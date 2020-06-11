@@ -1,0 +1,23 @@
+{
+  "name": "round-trip-routing",
+  "version": "1.0.0",
+  "description": "A web app for providing users with randomized routes of a specified distance.",
+  "main": "start.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walkianm/Round-Trip-Routing.git"
+  },
+  "author": "UVA 2020 IPP Group",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walkianm/Round-Trip-Routing/issues"
+  },
+  "homepage": "https://github.com/walkianm/Round-Trip-Routing#readme"
+}
