@@ -11,6 +11,7 @@ function initMap() {
     directionsRenderer.setMap(map);
 
 
+
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
         var latitude = event.latLng.lat();
