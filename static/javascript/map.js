@@ -5,7 +5,8 @@ function initMap() {
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 38.034004119, lng: -78.50953967324405},
-        zoom: 16
+        zoom: 16,
+        disableDefaultUI: true
     });
 
     directionsRenderer.setMap(map);
