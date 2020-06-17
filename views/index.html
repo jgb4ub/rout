@@ -12,9 +12,20 @@
     <p>Round Trip Routing</p>
     <label>Enter a distance:</label><br>
     <input type="submit" value="Generate Route">
-    <input type="text"><br>
+    <input type="number" onkeypress="return numberHandler"><br>
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&callback=initMap"
     async defer></script>
 </body>
+
+<script>
+//inputNumberHandler
+function numberHandler(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode
+     if (charCode > 31 && (charCode != 46 &&(charCode < 48 || charCode > 57)))
+        return false;
+    return true;
+}
+</script>
+
 </html>
