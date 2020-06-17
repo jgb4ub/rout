@@ -32,4 +32,10 @@ function initMap() {
         //place marker
         placeMarker(event.latLng);
     });
+
+    // Autocomplete
+    var input = document.getElementById('pac-input');
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
+
+    var autocomplete = new google.maps.places.autocomplete(input, options);
 }
