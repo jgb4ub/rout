@@ -6,7 +6,8 @@ function initMap() {
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 38.034004119, lng: -78.50953967324405},
-        zoom: 16
+        zoom: 16,
+        disableDefaultUI: true
     });
 
     directionsRenderer.setMap(map);
@@ -21,6 +22,7 @@ function initMap() {
         });
       }
     }
+
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
