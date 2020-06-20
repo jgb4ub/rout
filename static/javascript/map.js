@@ -12,6 +12,32 @@ function initMap() {
 
     directionsRenderer.setMap(map);
 
+    //Find Coordinates of Starting location
+
+    function locationHandler(){
+      
+    }
+
+
+
+
+    //inputNumberHandler
+    function numberHandler(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+         if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
     function placeMarker(location) {
       if (marker) {
         marker.setPosition(location);

@@ -16,21 +16,11 @@
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&callback=initMap"
     async defer></script>
-    <input id="pac-input" class = "controls" type = "text" placeholder = "Starting Location">
+    <input id="pac-input" class = "controls" type = "text" placeholder = "Starting Location" onchange="locationHandler()">
     <div id ="map-canvas"></div>
     <script src = "https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places">
     </script>
 </body>
 
-<script>
-//inputNumberHandler
-function numberHandler(evt) {
-    var charCode = (evt.which) ? evt.which : event.keyCode
-     if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
-    return true;
-}
-
-</script>
 
 </html>
