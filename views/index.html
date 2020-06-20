@@ -1,6 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
+      <style>
+      .button {
+        display: inline-block;
+        border-radius: 4px;
+        background-color: #232D4B;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 16px;
+        padding: 5px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        }
+      .button span {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+      }
+      .button span:after {
+      content: '\00bb';
+      position: absolute;
+      opacity: 0;
+      top: 0;
+      right: -20px;
+      transition: 0.5s;
+      }
+      .button:hover span {
+      padding-right: 25px;
+      }
+      .button:hover span:after {
+      opacity: 1;
+      right: 0;
+      }
+      .label {
+        color: white;
+        padding: 8px;
+        font-size: 20px;
+      }
+      .dist {
+        color: #232D4B
+        }
+      p {
+        color: #F84C1E;
+        text-align: center;
+        font-weight: bold;
+        font-size: 40px;
+      }
+      body {
+        background-color: #eeeeee;
+        opacity: 1;
+      }
+    </style>
     <title>IPP project</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
@@ -10,9 +65,10 @@
 </head>
 <body>
     <p>Round Trip Routing</p>
-    <label>Enter a distance:</label><br>
-    <input type="submit" value="Generate Route">
-    <input type="number" onkeypress="return numberHandler"><br>
+    <span class="label dist">Enter a distance:</span>
+    <input type="number" onkeypress="return numberHandler" min="0">
+    <button class="button" style="vertical-align:middle"><span>Generate Route</span></button>
+    <br><br>
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&callback=initMap"
     async defer></script>
