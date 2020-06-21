@@ -66,16 +66,19 @@
 <body>
     <p>Round Trip Routing</p>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" onkeypress="return numberHandler" min="0">
+    <input type="number" min="0">
     <button class="button" style="vertical-align:middle"><span>Generate Route</span></button>
     <br><br>
     <div id="map"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&callback=initMap"
     async defer></script>
-    <input id="pac-input" class = "controls" type = "text" placeholder = "Starting Location" onchange="locationHandler()">
+    <input id="pac-input" class = "controls" type = "text" placeholder = "Starting Location" onkeypress="locationHandler()">
     <div id ="map-canvas"></div>
     <script src = "https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places">
     </script>
+
+
+
 </body>
 
 

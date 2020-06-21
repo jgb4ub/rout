@@ -1,6 +1,7 @@
 var map;
 function initMap() {
     var marker;
+    var origin, destination;
     var directionsService = new google.maps.DirectionsService();
     var directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -12,29 +13,12 @@ function initMap() {
 
     directionsRenderer.setMap(map);
 
-    //Find Coordinates of Starting location
 
-    function locationHandler(){
-      
-    }
-
-
-
-
-    //inputNumberHandler
-    function numberHandler(evt) {
-        var charCode = (evt.which) ? evt.which : event.keyCode
-         if (charCode > 31 && (charCode < 48 || charCode > 57))
-            return false;
-        return true;
-    }
-
-
-
-
-
-
-
+        //Find Coordinates of Starting location
+        function locationHandler() {
+          origin = document.getElementById("pac-input").value;
+          console.log(origin);
+        }
 
 
 
