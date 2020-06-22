@@ -8,6 +8,8 @@ function initMap() {
         center: {lat: 38.034004119, lng: -78.50953967324405},
         zoom: 16,
         disableDefaultUI: true
+
+
     });
 
     directionsRenderer.setMap(map);
@@ -32,12 +34,12 @@ function initMap() {
         //place marker
         placeMarker(event.latLng);
     });
-    }
 
+    // Autocomplete
+    var input = document.getElementById('pac-input');
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
 
-    /**
-
-    Handle getting current position and sending as starting point
+    /**Handle getting current position and sending as starting point
     **/
 
     //currPos is the current Location of the user
@@ -78,3 +80,5 @@ function initMap() {
     function currPosErr(){
       currPosFail.innerHTML = "There was a problem getting your location";
     }
+    var autocomplete = new google.maps.places.autocomplete(input, options);
+}
