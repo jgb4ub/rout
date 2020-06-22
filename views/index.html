@@ -188,6 +188,7 @@ function numberHandler(evt) {
       <input id="pac-input" type="text"
           placeholder="Enter a location">
     </div>
+
   </div>
   <div id="map"></div>
   <div id="infowindow-content">
@@ -198,7 +199,7 @@ function numberHandler(evt) {
 
   <!--message to indicate if unsuccessful in getting current position-->
   <div id="currPositionGrab"></div>
-  
+
   <script>
 
     function initMap() {
@@ -215,6 +216,19 @@ function numberHandler(evt) {
 
       var autocomplete = new google.maps.places.Autocomplete(input);
 
+  // // Converting address to coordinates
+        // google.maps.event.addListener( autocomplete , 'place_changed' , function(){
+        //   var place = autocomplete.getPlace();
+        //   var location = "<b>Address:</b>" + place.formatted_address + "<br/>";
+        //   location += "<b>Latitude:</b>" + place.geometry.location.A + "<br/>";
+        //   location += "<b>Longtitude:</b>" + place.geometry.location.F;
+        //   document.getElementById('lblresult').innerHTML = location;
+        //   });
+        // });
+        // //This would get used on the existing input box that has the autocomplete feature. The address that gets typed in that box would be converted to coordinates
+        // //<span>Location:</span><input type="text" id="pac-input" style="width:200px" placeholder="Enter the address" /><br /><br />
+        // <label id="lblresult"></label>
+
       autocomplete.bindTo('bounds', map);
 
       autocomplete.setFields(
@@ -226,7 +240,7 @@ function numberHandler(evt) {
       var marker = new google.maps.Marker({
         map: map,
         anchorPoint: new google.maps.Point(0, -29)
-      });
+
 
       autocomplete.addListener('place_changed', function() {
         infowindow.close();
