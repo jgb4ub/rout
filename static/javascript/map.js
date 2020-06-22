@@ -33,3 +33,33 @@ function initMap() {
         placeMarker(event.latLng);
     });
     }
+
+
+    /**
+
+    Handle getting current position and sending as starting point
+    **/
+
+    //currPos is the current Location of the user
+    var currPos;
+    //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
+    var currPosFail = document.getElementById("currPositionGrab");
+
+    //Upon loading, request user location access, printing if an error occurred below the map
+    window.onload = function(){
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(currPos, currPosErr);
+      }
+      else {
+        curPosFail.innerHTML = "This feature is not supported by your browser";
+      }
+    }
+
+    function currPos(pos){
+      var latitude = pos.coords.latitude;
+      var longitude = pos.coords.longitude;
+    }
+
+    function currPosErr(){
+      currPosFail.innerHTML = "There was a problem getting your location";
+    }
