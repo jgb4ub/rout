@@ -1,7 +1,7 @@
 var map;
+var origin, destination;
 function initMap() {
     var marker;
-    var origin, destination;
     var directionsService = new google.maps.DirectionsService();
     var directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -9,16 +9,13 @@ function initMap() {
         center: {lat: 38.034004119, lng: -78.50953967324405},
         zoom: 16,
         disableDefaultUI: true
-    });
+    }
+  );
 
     directionsRenderer.setMap(map);
 
 
-        //Find Coordinates of Starting location
-        function locationHandler() {
-          origin = document.getElementById("pac-input").value;
-          console.log(origin);
-        }
+
 
 
 
@@ -48,4 +45,13 @@ function initMap() {
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
 
     var autocomplete = new google.maps.places.autocomplete(input, options);
+}
+
+
+
+//Find Coordinates of Starting location
+
+function setOrigin() {
+  origin = document.getElementById("pac-input").value;
+  console.log(origin);
 }
