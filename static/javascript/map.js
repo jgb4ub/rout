@@ -12,6 +12,8 @@ function initMap() {
     }
   );
 
+    setupAutoComplete(map);
+
     directionsRenderer.setMap(map);
 
 
@@ -20,14 +22,14 @@ function initMap() {
 
 
     function placeMarker(location) {
-      if (marker) {
-        marker.setPosition(location);
-      } else {
-        marker = new google.maps.Marker({
-          position:location,
-          map:map,
-        });
-      }
+        if (marker) {
+            marker.setPosition(location);
+        } else {
+            marker = new google.maps.Marker({
+                position:location,
+                map:map,
+            });
+        }
     }
 
 
@@ -44,6 +46,47 @@ function initMap() {
     var input = document.getElementById('pac-input');
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
 
+    /**Handle getting current position and sending as starting point
+    **/
+
+    //currPos is the current Location of the user
+    var currPos;
+    //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
+    var currPosFail = document.getElementById("currPositionGrab");
+
+    //Upon loading, request user location access, printing if an error occurred below the map
+    window.onload = function(){
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
+        }
+        else {
+            curPosFail.innerHTML = "This feature is not supported by your browser";
+        }
+    }
+
+    function getCurrPos(pos){
+        var latitude = pos.coords.latitude;
+        var longitude = pos.coords.longitude;
+
+        /**
+        unsure about this part (below)
+        **/
+
+        //create google LatLng object
+        currPos = new google.maps.LatLng(latitude,longitude);
+
+        //Put on map as marker (for now)
+        var currPosMarker = new google.maps.Marker({
+            position: currPos,
+            map: map
+        });
+
+        /**end uncertainty**/
+    }
+
+    function currPosErr(){
+        currPosFail.innerHTML = "There was a problem getting your location";
+    }
     var autocomplete = new google.maps.places.autocomplete(input, options);
 }
 

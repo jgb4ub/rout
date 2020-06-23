@@ -1,63 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-      <style>
-      .button {
-        display: inline-block;
-        border-radius: 4px;
-        background-color: #232D4B;
-        border: none;
-        color: #FFFFFF;
-        text-align: center;
-        font-size: 16px;
-        padding: 5px;
-        width: 200px;
-        transition: all 0.5s;
-        cursor: pointer;
-        margin: 5px;
-        }
-      .button span {
-      cursor: pointer;
-      display: inline-block;
-      position: relative;
-      transition: 0.5s;
-      }
-      .button span:after {
-      content: '\00bb';
-      position: absolute;
-      opacity: 0;
-      top: 0;
-      right: -20px;
-      transition: 0.5s;
-      }
-      .button:hover span {
-      padding-right: 25px;
-      }
-      .button:hover span:after {
-      opacity: 1;
-      right: 0;
-      }
-      .label {
-        color: white;
-        padding: 8px;
-        font-size: 20px;
-      }
-      .dist {
-        color: #232D4B
-        }
-      p {
-        color: #F84C1E;
-        text-align: center;
-        font-weight: bold;
-        font-size: 40px;
-      }
-      body {
-        background-color: #eeeeee;
-        opacity: 1;
-      }
-    </style>
     <title>IPP project</title>
-    <meta name="viewport" content="initial-scale=1.0">
+    <meta name="viewport" content="initial-scale=1.0"> <!-- content="user-scalable=no" -->
     <meta charset="utf-8">
 
     <link href="/css/main.css" rel="stylesheet">
@@ -66,21 +11,47 @@
 <body>
     <p>Round Trip Routing</p>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" min="0">
-    <button class="button" style="vertical-align:middle"><span>Generate Route</span></button>
+    <input type="number" onkeypress="return numberHandler" min="0">
+    <button class="button"><span>Generate Route</span></button>
     <br><br>
     <div id="map"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&callback=initMap"
+    <div class="pac-card" id="pac-card">
+        <div id="title">
+            Start Point Search
+        </div>
+        <div id="type-selector" class="pac-controls">
+            <input type="radio" name="type" id="changetype-all" checked="checked">
+            <label for="changetype-all">All</label>
+
+            <input type="radio" name="type" id="changetype-establishment">
+            <label for="changetype-establishment">Establishments</label>
+
+            <input type="radio" name="type" id="changetype-address">
+            <label for="changetype-address">Addresses</label>
+
+            <input type="radio" name="type" id="changetype-geocode">
+            <label for="changetype-geocode">Geocodes</label>
+        </div>
+        <div id="strict-bounds-selector" class="pac-controls">
+            <input type="checkbox" id="use-strict-bounds" value="">
+            <label for="use-strict-bounds">Strict Bounds</label>
+        </div>
+        <div id="pac-container">
+            <input id="pac-input" type="text" placeholder="Enter a location">
+        </div>
+
+        <div id="map"></div>
+        <div id="infowindow-content">
+            <img src="" width="16" height="16" id="place-icon">
+            <span id="place-name"  class="title"></span><br>
+            <span id="place-address"></span>
+        </div>
+    </div>
+
+    <!--message to indicate if unsuccessful in getting current position-->
+    <div id="currPositionGrab"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&libraries=places&callback=initMap"
     async defer></script>
-    <input id="pac-input" class = "controls" type = "text" placeholder = "Starting Location">
-    <button onclick="setOrigin()">Set Location</button>
-    <div id ="map-canvas"></div>
-    <script src = "https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places">
-    </script>
-
-
-
 </body>
-
 
 </html>
