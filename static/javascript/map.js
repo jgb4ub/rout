@@ -179,3 +179,16 @@ function numberHandler(evt) {
         return false;
     return true;
 }
+
+document.getElementById('routeBtn').addEventListener('click', 'genRouteListener')
+
+function genRouteListener() {
+    dist=document.getElementById("dist_input").value
+    if (dist<0 || dist==""){
+        document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
+        document.getElementById("dist_input").value=0
+    } else{
+        document.getElementById("dist_error").innerHTML= '';
+        /**additional code to implement button**/
+    }
+}

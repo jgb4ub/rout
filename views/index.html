@@ -11,9 +11,11 @@
 <body>
     <p>Round Trip Routing</p>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" onkeypress="return numberHandler" min="0">
-    <button class="button"><span>Generate Route</span></button>
-    <br><br>
+    <input type="number" id= "dist_input" onkeypress="return numberHandler" min="0">
+    <button class="button" id="routeBtn" onclick="genRouteListener()" <span>Generate Route</span></button>
+    <span class="label dist2" id="dist_error"></span>
+    <br>
+    <br>
     <div id="map"></div>
     <div class="pac-card" id="pac-card">
         <div id="title">
