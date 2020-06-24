@@ -46,12 +46,12 @@ function initMap() {
     **/
 
     //currPos is the current Location of the user
-    //var currPos;
+    var currPos;
     //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
-    //var currPosFail = document.getElementById("currPositionGrab");
+    var currPosFail = document.getElementById("currPositionGrab");
 
     //Upon loading, request user location access, printing if an error occurred below the map
-/*
+
     window.onload = function(){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
@@ -61,104 +61,86 @@ function initMap() {
         }
     }
 
-*/
-/*
+
+
     function currPosErr(){
         currPosFail.innerHTML = "There was a problem getting your location";
     }
     var autocomplete = new google.maps.places.autocomplete(input, options);
-*/
+
 }
-
-
-
-//Find Coordinates of Starting location
-/*
-function setOrigin() {
-  origin = document.getElementById("pac-input").value;
-  console.log(origin);
-}
-*/
 
 
 
     function genRoute(distance) {
-      let origin, destination;
-      let lat_origin = latitude;
-      let long_origin = longitude;
-      let distanceTo = parseFloat(distance/2);
+        let origin, destination;
+        let lat_origin = latitude;
+        let long_origin = longitude;
+        let distanceTo = parseFloat(distance/2);
 
-      console.log(lat_origin);
-      directions = [
-         { direction : "north", latitude: '', longitude: ''}, { direction : "south", latitude: '', longitude: ''},
-         { direction : "east", latitude: '', longitude: ''}, { direction : "west", latitude: '', longitude: ''},
-         { direction : "northeast", latitude: '', longitude: ''}, { direction : "northwest", latitude: '', longitude: ''},
-         { direction : "southeast", latitude: '', longitude: ''}, { direction : "southwest", latitude: '', longitude: ''},
-      ];
+        directions = [
+           { direction : "north", latitude: '', longitude: ''}, { direction : "south", latitude: '', longitude: ''},
+           { direction : "east", latitude: '', longitude: ''}, { direction : "west", latitude: '', longitude: ''},
+           { direction : "northeast", latitude: '', longitude: ''}, { direction : "northwest", latitude: '', longitude: ''},
+           { direction : "southeast", latitude: '', longitude: ''}, { direction : "southwest", latitude: '', longitude: ''},
+        ];
 
-      let randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        let randomDirection = directions[Math.floor(Math.random() * directions.length)];
 
 
-      if (randomDirection.direction === 'north') {
-        randomDirection.latitude = lat_origin;
-        randomDirection.longitude = long_origin + distanceTo;
-      }
-      else if (randomDirection.direction === 'south'){
-        randomDirection.latitude = lat_origin;
-        randomDirection.longitude = long_origin - distanceTo;
-      }
-      else if (randomDirection.direction === 'east'){
-        randomDirection.latitude = lat_origin + distanceTo;
-        randomDirection.longitude = long_origin;
-      }
-      else if (randomDirection.direction === 'west'){
-        randomDirection.latitude = lat_origin - distanceTo;
-        randomDirection.longitude = long_origin;
-      }
-      else if (randomDirection.direction === 'northeast'){
-        randomDirection.latitude = lat_origin + distanceTo;
-        randomDirection.longitude = long_origin + distanceTo;
-      }
-      else if (randomDirection.direction === 'northwest'){
-        randomDirection.latitude = lat_origin - distanceTo;
-        randomDirection.longitude = long_origin + distanceTo;
-      }
-      else if (randomDirection.direction === 'southeast'){
-        randomDirection.latitude = lat_origin + distanceTo;
-        randomDirection.longitude = long_origin - distanceTo;
-      }
-      else if (randomDirection.direction === 'southwest'){
-        randomDirection.latitude = lat_origin - distanceTo;
-        randomDirection.longitude = long_origin - distanceTo;
-      }
+        if (randomDirection.direction === 'north') {
+          randomDirection.latitude = lat_origin;
+          randomDirection.longitude = long_origin + distanceTo;
+        }
+        else if (randomDirection.direction === 'south'){
+          randomDirection.latitude = lat_origin;
+          randomDirection.longitude = long_origin - distanceTo;
+        }
+        else if (randomDirection.direction === 'east'){
+          randomDirection.latitude = lat_origin + distanceTo;
+          randomDirection.longitude = long_origin;
+        }
+        else if (randomDirection.direction === 'west'){
+          randomDirection.latitude = lat_origin - distanceTo;
+          randomDirection.longitude = long_origin;
+        }
+        else if (randomDirection.direction === 'northeast'){
+          randomDirection.latitude = lat_origin + distanceTo;
+          randomDirection.longitude = long_origin + distanceTo;
+        }
+        else if (randomDirection.direction === 'northwest'){
+          randomDirection.latitude = lat_origin - distanceTo;
+          randomDirection.longitude = long_origin + distanceTo;
+        }
+        else if (randomDirection.direction === 'southeast'){
+          randomDirection.latitude = lat_origin + distanceTo;
+          randomDirection.longitude = long_origin - distanceTo;
+        }
+        else if (randomDirection.direction === 'southwest'){
+          randomDirection.latitude = lat_origin - distanceTo;
+          randomDirection.longitude = long_origin - distanceTo;
+        }
 
-      //destination = {latitude: randomDirection.latitude, longitude: randomDirection.longitude};
-      let lat_dest = randomDirection.latitude;
-      let long_dest = randomDirection.longitude;
 
-      //console.log(origin)
-      //console.log(destination)
-      //let directionsService = new google.maps.DirectionsService();
-      //let directionsRenderer = new google.maps.DirectionsRenderer();
+        let lat_dest = randomDirection.latitude;
+        let long_dest = randomDirection.longitude;
 
-      origin = "" + lat_origin + "," + long_origin;
-      destination = "" + lat_dest + "," + long_dest;
+        origin = "" + lat_origin + "," + long_origin;
+        destination = "" + lat_dest + "," + long_dest;
 
-      let request = {
-        origin: origin,
-        destination: destination,
-        travelMode: 'WALKING'
-      };
+        let request = {
+          origin: origin,
+          destination: destination,
+          travelMode: 'WALKING'
+        };
 
-      directionsService.route(request, function(result, status){
-          if(status === "OK"){
-            directionsRenderer.setDirections(result);
-          }
-      });
+        directionsService.route(request, function(result, status){
+            if(status === "OK"){
+              directionsRenderer.setDirections(result);
+            }
+        });
+
     }
-
-
-
 
 
     function isNumberKey(evt){
