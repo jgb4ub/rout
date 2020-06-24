@@ -179,3 +179,7 @@ function numberHandler(evt) {
         return false;
     return true;
 }
+
+function description(){
+    alert("This website uses the Google Maps API to enable users to create a round trip route, with the ability to specify certain parameters and customize their route.")
+}
