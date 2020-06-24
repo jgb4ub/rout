@@ -141,8 +141,8 @@ function setOrigin() {
       //let directionsService = new google.maps.DirectionsService();
       //let directionsRenderer = new google.maps.DirectionsRenderer();
 
-      origin = "" + lat_origin + "" + long_origin;
-      destination = "" + lat_dest + "" + long_dest;
+      origin = "" + lat_origin + "," + long_origin;
+      destination = "" + lat_dest + "," + long_dest;
 
       let request = {
         origin: origin,
