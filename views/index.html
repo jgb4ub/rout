@@ -11,8 +11,8 @@
 <body>
     <p>Round Trip Routing</p>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" onkeypress="return numberHandler" min="0">
-    <button class="button"><span>Generate Route</span></button>
+    <input type="number" id="distance"  min="0" onkeypress="isNumberKey(event)">
+    <button class="button" onclick="genRoute(document.getElementById('distance').value)"><span>Generate Route</span></button>
     <br><br>
     <div id="map"></div>
     <div class="pac-card" id="pac-card">
