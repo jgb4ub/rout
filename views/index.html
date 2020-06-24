@@ -9,17 +9,17 @@
     <script src="/javascript/map.js"></script>
 </head>
 <body>
-    <p onClick="description()">Round Trip Routing</p>
+    <a href="/about">
+        <p onClick="description()">Round Trip Routing</p>
+    </a>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" id= "dist_input" onkeypress="return numberHandler" min="0">
+    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
     <button class="button" id="routeBtn" onclick="genRouteListener()" <span>Generate Route</span></button>
     <span class="label dist2" id="dist_error"></span>
     <br>
     <br>
     <div id="map"></div>
-    <div id="pac-container" class="pac-card">
-        <input id="pac-input" type="text" placeholder="Enter a location">
-    </div>
+
     <div class="pac-card" id="pac-card">
         <div id="title">
             Start Point Search
@@ -41,9 +41,10 @@
             <input type="checkbox" id="use-strict-bounds" value="">
             <label for="use-strict-bounds">Strict Bounds</label>
         </div>
+        <div id="pac-container" class="pac-card">
+            <input id="pac-input" type="text" placeholder="Enter a location">
+        </div>
 
-
-        <div id="map"></div>
         <div id="infowindow-content">
             <img src="" width="16" height="16" id="place-icon">
             <span id="place-name"  class="title"></span><br>
