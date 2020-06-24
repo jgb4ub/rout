@@ -22,6 +22,14 @@
             Start Point Search
         </div>
         <div id="type-selector" class="pac-controls">
+            <input type="radio" name="wp-toggle" id="addstart" >
+            <label>Add/Edit Starting point</label>
+            <input type="radio" name="wp-toggle" id="addwp" >
+            <label>Add Waypoints</label>
+            <input type="radio" name="wp-toggle" id="delwp">
+            <label>Delete Waypoints</label>
+        </div><br><br>
+        <div id="type-selector" class="pac-controls">
             <input type="radio" name="type" id="changetype-all" checked="checked">
             <label for="changetype-all">All</label>
 
@@ -41,19 +49,37 @@
         <div id="pac-container">
             <input id="pac-input" type="text" placeholder="Enter a location">
         </div>
-
+        <button type="button">Add Startpoint/Waypoint</button>
+        <button type="button">Delete Waypoint</button>
+        <br>
+        <br>
+        <label>Start Address:</label><br><br>
+        <label>Waypoints:</label>
         <div id="map"></div>
         <div id="infowindow-content">
             <img src="" width="16" height="16" id="place-icon">
             <span id="place-name"  class="title"></span><br>
             <span id="place-address"></span>
         </div>
-    </div>
-
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&libraries=places&callback=initMap"
     async defer></script>
+
+    <!-- <div class="pac-card" id="wp-card">
+        <div id="title">
+            Select Waypoints
+        </div>
+        <div id="wp-selector" class="pac-controls">
+            <input type="radio" name="wp-toggle" id="addwp" >
+            <label>Add Waypoints</label>
+            <input type="radio" name="wp-toggle" id="delwp">
+            <label>Delete Waypoints</label>
+        </div>
+        <div id="wp-container">
+            <input id="wp-input" type="text" placeholder="Enter a waypoint location">
+        </div>
+    </div> -->
 </body>
 
 </html>

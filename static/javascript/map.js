@@ -74,6 +74,11 @@ function setupAutoComplete(map) {
         autocomplete.setOptions({strictBounds: this.checked});
     });
 
+    // document.getElementById('addstart').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
+
 
     // // Converting address to coordinates
     // google.maps.event.addListener( autocomplete , 'place_changed' , function(){
@@ -88,6 +93,8 @@ function setupAutoComplete(map) {
     // <label id="lblresult"></label>
 }
 
+
+
 function initMap() {
     var marker;
     var directionsService = new google.maps.DirectionsService();
@@ -101,6 +108,8 @@ function initMap() {
     });
 
     setupAutoComplete(map);
+
+    setupWaypoints(map);
 
     directionsRenderer.setMap(map);
 
@@ -183,7 +192,7 @@ function numberHandler(evt) {
 document.getElementById('routeBtn').addEventListener('click', 'genRouteListener')
 
 function genRouteListener() {
-    dist=document.getElementById("dist_input").value
+    var dist=document.getElementById("dist_input").value
     if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
