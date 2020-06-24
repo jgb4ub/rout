@@ -156,8 +156,8 @@ function initMap() {
         **/
 
         //create google LatLng object
-        currPos = new google.maps.LatLng(latitude,longitude);
-
+        var currPos = new google.maps.LatLng(latitude,longitude);
+        map.setCenter(currPos);
         //Put on map as marker (for now)
         var currPosMarker = new google.maps.Marker({
             position: currPos,
