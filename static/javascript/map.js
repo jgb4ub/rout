@@ -121,7 +121,7 @@ function initMap() {
                 map:map,
             });
         }
-        map.setCenter(currPos.position);
+        setTimeout(function(){map.setCenter(currPos.position)},200);
     }
 
 
@@ -157,12 +157,13 @@ function setUserCurrentPosition() {
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
 
-        /**
-        unsure about this part (below)
-        **/
+
         //create google LatLng object
         var currCoords = new google.maps.LatLng(latitude,longitude);
+        /** set Timeout on map view update
+        setTimeout(function(){map.setCenter(currCoords)},300);**/
         map.setCenter(currCoords);
+        //map.setCenter(currCoords);
         //Put on map as marker (for now)
         if (currPos){
             currPos.setPosition(currCoords);
@@ -173,7 +174,7 @@ function setUserCurrentPosition() {
             });
         }
 
-        /**end uncertainty**/
+
     }
 
     function currPosErr(){
