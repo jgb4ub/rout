@@ -108,7 +108,7 @@ function initMap() {
     });
 
     setupAutoComplete(map);
-    setUserCurrentPosition();
+    //setUserCurrentPosition();
 
     directionsRenderer.setMap(map);
 
@@ -121,6 +121,7 @@ function initMap() {
                 map:map,
             });
         }
+        map.setCenter(currPos.position);
     }
 
 
@@ -139,11 +140,11 @@ function setUserCurrentPosition() {
     **/
 
     //currPos is the current Location of the user
-    var currPos;
+    //var currPos;
     //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
     var currPosFail = document.getElementById("currPositionGrab");
 
-    //Upon loading, request user location access, printing if an error occurred below the map
+    //Upon clicking current position button, request user location access, printing if an error occurred below the map
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
@@ -160,13 +161,17 @@ function setUserCurrentPosition() {
         unsure about this part (below)
         **/
         //create google LatLng object
-        var currPos = new google.maps.LatLng(latitude,longitude);
-        map.setCenter(currPos);
+        var currCoords = new google.maps.LatLng(latitude,longitude);
+        map.setCenter(currCoords);
         //Put on map as marker (for now)
-        var currPosMarker = new google.maps.Marker({
-            position: currPos,
-            map: map
-        });
+        if (currPos){
+            currPos.setPosition(currCoords);
+        } else {
+            currPos = new google.maps.Marker({
+                position: currCoords,
+                map: map
+            });
+        }
 
         /**end uncertainty**/
     }
