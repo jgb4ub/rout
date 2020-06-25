@@ -39,7 +39,7 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        marker.setPosition(place.geometry.location);
+        currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
