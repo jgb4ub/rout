@@ -15,7 +15,6 @@
     <span class="label dist">Enter a distance:</span>
     <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
     <button class="button" id="routeBtn" onclick="genRouteListener()" <span>Generate Route</span></button>
-    <button class="button" id="currPosButton" onclick="setUserCurrentPosition()"> Use Current Location</button>
     <span class="label dist2" id="dist_error"></span>
     <br>
     <br>
@@ -24,6 +23,7 @@
     <div class="pac-card" id="pac-card">
         <div id="title">
             Start Point Search
+            <button class="button" id="currPosButton" onclick="setUserCurrentPosition()"> Use Current Location</button>
         </div>
         <div id="type-selector" class="pac-controls">
             <input type="radio" name="type" id="changetype-all" checked="checked">
