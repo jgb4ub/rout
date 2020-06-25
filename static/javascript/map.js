@@ -3,8 +3,7 @@ var map;
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
-    var types = document.getElementById('type-selector');
-    var strictBounds = document.getElementById('strict-bounds-selector');
+    
 
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
@@ -57,22 +56,90 @@ function setupAutoComplete(map) {
         infowindow.open(map, marker);
     });
 
-    function setupClickListener(id, types) {
-        var radioButton = document.getElementById(id);
-        radioButton.addEventListener('click', function() {
-            autocomplete.setTypes(types);
-        });
+    //"Add" button listener
+    document.getElementById('addbtn').addEventListener('click', function() {
+        if(document.getElementById('addstart').checked==true)
+            addStart()
+        if(document.getElementById('addwp').checked==true)
+            addWaypoint()
+    });
+
+    //"Delete Waypoint" button listener that deletes checked waypoints
+    document.getElementById('delbtn').addEventListener('click', function() {
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            if(document.getElementsByName("boxes")[i].checked==true){
+                document.getElementsByName("boxes")[i].nextSibling.remove();
+                document.getElementsByName("boxes")[i].remove();
+                i-=1
+            }
+        }
+    });
+
+    //"Add/Edit Start" radio button listener to enable/disable properties
+    document.getElementById('addstart').addEventListener('click', function() {
+        document.getElementById("pac-input").disabled = false;
+        document.getElementById("addbtn").disabled = false;
+        document.getElementById("delbtn").disabled = true;
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            document.getElementsByName("boxes")[i].disabled=true
+        }
+    });
+
+    //"Delete waypoint" radio button listener to enable/disable properties
+    document.getElementById('addwp').addEventListener('click', function() {
+        document.getElementById("pac-input").disabled = false;
+        document.getElementById("addbtn").disabled = false;
+        document.getElementById("delbtn").disabled = true;
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            document.getElementsByName("boxes")[i].disabled=true
+        }
+    });
+
+    //"Delete waypoint" radio button listener to enable/disable properties
+    document.getElementById('delwp').addEventListener('click', function() {
+            document.getElementById("pac-input").disabled = true;
+            document.getElementById("addbtn").disabled = true;
+            document.getElementById("delbtn").disabled = false;
+            for (i = 0; i < document.getElementsByName("boxes").length; i++){
+                document.getElementsByName("boxes")[i].disabled=false
+            }
+    });
+
+    //Function to add/change start address used in add button
+    function addStart() {
+        document.getElementById("startaddressval").innerHTML=infowindowContent.children['place-address'].textContent
     }
 
-    setupClickListener('changetype-all', []);
-    setupClickListener('changetype-address', ['address']);
-    setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);
+    //Function to add waypoint used in add button
+    function addWaypoint() {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "checkbox");
+        x.setAttribute("name", "boxes")
+        x.setAttribute("id", "box1")
+        x.disabled=true
+        document.getElementById("wp-boxes").appendChild(x);
+        var address1=document.createElement("LABEL");
+        address1.innerHTML= infowindowContent.children['place-address'].textContent
+        address1.innerHTML+="<br/>"
+        document.getElementById("wp-boxes").appendChild(address1);
+    }
 
-    document.getElementById('use-strict-bounds').addEventListener('click', function() {
-        console.log('Checkbox clicked! New state=' + this.checked);
-        autocomplete.setOptions({strictBounds: this.checked});
-    });
+    // function setupClickListener(id, types) {
+    //     var radioButton = document.getElementById(id);
+    //     radioButton.addEventListener('click', function() {
+    //         autocomplete.setTypes(types);
+    //     });
+    // }
+    //
+    // setupClickListener('changetype-all', []);
+    // setupClickListener('changetype-address', ['address']);
+    // setupClickListener('changetype-establishment', ['establishment']);
+    // setupClickListener('changetype-geocode', ['geocode']);
+    //
+    // document.getElementById('use-strict-bounds').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
 
     // document.getElementById('addstart').addEventListener('click', function() {
     //     console.log('Checkbox clicked! New state=' + this.checked);
@@ -179,7 +246,7 @@ function initMap() {
     function currPosErr(){
         currPosFail.innerHTML = "There was a problem getting your location";
     }
-    var autocomplete = new google.maps.places.autocomplete(input, options);
+    var autocomplete = new google.maps.places.autocomplete(input);
 }
 
 function numberHandler(evt) {
