@@ -131,7 +131,7 @@ function initMap() {
         let request = {
           origin: origin,
           destination: destination,
-          travelMode: 'WALKING'
+          travelMode: 'DRIVING'
         };
 
         directionsService.route(request, function(result, status){
@@ -140,6 +140,18 @@ function initMap() {
             }
         });
 
+        let requestBack = {
+          origin: destination,
+          destination: origin,
+          travelMode: 'DRIVING'
+        };
+
+        directionsService.route(requestBack, function(result, status){
+            if(status === "OK"){
+              directionsRenderer.setDirections(result);
+            }
+        });
+        
     }
 
 
