@@ -61,7 +61,24 @@ function initMap() {
         }
     }
 
+    function getCurrPos(pos){
+        var latitude = pos.coords.latitude;
+        var longitude = pos.coords.longitude;
 
+        /**
+        unsure about this part (below)
+        **/
+        //create google LatLng object
+        var currPos = new google.maps.LatLng(latitude,longitude);
+        map.setCenter(currPos);
+        //Put on map as marker (for now)
+        var currPosMarker = new google.maps.Marker({
+            position: currPos,
+            map: map
+        });
+
+        /**end uncertainty**/
+    }
 
     function currPosErr(){
         currPosFail.innerHTML = "There was a problem getting your location";
