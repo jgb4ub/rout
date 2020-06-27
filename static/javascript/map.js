@@ -1,4 +1,11 @@
-var map, origin, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
+
+
+
+
+
+
+
+var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
 
 
 function initMap() {
@@ -90,7 +97,8 @@ function initMap() {
 
 
     function genRoute(distance) {
-        let origin, destination;
+        let randomWayPt;
+        let waypts = [];
         let lat_origin = latitude;
         let long_origin = longitude;
         let distanceTo = parseFloat(distance/2);
@@ -139,36 +147,40 @@ function initMap() {
         }
 
 
-        let lat_dest = randomDirection.latitude;
-        let long_dest = randomDirection.longitude;
+        let lat_mid = randomDirection.latitude;
+        let long_mid = randomDirection.longitude;
 
         origin = "" + lat_origin + "," + long_origin;
-        destination = "" + lat_dest + "," + long_dest;
+        midway = "" + lat_mid + "," + long_mid;
+        let randomWayPtLat = (Math.random() * (lat_mid - lat_origin) + lat_origin);
+        let randomWayPtLong = (Math.random() * (long_mid - long_origin) + long_origin);
+        randomWayPt = "" + randomWayPtLat + "," + randomWayPtLong;
+        console.log(randomWayPtLat);
+
+        waypts.push({location: midway, stopover: true})
+        waypts.push({location: randomWayPt, stopover: true})
+
+
+
+
 
         let request = {
           origin: origin,
-          destination: destination,
+          destination: origin,
+          waypoints: waypts,
+          optimizeWaypoints: true,
           travelMode: 'DRIVING'
         };
 
+        console.log(request.origin);
+        console.log(request.destination);
         directionsService.route(request, function(result, status){
             if(status === "OK"){
               directionsRenderer.setDirections(result);
             }
         });
 
-        let requestBack = {
-          origin: destination,
-          destination: origin,
-          travelMode: 'DRIVING'
-        };
 
-        directionsService.route(requestBack, function(result, status){
-            if(status === "OK"){
-              directionsRenderer.setDirections(result);
-            }
-        });
-        
     }
 
 
