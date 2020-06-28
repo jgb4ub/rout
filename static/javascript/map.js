@@ -1,3 +1,4 @@
+
 var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
 
 function setupAutoComplete(map) {
@@ -192,12 +193,15 @@ function genRouteListener() {
 }
 
 
+
 function genRoute(distance) {
     let randomWayPt;
     let waypts = [];
     let lat_origin = latitude;
     let long_origin = longitude;
     let distanceTo = parseFloat(distance/2);
+
+
 
     directions = [
        { direction : "north", latitude: '', longitude: ''}, { direction : "south", latitude: '', longitude: ''},
@@ -243,6 +247,7 @@ function genRoute(distance) {
     }
 
 
+
     let lat_mid = randomDirection.latitude;
     let long_mid = randomDirection.longitude;
 
@@ -255,7 +260,6 @@ function genRoute(distance) {
 
     waypts.push({location: midway, stopover: true})
     //waypts.push({location: randomWayPt, stopover: true})
-
 
 
 
