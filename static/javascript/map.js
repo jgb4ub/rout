@@ -64,10 +64,14 @@ function setupAutoComplete(map) {
         });
     }
 
-    setupClickListener('changetype-all', []);
+
+    setupClickListener('changemode-walking', 'WALKING');
+    setupClickListener('changemode-bicycling', 'BICYCLING');
+    setupClickListener('changemode-driving', 'DRIVING');
+    /*setupClickListener('changetype-all', []);
     setupClickListener('changetype-address', ['address']);
     setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);
+    setupClickListener('changetype-geocode', ['geocode']);*/
 
     document.getElementById('use-strict-bounds').addEventListener('click', function() {
         console.log('Checkbox clicked! New state=' + this.checked);
