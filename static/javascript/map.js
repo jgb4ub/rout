@@ -40,7 +40,8 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        currPos.setPosition(place.geometry.location);
+        setOrigin(place.geometry.location);
+        // currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -114,10 +115,10 @@ function setupAutoComplete(map) {
     setupClickListenerTransMode('changemode-driving', 'DRIVING');
 
 
-    setupClickListener('changetype-all', []);
-    setupClickListener('changetype-address', ['address']);
-    setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);
+    // setupClickListener('changetype-all', []);
+    // setupClickListener('changetype-address', ['address']);
+    // setupClickListener('changetype-establishment', ['establishment']);
+    // setupClickListener('changetype-geocode', ['geocode']);
 
 
     //"Delete waypoint" radio button listener to enable/disable properties
@@ -209,21 +210,11 @@ function initMap() {
     setupAutoComplete(map);
     //setUserCurrentPosition();
 
-    setupWaypoints(map);
+
 
     directionsRenderer.setMap(map);
 
-    function setOrigin(marker) {
-        if (currPos) {
-            currPos.setPosition(marker);
-        } else {
-            currPos = new google.maps.Marker({
-                position:marker,
-                map:map,
-            });
-        }
-        setTimeout(function(){map.setCenter(currPos.position)},200);
-    }
+
 
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
@@ -477,4 +468,16 @@ function isNumberKey(evt){
     if (charCode > 31 && (charCode < 48 || charCode > 57))
         return false;
     return true;
+}
+
+function setOrigin(marker) {
+    if (currPos) {
+        currPos.setPosition(marker);
+    } else {
+        currPos = new google.maps.Marker({
+            position:marker,
+            map:map,
+        });
+    }
+    setTimeout(function(){map.setCenter(currPos.position)},200);
 }
