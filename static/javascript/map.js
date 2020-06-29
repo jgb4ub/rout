@@ -1,12 +1,14 @@
-var map;
+var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
 
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
-    
 
+
+    var card2 = document.getElementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -38,7 +40,7 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        marker.setPosition(place.geometry.location);
+        currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -75,6 +77,7 @@ function setupAutoComplete(map) {
         }
     });
 
+
     //"Add/Edit Start" radio button listener to enable/disable properties
     document.getElementById('addstart').addEventListener('click', function() {
         document.getElementById("pac-input").disabled = false;
@@ -94,6 +97,28 @@ function setupAutoComplete(map) {
             document.getElementsByName("boxes")[i].disabled=true
         }
     });
+    //declare variable for mode of transport
+    var mode;
+
+    function setupClickListenerTransMode(id, transMode) {
+        var radioButton = document.getElementById(id);
+        radioButton.addEventListener('click', function() {
+            // for now, store transport mode as variable
+            mode = transMode;
+        });
+    }
+
+
+    setupClickListenerTransMode('changemode-walking', 'WALKING');
+    setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
+    setupClickListenerTransMode('changemode-driving', 'DRIVING');
+
+
+    setupClickListener('changetype-all', []);
+    setupClickListener('changetype-address', ['address']);
+    setupClickListener('changetype-establishment', ['establishment']);
+    setupClickListener('changetype-geocode', ['geocode']);
+
 
     //"Delete waypoint" radio button listener to enable/disable properties
     document.getElementById('delwp').addEventListener('click', function() {
@@ -147,6 +172,13 @@ function setupAutoComplete(map) {
     // });
 
 
+
+    // document.getElementById('addstart').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
+
+
     // // Converting address to coordinates
     // google.maps.event.addListener( autocomplete , 'place_changed' , function(){
     //     var place = autocomplete.getPlace();
@@ -164,99 +196,96 @@ function setupAutoComplete(map) {
 
 function initMap() {
     var marker;
-    var directionsService = new google.maps.DirectionsService();
-    var directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 38.034004119, lng: -78.50953967324405},
         zoom: 16,
         // TODO: Disable only extraneous UI features
-        // disableDefaultUI: true
+        disableDefaultUI: true
     });
 
     setupAutoComplete(map);
+    //setUserCurrentPosition();
 
     setupWaypoints(map);
 
     directionsRenderer.setMap(map);
 
-    function placeMarker(location) {
-        if (marker) {
-            marker.setPosition(location);
+    function setOrigin(marker) {
+        if (currPos) {
+            currPos.setPosition(marker);
         } else {
-            marker = new google.maps.Marker({
-                position:location,
+            currPos = new google.maps.Marker({
+                position:marker,
                 map:map,
             });
         }
+        setTimeout(function(){map.setCenter(currPos.position)},200);
     }
 
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
-        var latitude = event.latLng.lat();
-        var longitude = event.latLng.lng();
-        console.log(latitude + ', ' + longitude);
+        latitude = event.latLng.lat();
+        longitude = event.latLng.lng();
+        //currPos = new google.maps.LatLng(latitude,longitude);
         //place marker
-        placeMarker(event.latLng);
+        setOrigin(event.latLng);
     });
+}
 
-    // Autocomplete
-    var input = document.getElementById('pac-input');
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
-
+function setUserCurrentPosition() {
     /**Handle getting current position and sending as starting point
     **/
 
     //currPos is the current Location of the user
-    var currPos;
+    //var currPos;
     //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
     var currPosFail = document.getElementById("currPositionGrab");
 
-    //Upon loading, request user location access, printing if an error occurred below the map
-    window.onload = function(){
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
-        }
-        else {
-            curPosFail.innerHTML = "This feature is not supported by your browser";
-        }
+    //Upon clicking current position button, request user location access, printing if an error occurred below the map
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
+    }
+    else {
+        curPosFail.innerHTML = "This feature is not supported by your browser";
     }
 
     function getCurrPos(pos){
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
 
-        /**
-        unsure about this part (below)
-        **/
 
         //create google LatLng object
-        currPos = new google.maps.LatLng(latitude,longitude);
-
+        var currCoords = new google.maps.LatLng(latitude,longitude);
+        /** set Timeout on map view update
+        setTimeout(function(){map.setCenter(currCoords)},300);**/
+        map.setCenter(currCoords);
+        //map.setCenter(currCoords);
         //Put on map as marker (for now)
-        var currPosMarker = new google.maps.Marker({
-            position: currPos,
-            map: map
-        });
+        if (currPos){
+            currPos.setPosition(currCoords);
+        } else {
+            currPos = new google.maps.Marker({
+                position: currCoords,
+                map: map
+            });
+        }
 
-        /**end uncertainty**/
+
     }
 
     function currPosErr(){
         currPosFail.innerHTML = "There was a problem getting your location";
     }
-    var autocomplete = new google.maps.places.autocomplete(input);
 }
 
-function numberHandler(evt) {
-    var charCode = (evt.which) ? evt.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
-    return true;
+function description(){
+    alert("This website uses the Google Maps API to enable users to create a round trip route, with the ability to specify certain parameters and customize their route.")
 }
-
-document.getElementById('routeBtn').addEventListener('click', 'genRouteListener')
 
 function genRouteListener() {
     var dist=document.getElementById("dist_input").value
@@ -265,6 +294,187 @@ function genRouteListener() {
         document.getElementById("dist_input").value=0
     } else{
         document.getElementById("dist_error").innerHTML= '';
-        /**additional code to implement button**/
+        genRoute(dist);
     }
+}
+
+
+function genRoute(distance) {
+    let randomWayPt;
+    let waypts = [];
+    let lat_origin = latitude;
+    let long_origin = longitude;
+    let distanceTo = parseFloat(distance/2);
+
+    directions = [
+       { direction : "north", latitude: '', longitude: ''}, { direction : "south", latitude: '', longitude: ''},
+       { direction : "east", latitude: '', longitude: ''}, { direction : "west", latitude: '', longitude: ''},
+       { direction : "northeast", latitude: '', longitude: ''}, { direction : "northwest", latitude: '', longitude: ''},
+       { direction : "southeast", latitude: '', longitude: ''}, { direction : "southwest", latitude: '', longitude: ''},
+    ];
+
+    let randomDirection = directions[Math.floor(Math.random() * directions.length)];
+
+
+    if (randomDirection.direction === 'north') {
+      randomDirection.latitude = lat_origin;
+      randomDirection.longitude = long_origin + distanceTo;
+    }
+    else if (randomDirection.direction === 'south'){
+      randomDirection.latitude = lat_origin;
+      randomDirection.longitude = long_origin - distanceTo;
+    }
+    else if (randomDirection.direction === 'east'){
+      randomDirection.latitude = lat_origin + distanceTo;
+      randomDirection.longitude = long_origin;
+    }
+    else if (randomDirection.direction === 'west'){
+      randomDirection.latitude = lat_origin - distanceTo;
+      randomDirection.longitude = long_origin;
+    }
+    else if (randomDirection.direction === 'northeast'){
+      randomDirection.latitude = lat_origin + distanceTo;
+      randomDirection.longitude = long_origin + distanceTo;
+    }
+    else if (randomDirection.direction === 'northwest'){
+      randomDirection.latitude = lat_origin - distanceTo;
+      randomDirection.longitude = long_origin + distanceTo;
+    }
+    else if (randomDirection.direction === 'southeast'){
+      randomDirection.latitude = lat_origin + distanceTo;
+      randomDirection.longitude = long_origin - distanceTo;
+    }
+    else if (randomDirection.direction === 'southwest'){
+      randomDirection.latitude = lat_origin - distanceTo;
+      randomDirection.longitude = long_origin - distanceTo;
+    }
+
+
+    let lat_mid = randomDirection.latitude;
+    let long_mid = randomDirection.longitude;
+
+    origin = "" + lat_origin + "," + long_origin;
+    midway = "" + lat_mid + "," + long_mid;
+    let randomWayPtLat = (Math.random() * (lat_mid - lat_origin) + lat_origin);
+    let randomWayPtLong = (Math.random() * (long_mid - long_origin) + long_origin);
+    randomWayPt = "" + randomWayPtLat + "," + randomWayPtLong;
+    console.log(randomWayPtLat);
+
+    waypts.push({location: midway, stopover: true})
+    //waypts.push({location: randomWayPt, stopover: true})
+
+
+
+
+
+    let request = {
+      origin: origin,
+      destination: origin,
+      waypoints: waypts,
+      optimizeWaypoints: true,
+      travelMode: 'DRIVING'
+    };
+
+    console.log(request.origin);
+    console.log(request.destination);
+    directionsService.route(request, function(result, status){
+        if(status === "OK"){
+          directionsRenderer.setDirections(result);
+        }
+    });
+
+}
+
+//Directions
+function calcRoute() {
+
+  for (i = 0; i < markerArray.length; i++) {
+    markerArray[i].setMap(null);
+  }
+
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: 'WALKING'
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == "OK") {
+      var warnings = document.getElementById("warnings_panel");
+      warnings.innerHTML = "" + response.routes[0].warnings + "";
+      directionsRenderer.setDirections(response);
+      showSteps(response);
+    }
+  });
+}
+
+function showSteps(directionResult) {
+  var myRoute = directionResult.routes[0].legs[0];
+
+  for (var i = 0; i < myRoute.steps.length; i++) {
+      var marker = new google.maps.Marker({
+        position: myRoute.steps[i].start_point,
+        map: map
+      });
+      attachInstructionText(marker, myRoute.steps[i].instructions);
+      markerArray[i] = marker;
+  }
+}
+
+function attachInstructionText(marker, text) {
+  google.maps.event.addListener(marker, 'click', function() {
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
+}function calcRoute() {
+
+  for (i = 0; i < markerArray.length; i++) {
+    markerArray[i].setMap(null);
+  }
+
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: 'WALKING'
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == "OK") {
+      var warnings = document.getElementById("warnings_panel");
+      warnings.innerHTML = "" + response.routes[0].warnings + "";
+      directionsRenderer.setDirections(response);
+      showSteps(response);
+    }
+  });
+}
+
+function showSteps(directionResult) {
+  var myRoute = directionResult.routes[0].legs[0];
+
+  for (var i = 0; i < myRoute.steps.length; i++) {
+      var marker = new google.maps.Marker({
+        position: myRoute.steps[i].start_point,
+        map: map
+      });
+      attachInstructionText(marker, myRoute.steps[i].instructions);
+      markerArray[i] = marker;
+  }
+}
+
+function attachInstructionText(marker, text) {
+  google.maps.event.addListener(marker, 'click', function() {
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
+}
+
+function isNumberKey(evt){
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+    return true;
 }
