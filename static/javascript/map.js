@@ -6,8 +6,10 @@ function setupAutoComplete(map) {
     var types = document.getElementById('type-selector');
     var strictBounds = document.getElementById('strict-bounds-selector');
 
+    var card2 = document.getElementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -63,6 +65,23 @@ function setupAutoComplete(map) {
             autocomplete.setTypes(types);
         });
     }
+
+    //declare variable for mode of transport
+    var mode;
+
+    function setupClickListenerTransMode(id, transMode) {
+        var radioButton = document.getElementById(id);
+        radioButton.addEventListener('click', function() {
+            // for now, store transport mode as variable
+            mode = transMode;
+        });
+    }
+
+
+    setupClickListenerTransMode('changemode-walking', 'WALKING');
+    setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
+    setupClickListenerTransMode('changemode-driving', 'DRIVING');
+
 
     setupClickListener('changetype-all', []);
     setupClickListener('changetype-address', ['address']);

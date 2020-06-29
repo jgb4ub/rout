@@ -51,19 +51,22 @@
             <span id="place-address"></span>
         </div>
     </div>
-    
-<!-- Mode of Travel Select
-    <div>
-    <strong>Mode of Travel: </strong>
-    <select id="mode" onchange="calcRoute();">
-      <option value="DRIVING">Driving</option>
-      <option value="WALKING">Walking</option>
-      <option value="BICYCLING">Bicycling</option>
-      <option value="TRANSIT">Transit</option>
-    </select>
+
+    <div class="pac-card" id="pac-card2">
+        <div id="transit-selector" class="controls">
+            <input type="radio" name="type" id="changemode-walking" checked="checked">
+            <label for="changemode-walking">Walking</label>
+
+            <input type="radio" name="type" id="changemode-bicycling">
+            <label for="changemode-bicycling">Bicycling</label>
+
+            <input type="radio" name="type" id="changemode-driving">
+            <label for="changemode-driving">Driving</label>
+        </div>
     </div>
-    <div id="directionsPanel" style="float:left;width:30%;height:100%">
-    </div> -->
+
+
+
 
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>
