@@ -7,8 +7,10 @@ function setupAutoComplete(map) {
     var types = document.getElementById('type-selector');
     var strictBounds = document.getElementById('strict-bounds-selector');
 
+    var card2 = document.getElementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -40,7 +42,7 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        marker.setPosition(place.geometry.location);
+        currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -64,6 +66,23 @@ function setupAutoComplete(map) {
             autocomplete.setTypes(types);
         });
     }
+
+    //declare variable for mode of transport
+    var mode;
+
+    function setupClickListenerTransMode(id, transMode) {
+        var radioButton = document.getElementById(id);
+        radioButton.addEventListener('click', function() {
+            // for now, store transport mode as variable
+            mode = transMode;
+        });
+    }
+
+
+    setupClickListenerTransMode('changemode-walking', 'WALKING');
+    setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
+    setupClickListenerTransMode('changemode-driving', 'DRIVING');
+
 
     setupClickListener('changetype-all', []);
     setupClickListener('changetype-address', ['address']);
@@ -109,7 +128,7 @@ function initMap() {
     });
 
     setupAutoComplete(map);
-    setUserCurrentPosition();
+    //setUserCurrentPosition();
 
     directionsRenderer.setMap(map);
 
@@ -122,6 +141,7 @@ function initMap() {
                 map:map,
             });
         }
+        setTimeout(function(){map.setCenter(currPos.position)},200);
     }
 
 
@@ -140,11 +160,11 @@ function setUserCurrentPosition() {
     **/
 
     //currPos is the current Location of the user
-    var currPos;
+    //var currPos;
     //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
     var currPosFail = document.getElementById("currPositionGrab");
 
-    //Upon loading, request user location access, printing if an error occurred below the map
+    //Upon clicking current position button, request user location access, printing if an error occurred below the map
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
@@ -157,19 +177,24 @@ function setUserCurrentPosition() {
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
 
-        /**
-        unsure about this part (below)
-        **/
-        //create google LatLng object
-        var currPos = new google.maps.LatLng(latitude,longitude);
-        map.setCenter(currPos);
-        //Put on map as marker (for now)
-        var currPosMarker = new google.maps.Marker({
-            position: currPos,
-            map: map
-        });
 
-        /**end uncertainty**/
+        //create google LatLng object
+        var currCoords = new google.maps.LatLng(latitude,longitude);
+        /** set Timeout on map view update
+        setTimeout(function(){map.setCenter(currCoords)},300);**/
+        map.setCenter(currCoords);
+        //map.setCenter(currCoords);
+        //Put on map as marker (for now)
+        if (currPos){
+            currPos.setPosition(currCoords);
+        } else {
+            currPos = new google.maps.Marker({
+                position: currCoords,
+                map: map
+            });
+        }
+
+
     }
 
     function currPosErr(){
@@ -282,6 +307,92 @@ function genRoute(distance) {
 
 }
 
+//Directions
+function calcRoute() {
+
+  for (i = 0; i < markerArray.length; i++) {
+    markerArray[i].setMap(null);
+  }
+
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: 'WALKING'
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == "OK") {
+      var warnings = document.getElementById("warnings_panel");
+      warnings.innerHTML = "" + response.routes[0].warnings + "";
+      directionsRenderer.setDirections(response);
+      showSteps(response);
+    }
+  });
+}
+
+function showSteps(directionResult) {
+  var myRoute = directionResult.routes[0].legs[0];
+
+  for (var i = 0; i < myRoute.steps.length; i++) {
+      var marker = new google.maps.Marker({
+        position: myRoute.steps[i].start_point,
+        map: map
+      });
+      attachInstructionText(marker, myRoute.steps[i].instructions);
+      markerArray[i] = marker;
+  }
+}
+
+function attachInstructionText(marker, text) {
+  google.maps.event.addListener(marker, 'click', function() {
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
+}function calcRoute() {
+
+  for (i = 0; i < markerArray.length; i++) {
+    markerArray[i].setMap(null);
+  }
+
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: 'WALKING'
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == "OK") {
+      var warnings = document.getElementById("warnings_panel");
+      warnings.innerHTML = "" + response.routes[0].warnings + "";
+      directionsRenderer.setDirections(response);
+      showSteps(response);
+    }
+  });
+}
+
+function showSteps(directionResult) {
+  var myRoute = directionResult.routes[0].legs[0];
+
+  for (var i = 0; i < myRoute.steps.length; i++) {
+      var marker = new google.maps.Marker({
+        position: myRoute.steps[i].start_point,
+        map: map
+      });
+      attachInstructionText(marker, myRoute.steps[i].instructions);
+      markerArray[i] = marker;
+  }
+}
+
+function attachInstructionText(marker, text) {
+  google.maps.event.addListener(marker, 'click', function() {
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
+}
 
 function isNumberKey(evt){
     var charCode = (evt.which) ? evt.which : evt.keyCode;
