@@ -3,8 +3,7 @@ var map, origin, midway, destination, currPos, latitude, longitude, directionsSe
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
-    var types = document.getElementById('type-selector');
-    var strictBounds = document.getElementById('strict-bounds-selector');
+
 
     var card2 = document.getElementById('pac-card2');
 
@@ -41,7 +40,8 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        currPos.setPosition(place.geometry.location);
+        setOrigin(place.geometry.location);
+        // currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -59,13 +59,45 @@ function setupAutoComplete(map) {
         infowindow.open(map, marker);
     });
 
-    function setupClickListener(id, types) {
-        var radioButton = document.getElementById(id);
-        radioButton.addEventListener('click', function() {
-            autocomplete.setTypes(types);
-        });
-    }
+    //"Add" button listener
+    document.getElementById('addbtn').addEventListener('click', function() {
+        if(document.getElementById('addstart').checked==true)
+            addStart()
+        if(document.getElementById('addwp').checked==true)
+            addWaypoint()
+    });
 
+    //"Delete Waypoint" button listener that deletes checked waypoints
+    document.getElementById('delbtn').addEventListener('click', function() {
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            if(document.getElementsByName("boxes")[i].checked==true){
+                document.getElementsByName("boxes")[i].nextSibling.remove();
+                document.getElementsByName("boxes")[i].remove();
+                i-=1
+            }
+        }
+    });
+
+
+    //"Add/Edit Start" radio button listener to enable/disable properties
+    document.getElementById('addstart').addEventListener('click', function() {
+        document.getElementById("pac-input").disabled = false;
+        document.getElementById("addbtn").disabled = false;
+        document.getElementById("delbtn").disabled = true;
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            document.getElementsByName("boxes")[i].disabled=true
+        }
+    });
+
+    //"Delete waypoint" radio button listener to enable/disable properties
+    document.getElementById('addwp').addEventListener('click', function() {
+        document.getElementById("pac-input").disabled = false;
+        document.getElementById("addbtn").disabled = false;
+        document.getElementById("delbtn").disabled = true;
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            document.getElementsByName("boxes")[i].disabled=true
+        }
+    });
     //declare variable for mode of transport
     var mode;
 
@@ -83,15 +115,62 @@ function setupAutoComplete(map) {
     setupClickListenerTransMode('changemode-driving', 'DRIVING');
 
 
-    setupClickListener('changetype-all', []);
-    setupClickListener('changetype-address', ['address']);
-    setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);
+    // setupClickListener('changetype-all', []);
+    // setupClickListener('changetype-address', ['address']);
+    // setupClickListener('changetype-establishment', ['establishment']);
+    // setupClickListener('changetype-geocode', ['geocode']);
 
-    document.getElementById('use-strict-bounds').addEventListener('click', function() {
-        console.log('Checkbox clicked! New state=' + this.checked);
-        autocomplete.setOptions({strictBounds: this.checked});
+
+    //"Delete waypoint" radio button listener to enable/disable properties
+    document.getElementById('delwp').addEventListener('click', function() {
+            document.getElementById("pac-input").disabled = true;
+            document.getElementById("addbtn").disabled = true;
+            document.getElementById("delbtn").disabled = false;
+            for (i = 0; i < document.getElementsByName("boxes").length; i++){
+                document.getElementsByName("boxes")[i].disabled=false
+            }
     });
+
+    //Function to add/change start address used in add button
+    function addStart() {
+        document.getElementById("startaddressval").innerHTML=infowindowContent.children['place-address'].textContent
+    }
+
+    //Function to add waypoint used in add button
+    function addWaypoint() {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "checkbox");
+        x.setAttribute("name", "boxes")
+        x.setAttribute("id", "box1")
+        x.disabled=true
+        document.getElementById("wp-boxes").appendChild(x);
+        var address1=document.createElement("LABEL");
+        address1.innerHTML= infowindowContent.children['place-address'].textContent
+        address1.innerHTML+="<br/>"
+        document.getElementById("wp-boxes").appendChild(address1);
+    }
+
+    // function setupClickListener(id, types) {
+    //     var radioButton = document.getElementById(id);
+    //     radioButton.addEventListener('click', function() {
+    //         autocomplete.setTypes(types);
+    //     });
+    // }
+    //
+    // setupClickListener('changetype-all', []);
+    // setupClickListener('changetype-address', ['address']);
+    // setupClickListener('changetype-establishment', ['establishment']);
+    // setupClickListener('changetype-geocode', ['geocode']);
+    //
+    // document.getElementById('use-strict-bounds').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
+
+    // document.getElementById('addstart').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
 
 
 
@@ -114,6 +193,8 @@ function setupAutoComplete(map) {
     // <label id="lblresult"></label>
 }
 
+
+
 function initMap() {
     var marker;
     directionsService = new google.maps.DirectionsService();
@@ -130,19 +211,10 @@ function initMap() {
     setupAutoComplete(map);
     //setUserCurrentPosition();
 
+
+
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById('right-panel'));
-    function setOrigin(marker) {
-        if (currPos) {
-            currPos.setPosition(marker);
-        } else {
-            currPos = new google.maps.Marker({
-                position:marker,
-                map:map,
-            });
-        }
-        setTimeout(function(){map.setCenter(currPos.position)},200);
-    }
 
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
@@ -207,7 +279,7 @@ function description(){
 }
 
 function genRouteListener() {
-    dist=document.getElementById("dist_input").value
+    var dist=document.getElementById("dist_input").value
     if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
@@ -306,4 +378,16 @@ function isNumberKey(evt){
     if (charCode > 31 && (charCode < 48 || charCode > 57))
         return false;
     return true;
+}
+
+function setOrigin(marker) {
+    if (currPos) {
+        currPos.setPosition(marker);
+    } else {
+        currPos = new google.maps.Marker({
+            position:marker,
+            map:map,
+        });
+    }
+    setTimeout(function(){map.setCenter(currPos.position)},200);
 }
