@@ -6,8 +6,10 @@ function setupAutoComplete(map) {
     var types = document.getElementById('type-selector');
     var strictBounds = document.getElementById('strict-bounds-selector');
 
+    var card2 = document.getELementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -64,14 +66,27 @@ function setupAutoComplete(map) {
         });
     }
 
+    //declare variable for mode of transport
+    var mode;
 
-    setupClickListener('changemode-walking', 'WALKING');
-    setupClickListener('changemode-bicycling', 'BICYCLING');
-    setupClickListener('changemode-driving', 'DRIVING');
-    /*setupClickListener('changetype-all', []);
+    function setupClickListenerTransMode(id, transMode) {
+        var radioButton = document.getElementById(id);
+        radioButton.addEventListener('click', function() {
+            // for now, store transport mode as variable
+            mode = transMode;
+        });
+    }
+
+
+    setupClickListenerTransMode('changemode-walking', 'WALKING');
+    setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
+    setupClickListenerTransMode('changemode-driving', 'DRIVING');
+
+
+    setupClickListener('changetype-all', []);
     setupClickListener('changetype-address', ['address']);
     setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);*/
+    setupClickListener('changetype-geocode', ['geocode']);
 
     document.getElementById('use-strict-bounds').addEventListener('click', function() {
         console.log('Checkbox clicked! New state=' + this.checked);
