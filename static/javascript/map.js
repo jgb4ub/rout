@@ -41,7 +41,7 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        marker.setPosition(place.geometry.location);
+        currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -127,7 +127,7 @@ function initMap() {
     });
 
     setupAutoComplete(map);
-    setUserCurrentPosition();
+    //setUserCurrentPosition();
 
     directionsRenderer.setMap(map);
 
@@ -140,6 +140,7 @@ function initMap() {
                 map:map,
             });
         }
+        setTimeout(function(){map.setCenter(currPos.position)},200);
     }
 
 
@@ -158,11 +159,11 @@ function setUserCurrentPosition() {
     **/
 
     //currPos is the current Location of the user
-    var currPos;
+    //var currPos;
     //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
     var currPosFail = document.getElementById("currPositionGrab");
 
-    //Upon loading, request user location access, printing if an error occurred below the map
+    //Upon clicking current position button, request user location access, printing if an error occurred below the map
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
@@ -175,19 +176,24 @@ function setUserCurrentPosition() {
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
 
-        /**
-        unsure about this part (below)
-        **/
-        //create google LatLng object
-        var currPos = new google.maps.LatLng(latitude,longitude);
-        map.setCenter(currPos);
-        //Put on map as marker (for now)
-        var currPosMarker = new google.maps.Marker({
-            position: currPos,
-            map: map
-        });
 
-        /**end uncertainty**/
+        //create google LatLng object
+        var currCoords = new google.maps.LatLng(latitude,longitude);
+        /** set Timeout on map view update
+        setTimeout(function(){map.setCenter(currCoords)},300);**/
+        map.setCenter(currCoords);
+        //map.setCenter(currCoords);
+        //Put on map as marker (for now)
+        if (currPos){
+            currPos.setPosition(currCoords);
+        } else {
+            currPos = new google.maps.Marker({
+                position: currCoords,
+                map: map
+            });
+        }
+
+
     }
 
     function currPosErr(){
