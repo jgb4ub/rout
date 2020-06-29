@@ -259,7 +259,7 @@ function genRoute(distance) {
     console.log(randomWayPtLat);
 
     waypts.push({location: midway, stopover: true})
-    //waypts.push({location: randomWayPt, stopover: true})
+    waypts.push({location: randomWayPt, stopover: true})
 
 
 
