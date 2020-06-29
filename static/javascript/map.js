@@ -6,7 +6,7 @@ function setupAutoComplete(map) {
     var types = document.getElementById('type-selector');
     var strictBounds = document.getElementById('strict-bounds-selector');
 
-    var card2 = document.getELementById('pac-card2');
+    var card2 = document.getElementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
     map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
