@@ -388,6 +388,7 @@ function attachInstructionText(marker, text) {
     stepDisplay.setContent(text);
     stepDisplay.open(map, marker);
   });
+}
 
 function isNumberKey(evt){
     var charCode = (evt.which) ? evt.which : evt.keyCode;
