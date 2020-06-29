@@ -119,6 +119,7 @@ function initMap() {
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
 
+
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 38.034004119, lng: -78.50953967324405},
         zoom: 16,
@@ -130,7 +131,7 @@ function initMap() {
     //setUserCurrentPosition();
 
     directionsRenderer.setMap(map);
-
+    directionsRenderer.setPanel(document.getElementById('right-panel'));
     function setOrigin(marker) {
         if (currPos) {
             currPos.setPosition(marker);
@@ -282,9 +283,6 @@ function genRoute(distance) {
     //waypts.push({location: randomWayPt, stopover: true})
 
 
-
-
-
     let request = {
       origin: origin,
       destination: origin,
@@ -303,92 +301,7 @@ function genRoute(distance) {
 
 }
 
-//Directions
-function calcRoute() {
 
-  for (i = 0; i < markerArray.length; i++) {
-    markerArray[i].setMap(null);
-  }
-
-  var start = document.getElementById('start').value;
-  var end = document.getElementById('end').value;
-  var request = {
-      origin: start,
-      destination: end,
-      travelMode: 'WALKING'
-  };
-
-  directionsService.route(request, function(response, status) {
-    if (status == "OK") {
-      var warnings = document.getElementById("warnings_panel");
-      warnings.innerHTML = "" + response.routes[0].warnings + "";
-      directionsRenderer.setDirections(response);
-      showSteps(response);
-    }
-  });
-}
-
-function showSteps(directionResult) {
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-      var marker = new google.maps.Marker({
-        position: myRoute.steps[i].start_point,
-        map: map
-      });
-      attachInstructionText(marker, myRoute.steps[i].instructions);
-      markerArray[i] = marker;
-  }
-}
-
-function attachInstructionText(marker, text) {
-  google.maps.event.addListener(marker, 'click', function() {
-    stepDisplay.setContent(text);
-    stepDisplay.open(map, marker);
-  });
-}function calcRoute() {
-
-  for (i = 0; i < markerArray.length; i++) {
-    markerArray[i].setMap(null);
-  }
-
-  var start = document.getElementById('start').value;
-  var end = document.getElementById('end').value;
-  var request = {
-      origin: start,
-      destination: end,
-      travelMode: 'WALKING'
-  };
-
-  directionsService.route(request, function(response, status) {
-    if (status == "OK") {
-      var warnings = document.getElementById("warnings_panel");
-      warnings.innerHTML = "" + response.routes[0].warnings + "";
-      directionsRenderer.setDirections(response);
-      showSteps(response);
-    }
-  });
-}
-
-function showSteps(directionResult) {
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-      var marker = new google.maps.Marker({
-        position: myRoute.steps[i].start_point,
-        map: map
-      });
-      attachInstructionText(marker, myRoute.steps[i].instructions);
-      markerArray[i] = marker;
-  }
-}
-
-function attachInstructionText(marker, text) {
-  google.maps.event.addListener(marker, 'click', function() {
-    stepDisplay.setContent(text);
-    stepDisplay.open(map, marker);
-  });
-}
 
 function isNumberKey(evt){
     var charCode = (evt.which) ? evt.which : evt.keyCode;
