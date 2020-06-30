@@ -14,11 +14,10 @@
     </a>
     <span class="label dist">Enter a distance:</span>
     <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
-    <button class="button" id="routeBtn" onclick="genRouteListener()" <span>Generate Route</span></button>
+    <button class="button" id="routeBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
     <span class="label dist2" id="dist_error"></span>
     <br><br>
     <div id="map"></div>
-    <div id="right-panel"></div>
     <div class="pac-card" id="pac-card">
         <div id="title">
             Start Point Search
@@ -82,6 +81,11 @@
             <input type="radio" name="type" id="changemode-driving">
             <label for="changemode-driving">Driving</label>
         </div>
+    </div>
+
+    <div class = "pac-card" id = "pac-card3">
+        <div class = "demo" id="right-panel"></div>
+        <button class="button" id = "directions-button" onclick="collapsableDirections()">Directions</button>
     </div>
 
 

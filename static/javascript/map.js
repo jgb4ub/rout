@@ -1,14 +1,14 @@
 var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
 
 function setupAutoComplete(map) {
-    var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
-
-
+    var card = document.getElementById('pac-card');
     var card2 = document.getElementById('pac-card2');
+    var card3 = document.getElementById('pac-card3');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
     map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card3);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -373,7 +373,18 @@ function genRoute(distance) {
 
 }
 
-function isNumberKey(evt){
+function collapsableDirections() {
+    var directionsPanel = document.getElementById("right-panel");
+    if (directionsPanel.style.display === "none") {
+        directionsPanel.style.display = "block";
+    } else {
+        directionsPanel.style.display = "none";
+    }
+}
+
+
+
+function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : evt.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57))
         return false;
