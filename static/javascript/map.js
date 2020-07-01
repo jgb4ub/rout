@@ -80,19 +80,6 @@ function setupAutoComplete(map) {
     //     console.log('Checkbox clicked! New state=' + this.checked);
     //     autocomplete.setOptions({strictBounds: this.checked});
     // });
-
-
-    // // Converting address to coordinates
-    // google.maps.event.addListener( autocomplete , 'place_changed' , function(){
-    //     var place = autocomplete.getPlace();
-    //     var location = "<b>Address:</b>" + place.formatted_address + "<br/>";
-    //     location += "<b>Latitude:</b>" + place.geometry.location.A + "<br/>";
-    //     location += "<b>Longtitude:</b>" + place.geometry.location.F;
-    //     document.getElementById('lblresult').innerHTML = location;
-    // });
-    // //This would get used on the existing input box that has the autocomplete feature. The address that gets typed in that box would be converted to coordinates
-    // //<span>Location:</span><input type="text" id="pac-input" placeholder="Enter the address" /><br /><br />
-    // <label id="lblresult"></label>
 }
 
 function initMap() {
@@ -105,6 +92,19 @@ function initMap() {
         zoom: 16,
         // TODO: Disable only extraneous UI features
         disableDefaultUI: true
+    });
+    var elevator = new google.maps.ElevationService;
+    var infowindow = new google.maps.InfoWindow({map: map});
+
+    // Add a listener for the click event. Display the elevation for the LatLng of
+    // the click inside the infowindow. This function runs when the 'click' event occurs on the map object.
+    map.addListener('click', function(event) {
+        displayLocationElevation(event.latLng, elevator, infowindow);
+        latitude = event.latLng.lat();
+        longitude = event.latLng.lng();
+        //currPos = new google.maps.LatLng(latitude,longitude);
+        //place marker
+        setOrigin(event.latLng);
     });
 
     setupAutoComplete(map);
@@ -122,16 +122,6 @@ function initMap() {
             });
         }
     }
-
-
-    //Add a listener. This function runs when the 'click' event occurs on the map object.
-    map.addListener("click", function (event) {
-        latitude = event.latLng.lat();
-        longitude = event.latLng.lng();
-        //currPos = new google.maps.LatLng(latitude,longitude);
-        //place marker
-        setOrigin(event.latLng);
-    });
 }
 
 function setUserCurrentPosition() {
@@ -278,6 +268,28 @@ function genRoute(distance) {
 
 }
 
+
+
+function displayLocationElevation(location, elevator, infowindow) {
+  // Initiate the location request
+  elevator.getElevationForLocations({
+    'locations': [location]
+  }, function(results, status) {
+    infowindow.setPosition(location);
+    if (status === 'OK') {
+      // Retrieve the first result
+      if (results[0]) {
+        // Open the infowindow indicating the elevation at the clicked position.
+        infowindow.setContent('The elevation at this point <br>is ' +
+            results[0].elevation + ' meters.');
+      } else {
+        infowindow.setContent('No results found');
+      }
+    } else {
+      infowindow.setContent('Elevation service failed due to: ' + status);
+    }
+  });
+}
 
 function isNumberKey(evt){
     var charCode = (evt.which) ? evt.which : evt.keyCode;
