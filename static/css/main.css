@@ -180,7 +180,7 @@ body {
 
 .button2 {
     display: inline-block;
-    border-radius: 4px;
+    border-radius: 0px;
     background-color: #232D4B;
     border: none;
     color: #FFFFFF;
@@ -190,7 +190,6 @@ body {
     width: 50px;
     transition: all 0.5s;
     cursor: pointer;
-    margin: 5px;
     vertical-align: middle;
 }
 
