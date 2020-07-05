@@ -1,4 +1,4 @@
-var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer; 
+var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
 var lat1;
 var lng1;
 var add1;
@@ -162,14 +162,23 @@ function setUserCurrentPosition() {
         map.setCenter(currCoords);
         //map.setCenter(currCoords);
         //Put on map as marker (for now)
-        if (currPos){
-            currPos.setPosition(currCoords);
-        } else {
+        // if (currPos){
+        //     currPos.setPosition(currCoords);
+        // } else {
+            //remove previous start marker and clear array
+            for (var i = 0; i < currposmarker.length; i++){
+                currposmarker[i].setMap(null);
+                }
+            currposmarker = [];
             currPos = new google.maps.Marker({
                 position: currCoords,
                 map: map
             });
-        }
+            currposmarker.push(currPos);
+            lat1=latitude;
+            lng1=longitude;
+            getReverseGeocodingData(latitude, longitude);
+        // }
 
 
     }
@@ -399,12 +408,16 @@ function setOrigin(marker) {
 //"Add/Edit Start" button listener for non-autocomplete input
 function addbtnListener(){
     //var x= addStart()
-    if(document.getElementById("changemode-startpoint").checked==true){
-        addStartMarker();
-    }
+    if(add1==null){
+        alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
+    } else{
+        if(document.getElementById("changemode-startpoint").checked==true){
+            addStartMarker();
+        }
 
-    else{
-        addWpMarker();
+        else{
+            addWpMarker();
+        }
     }
 }
 
