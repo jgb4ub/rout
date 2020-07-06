@@ -404,7 +404,7 @@ Function to determine a route that approximates given distance
 planning:
 - request routes with waypoint preset distance from origin
 - if first route is more than 10% different from
-- iterate through routes (up to 100?), to find one that
+- iterate through routes (up to 100?), to find one that approximates desired distance
 -
 -
 -
@@ -450,7 +450,13 @@ planning:
     });
 
     /*while (diff > margin){
-        diff = Math.abs(dirResult.routes[0].);
+        var legSum = 0;       //sum of distance of all legs of route (in meters)
+        for (i in dirResult.routes[0]){
+            sum += i.distance.value;
+        }
+        var miles = sum/1609.34;     //convert meter distance to miles
+
+        diff = Math.abs(miles-dist);
     }
 
 
