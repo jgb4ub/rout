@@ -6,11 +6,12 @@ google.load("visualization", "1", { packages: ["columnchart"] });
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
-    var types = document.getElementById('type-selector');
-    var strictBounds = document.getElementById('strict-bounds-selector');
 
+
+    var card2 = document.getElementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -42,7 +43,8 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        marker.setPosition(place.geometry.location);
+        setOrigin(place.geometry.location);
+        // currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -60,22 +62,118 @@ function setupAutoComplete(map) {
         infowindow.open(map, marker);
     });
 
-    function setupClickListener(id, types) {
+    //"Add" button listener
+    document.getElementById('addbtn').addEventListener('click', function() {
+        if(document.getElementById('addstart').checked==true)
+            addStart()
+        if(document.getElementById('addwp').checked==true)
+            addWaypoint()
+    });
+
+    //"Delete Waypoint" button listener that deletes checked waypoints
+    document.getElementById('delbtn').addEventListener('click', function() {
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            if(document.getElementsByName("boxes")[i].checked==true){
+                document.getElementsByName("boxes")[i].nextSibling.remove();
+                document.getElementsByName("boxes")[i].remove();
+                i-=1
+            }
+        }
+    });
+
+
+    //"Add/Edit Start" radio button listener to enable/disable properties
+    document.getElementById('addstart').addEventListener('click', function() {
+        document.getElementById("pac-input").disabled = false;
+        document.getElementById("addbtn").disabled = false;
+        document.getElementById("delbtn").disabled = true;
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            document.getElementsByName("boxes")[i].disabled=true
+        }
+    });
+
+    //"Delete waypoint" radio button listener to enable/disable properties
+    document.getElementById('addwp').addEventListener('click', function() {
+        document.getElementById("pac-input").disabled = false;
+        document.getElementById("addbtn").disabled = false;
+        document.getElementById("delbtn").disabled = true;
+        for (i = 0; i < document.getElementsByName("boxes").length; i++){
+            document.getElementsByName("boxes")[i].disabled=true
+        }
+    });
+    //declare variable for mode of transport
+    var mode;
+
+    function setupClickListenerTransMode(id, transMode) {
         var radioButton = document.getElementById(id);
         radioButton.addEventListener('click', function() {
-            autocomplete.setTypes(types);
+            // for now, store transport mode as variable
+            mode = transMode;
         });
     }
 
-    setupClickListener('changetype-all', []);
-    setupClickListener('changetype-address', ['address']);
-    setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);
 
-    document.getElementById('use-strict-bounds').addEventListener('click', function() {
-        console.log('Checkbox clicked! New state=' + this.checked);
-        autocomplete.setOptions({strictBounds: this.checked});
+    setupClickListenerTransMode('changemode-walking', 'WALKING');
+    setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
+    setupClickListenerTransMode('changemode-driving', 'DRIVING');
+
+
+    // setupClickListener('changetype-all', []);
+    // setupClickListener('changetype-address', ['address']);
+    // setupClickListener('changetype-establishment', ['establishment']);
+    // setupClickListener('changetype-geocode', ['geocode']);
+
+
+    //"Delete waypoint" radio button listener to enable/disable properties
+    document.getElementById('delwp').addEventListener('click', function() {
+            document.getElementById("pac-input").disabled = true;
+            document.getElementById("addbtn").disabled = true;
+            document.getElementById("delbtn").disabled = false;
+            for (i = 0; i < document.getElementsByName("boxes").length; i++){
+                document.getElementsByName("boxes")[i].disabled=false
+            }
     });
+
+    //Function to add/change start address used in add button
+    function addStart() {
+        document.getElementById("startaddressval").innerHTML=infowindowContent.children['place-address'].textContent
+    }
+
+    //Function to add waypoint used in add button
+    function addWaypoint() {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "checkbox");
+        x.setAttribute("name", "boxes")
+        x.setAttribute("id", "box1")
+        x.disabled=true
+        document.getElementById("wp-boxes").appendChild(x);
+        var address1=document.createElement("LABEL");
+        address1.innerHTML= infowindowContent.children['place-address'].textContent
+        address1.innerHTML+="<br/>"
+        document.getElementById("wp-boxes").appendChild(address1);
+    }
+
+    // function setupClickListener(id, types) {
+    //     var radioButton = document.getElementById(id);
+    //     radioButton.addEventListener('click', function() {
+    //         autocomplete.setTypes(types);
+    //     });
+    // }
+    //
+    // setupClickListener('changetype-all', []);
+    // setupClickListener('changetype-address', ['address']);
+    // setupClickListener('changetype-establishment', ['establishment']);
+    // setupClickListener('changetype-geocode', ['geocode']);
+    //
+    // document.getElementById('use-strict-bounds').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
+
+    // document.getElementById('addstart').addEventListener('click', function() {
+    //     console.log('Checkbox clicked! New state=' + this.checked);
+    //     autocomplete.setOptions({strictBounds: this.checked});
+    // });
 
 
 
@@ -84,6 +182,8 @@ function setupAutoComplete(map) {
     //     autocomplete.setOptions({strictBounds: this.checked});
     // });
 }
+
+
 
 function initMap() {
     var marker;
@@ -112,10 +212,13 @@ function initMap() {
     });
 
     setupAutoComplete(map);
-    setUserCurrentPosition();
+    //setUserCurrentPosition();
+
+
 
     directionsRenderer.setMap(map);
 
+<<<<<<< HEAD
     function setOrigin(marker) {
         if (currPos) {
             currPos.setPosition(marker);
@@ -126,6 +229,19 @@ function initMap() {
             });
         }
     }
+=======
+
+
+
+    //Add a listener. This function runs when the 'click' event occurs on the map object.
+    map.addListener("click", function (event) {
+        latitude = event.latLng.lat();
+        longitude = event.latLng.lng();
+        //currPos = new google.maps.LatLng(latitude,longitude);
+        //place marker
+        setOrigin(event.latLng);
+    });
+>>>>>>> master
 }
 
 function setUserCurrentPosition() {
@@ -133,11 +249,11 @@ function setUserCurrentPosition() {
     **/
 
     //currPos is the current Location of the user
-    var currPos;
+    //var currPos;
     //currPosFail ouputs in the HTML if there was a problem getting the user's current location.
     var currPosFail = document.getElementById("currPositionGrab");
 
-    //Upon loading, request user location access, printing if an error occurred below the map
+    //Upon clicking current position button, request user location access, printing if an error occurred below the map
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(getCurrPos, currPosErr);
@@ -150,19 +266,24 @@ function setUserCurrentPosition() {
         var latitude = pos.coords.latitude;
         var longitude = pos.coords.longitude;
 
-        /**
-        unsure about this part (below)
-        **/
-        //create google LatLng object
-        var currPos = new google.maps.LatLng(latitude,longitude);
-        map.setCenter(currPos);
-        //Put on map as marker (for now)
-        var currPosMarker = new google.maps.Marker({
-            position: currPos,
-            map: map
-        });
 
-        /**end uncertainty**/
+        //create google LatLng object
+        var currCoords = new google.maps.LatLng(latitude,longitude);
+        /** set Timeout on map view update
+        setTimeout(function(){map.setCenter(currCoords)},300);**/
+        map.setCenter(currCoords);
+        //map.setCenter(currCoords);
+        //Put on map as marker (for now)
+        if (currPos){
+            currPos.setPosition(currCoords);
+        } else {
+            currPos = new google.maps.Marker({
+                position: currCoords,
+                map: map
+            });
+        }
+
+
     }
 
     function currPosErr(){
@@ -175,7 +296,7 @@ function description(){
 }
 
 function genRouteListener() {
-    dist=document.getElementById("dist_input").value
+    var dist=document.getElementById("dist_input").value
     if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
@@ -351,10 +472,108 @@ function plotElevation(elevations, status) {
   });
 }
 
+//Directions
+function calcRoute() {
+
+  for (i = 0; i < markerArray.length; i++) {
+    markerArray[i].setMap(null);
+  }
+
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: 'WALKING'
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == "OK") {
+      var warnings = document.getElementById("warnings_panel");
+      warnings.innerHTML = "" + response.routes[0].warnings + "";
+      directionsRenderer.setDirections(response);
+      showSteps(response);
+    }
+  });
+}
+
+function showSteps(directionResult) {
+  var myRoute = directionResult.routes[0].legs[0];
+
+  for (var i = 0; i < myRoute.steps.length; i++) {
+      var marker = new google.maps.Marker({
+        position: myRoute.steps[i].start_point,
+        map: map
+      });
+      attachInstructionText(marker, myRoute.steps[i].instructions);
+      markerArray[i] = marker;
+  }
+}
+
+function attachInstructionText(marker, text) {
+  google.maps.event.addListener(marker, 'click', function() {
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
+}function calcRoute() {
+
+  for (i = 0; i < markerArray.length; i++) {
+    markerArray[i].setMap(null);
+  }
+
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: 'WALKING'
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == "OK") {
+      var warnings = document.getElementById("warnings_panel");
+      warnings.innerHTML = "" + response.routes[0].warnings + "";
+      directionsRenderer.setDirections(response);
+      showSteps(response);
+    }
+  });
+}
+
+function showSteps(directionResult) {
+  var myRoute = directionResult.routes[0].legs[0];
+
+  for (var i = 0; i < myRoute.steps.length; i++) {
+      var marker = new google.maps.Marker({
+        position: myRoute.steps[i].start_point,
+        map: map
+      });
+      attachInstructionText(marker, myRoute.steps[i].instructions);
+      markerArray[i] = marker;
+  }
+}
+
+function attachInstructionText(marker, text) {
+  google.maps.event.addListener(marker, 'click', function() {
+    stepDisplay.setContent(text);
+    stepDisplay.open(map, marker);
+  });
+}
 
 function isNumberKey(evt){
     var charCode = (evt.which) ? evt.which : evt.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57))
         return false;
     return true;
+}
+
+function setOrigin(marker) {
+    if (currPos) {
+        currPos.setPosition(marker);
+    } else {
+        currPos = new google.maps.Marker({
+            position:marker,
+            map:map,
+        });
+    }
+    setTimeout(function(){map.setCenter(currPos.position)},200);
 }
