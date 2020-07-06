@@ -3,6 +3,8 @@ var map, origin, midway, destination, currPos, latitude, longitude, directionsSe
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
     var card = document.getElementById('pac-card');
+    var types = document.getElementById('type-selector');
+    var strictBounds = document.getElementById('strict-bounds-selector');
     var card2 = document.getElementById('pac-card2');
     var card3 = document.getElementById('pac-card3');
 
@@ -40,8 +42,7 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        setOrigin(place.geometry.location);
-        // currPos.setPosition(place.geometry.location);
+        currPos.setPosition(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -59,45 +60,13 @@ function setupAutoComplete(map) {
         infowindow.open(map, marker);
     });
 
-    //"Add" button listener
-    document.getElementById('addbtn').addEventListener('click', function() {
-        if(document.getElementById('addstart').checked==true)
-            addStart()
-        if(document.getElementById('addwp').checked==true)
-            addWaypoint()
-    });
+    function setupClickListener(id, types) {
+        var radioButton = document.getElementById(id);
+        radioButton.addEventListener('click', function() {
+            autocomplete.setTypes(types);
+        });
+    }
 
-    //"Delete Waypoint" button listener that deletes checked waypoints
-    document.getElementById('delbtn').addEventListener('click', function() {
-        for (i = 0; i < document.getElementsByName("boxes").length; i++){
-            if(document.getElementsByName("boxes")[i].checked==true){
-                document.getElementsByName("boxes")[i].nextSibling.remove();
-                document.getElementsByName("boxes")[i].remove();
-                i-=1
-            }
-        }
-    });
-
-
-    //"Add/Edit Start" radio button listener to enable/disable properties
-    document.getElementById('addstart').addEventListener('click', function() {
-        document.getElementById("pac-input").disabled = false;
-        document.getElementById("addbtn").disabled = false;
-        document.getElementById("delbtn").disabled = true;
-        for (i = 0; i < document.getElementsByName("boxes").length; i++){
-            document.getElementsByName("boxes")[i].disabled=true
-        }
-    });
-
-    //"Delete waypoint" radio button listener to enable/disable properties
-    document.getElementById('addwp').addEventListener('click', function() {
-        document.getElementById("pac-input").disabled = false;
-        document.getElementById("addbtn").disabled = false;
-        document.getElementById("delbtn").disabled = true;
-        for (i = 0; i < document.getElementsByName("boxes").length; i++){
-            document.getElementsByName("boxes")[i].disabled=true
-        }
-    });
     //declare variable for mode of transport
     var mode;
 
@@ -115,62 +84,15 @@ function setupAutoComplete(map) {
     setupClickListenerTransMode('changemode-driving', 'DRIVING');
 
 
-    // setupClickListener('changetype-all', []);
-    // setupClickListener('changetype-address', ['address']);
-    // setupClickListener('changetype-establishment', ['establishment']);
-    // setupClickListener('changetype-geocode', ['geocode']);
+    setupClickListener('changetype-all', []);
+    setupClickListener('changetype-address', ['address']);
+    setupClickListener('changetype-establishment', ['establishment']);
+    setupClickListener('changetype-geocode', ['geocode']);
 
-
-    //"Delete waypoint" radio button listener to enable/disable properties
-    document.getElementById('delwp').addEventListener('click', function() {
-            document.getElementById("pac-input").disabled = true;
-            document.getElementById("addbtn").disabled = true;
-            document.getElementById("delbtn").disabled = false;
-            for (i = 0; i < document.getElementsByName("boxes").length; i++){
-                document.getElementsByName("boxes")[i].disabled=false
-            }
+    document.getElementById('use-strict-bounds').addEventListener('click', function() {
+        console.log('Checkbox clicked! New state=' + this.checked);
+        autocomplete.setOptions({strictBounds: this.checked});
     });
-
-    //Function to add/change start address used in add button
-    function addStart() {
-        document.getElementById("startaddressval").innerHTML=infowindowContent.children['place-address'].textContent
-    }
-
-    //Function to add waypoint used in add button
-    function addWaypoint() {
-        var x = document.createElement("INPUT");
-        x.setAttribute("type", "checkbox");
-        x.setAttribute("name", "boxes")
-        x.setAttribute("id", "box1")
-        x.disabled=true
-        document.getElementById("wp-boxes").appendChild(x);
-        var address1=document.createElement("LABEL");
-        address1.innerHTML= infowindowContent.children['place-address'].textContent
-        address1.innerHTML+="<br/>"
-        document.getElementById("wp-boxes").appendChild(address1);
-    }
-
-    // function setupClickListener(id, types) {
-    //     var radioButton = document.getElementById(id);
-    //     radioButton.addEventListener('click', function() {
-    //         autocomplete.setTypes(types);
-    //     });
-    // }
-    //
-    // setupClickListener('changetype-all', []);
-    // setupClickListener('changetype-address', ['address']);
-    // setupClickListener('changetype-establishment', ['establishment']);
-    // setupClickListener('changetype-geocode', ['geocode']);
-    //
-    // document.getElementById('use-strict-bounds').addEventListener('click', function() {
-    //     console.log('Checkbox clicked! New state=' + this.checked);
-    //     autocomplete.setOptions({strictBounds: this.checked});
-    // });
-
-    // document.getElementById('addstart').addEventListener('click', function() {
-    //     console.log('Checkbox clicked! New state=' + this.checked);
-    //     autocomplete.setOptions({strictBounds: this.checked});
-    // });
 
 
 
@@ -193,8 +115,6 @@ function setupAutoComplete(map) {
     // <label id="lblresult"></label>
 }
 
-
-
 function initMap() {
     var marker;
     directionsService = new google.maps.DirectionsService();
@@ -211,10 +131,20 @@ function initMap() {
     setupAutoComplete(map);
     //setUserCurrentPosition();
 
-
-
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById('right-panel'));
+
+    function setOrigin(marker) {
+        if (currPos) {
+            currPos.setPosition(marker);
+        } else {
+            currPos = new google.maps.Marker({
+                position:marker,
+                map:map,
+            });
+        }
+        setTimeout(function(){map.setCenter(currPos.position)},200);
+        }
 
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
@@ -279,13 +209,14 @@ function description(){
 }
 
 function genRouteListener() {
-    var dist=document.getElementById("dist_input").value
+    dist=document.getElementById("dist_input").value
     if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
     } else{
         document.getElementById("dist_error").innerHTML= '';
         genRoute(dist);
+        //call pointCalculator here?
     }
 }
 
@@ -405,14 +336,66 @@ function isNumberKey(evt) {
     return true;
 }
 
-function setOrigin(marker) {
-    if (currPos) {
-        currPos.setPosition(marker);
-    } else {
-        currPos = new google.maps.Marker({
-            position:marker,
-            map:map,
-        });
+/*
+Function to determine a route that approximates given distance
+
+planning:
+- request routes with waypoint preset distance from origin
+- if first route is more than 10% different from
+- iterate through routes (up to 100?), to find one that approximates desired distance
+-
+-
+-
+*/
+
+/*function pointCalculator(){
+    let waypts = [];
+
+    var distPreset = .5;     //basic change in lat/longitude to create starting waypoint (which will be adjusted)
+    var margin = dist*.05;  //greatest acceptable difference between requested and actual distance
+    var diff = 2*dist;      //initialize to dist to ensure greater than 5% difference margin
+
+    var deg = 360*Math.random(); //random degree between 0 (inclusive) and 360 (exclusive)
+    var rad= (deg*Math.PI)/180;  //get radian of angle (for trig functions)
+
+    var ydiff = Math.sin(rad)*distPreset;  //find amount to change origin coords
+    var xdiff = Math.cos(rad)*distPreset;
+
+    var waypointY = origin.position.lat()+ydiff;  //find latitude to put new point
+    var waypointX = origin.position.lng()+xdiff;  //find longitude to put new point
+
+    var randomWaypointCoords = new google.maps.LatLng(waypointY,waypointX);
+    waypts.push({location: randomWaypointCoords, stopover: true});
+
+
+    let request = {
+      origin: origin,
+      destination: origin,
+      waypoints: waypts,
+      optimizeWaypoints: true,
+      travelMode: mode
+    };
+
+    var routed = false;   //tells if successfully generated a route
+    var dirResult;       //stores directionResult object
+
+
+    directionsService.route(request, function(result, status){
+        if(status === "OK"){
+            dirResult = result;
+            routed = true;                                        //directionsRenderer.setDirections(result);
+        }
+    });
+
+    /*while (diff > margin){
+        var legSum = 0;       //sum of distance of all legs of route (in meters)
+        for (i in dirResult.routes[0]){
+            sum += i.distance.value;
+        }
+        var miles = sum/1609.34;     //convert meter distance to miles
+
+        diff = Math.abs(miles-dist);
     }
-    setTimeout(function(){map.setCenter(currPos.position)},200);
-}
+
+
+}*/
