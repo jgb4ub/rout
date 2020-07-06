@@ -1,4 +1,7 @@
-var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
+var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer, route, elevator;
+
+// Load the Visualization API and the columnchart package.
+google.load("visualization", "1", { packages: ["columnchart"] });
 
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
@@ -93,12 +96,13 @@ function initMap() {
         // TODO: Disable only extraneous UI features
         disableDefaultUI: true
     });
-    var elevator = new google.maps.ElevationService;
+    elevator = new google.maps.ElevationService;
     var infowindow = new google.maps.InfoWindow({map: map});
 
     // Add a listener for the click event. Display the elevation for the LatLng of
     // the click inside the infowindow. This function runs when the 'click' event occurs on the map object.
     map.addListener('click', function(event) {
+        // When you click somewhere on the map, it will put a marker at that place and display the elevation at that place
         displayLocationElevation(event.latLng, elevator, infowindow);
         latitude = event.latLng.lat();
         longitude = event.latLng.lng();
@@ -262,10 +266,12 @@ function genRoute(distance) {
     console.log(request.destination);
     directionsService.route(request, function(result, status){
         if(status === "OK"){
-          directionsRenderer.setDirections(result);
+          route = result;
+          directionsRenderer.setDirections(route);
+          // Draw the path, using the Visualization API and the Elevation service.
+          displayPathElevation(route, elevator, map);
         }
     });
-
 }
 
 
@@ -290,6 +296,61 @@ function displayLocationElevation(location, elevator, infowindow) {
     }
   });
 }
+
+
+function displayPathElevation(route, elevator, map) {
+  // Display a polyline of the elevation path.
+  new google.maps.Polyline({
+    route: route,
+    strokeColor: "#0000CC",
+    strokeOpacity: 0.4,
+    map: map
+  });
+
+  // Create a PathElevationRequest object using this array.
+  // Ask for 256 samples along that path.
+  // Initiate the path request.
+  elevator.getElevationAlongPath(
+    {
+      route: route,
+      samples: 256
+    },
+    plotElevation
+  );
+}
+
+// Takes an array of ElevationResult objects, draws the path on the map
+// and plots the elevation profile on a Visualization API ColumnChart.
+function plotElevation(elevations, status) {
+  var chartDiv = document.getElementById("elevation_chart");
+  if (status !== "OK") {
+    // Show the error code inside the chartDiv.
+    chartDiv.innerHTML =
+      "Cannot show elevation: request failed because " + status;
+    return;
+  }
+  // Create a new chart in the elevation_chart DIV.
+  var chart = new google.visualization.ColumnChart(chartDiv);
+
+  // Extract the data from which to populate the chart.
+  // Because the samples are equidistant, the 'Sample'
+  // column here does double duty as distance along the
+  // X axis.
+  var data = new google.visualization.DataTable();
+  data.addColumn("string", "Sample");
+  data.addColumn("number", "Elevation");
+  for (var i = 0; i < elevations.length; i++) {
+    data.addRow(["", elevations[i].elevation]);
+  }
+
+  // Draw the chart using the data within its DIV.
+  chart.draw(data, {
+    height: 150,
+    legend: "none",
+    titleY: "Elevation (m)"
+  });
+}
+
 
 function isNumberKey(evt){
     var charCode = (evt.which) ? evt.which : evt.keyCode;
