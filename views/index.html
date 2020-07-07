@@ -72,10 +72,12 @@
     </div>
 
     <div class = "pac-card" id = "pac-card3">
-        <div class = "demo" id="right-panel"></div>
+        <div class = "demo" id="right-panel">
+            <div id="print-content">
+                <form><input type="button" class="button3" onclick="printDiv()" value="Print"/></form>
+            </div>
+        </div>
         <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span>Directions</span></button>
-        <div id="print-content"><form>
-            <input type="button" id="button3" onclick="printDiv()" value="Print"/></form></div>
     </div>
 
     <!--message to indicate if unsuccessful in getting current position-->

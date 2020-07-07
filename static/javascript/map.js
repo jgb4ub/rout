@@ -305,7 +305,7 @@ function collapsableDirections() {
 }
 
 function printDiv() {
-    var printContents = document.getElementById().innerHTML;
+    var printContents = document.getElementById("right-panel").innerHTML;
     w=window.open();
     w.document.write(printContents);
     w.print();
