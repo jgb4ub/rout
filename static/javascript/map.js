@@ -202,7 +202,7 @@ function genRouteListener() {
         var closebtns = document.getElementsByClassName("close");
         var i;
         for (i = 0; i < closebtns.length; i++){
-            if (this.parentElement.style.display !='none'){
+            if (closebtns[i].parentElement.style.display !='none'){
                 finalwps.push(wpcoordarray[i]);
             }
         }
@@ -501,7 +501,7 @@ function deleteWaypoints(){
 //     if (hitIterationLimit()) {
 //          callOutput();
 //     } else {
-// 
+//
 //         if (tooShort()) {
 //             // adjustments
 //             google.api(waypoints, iterativeRouting(counter) );
