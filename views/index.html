@@ -13,8 +13,8 @@
         <p onClick="description()">Round Trip Routing</p>
     </a>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
-    <button class="button" id="routeBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
+    <input type="number" onkeypress="return isNumberKey" min="0">
+    <button class="button"><span>Generate Route</span></button>
     <span class="label dist2" id="dist_error"></span>
     <br><br>
     <div id="map"></div>
@@ -37,9 +37,6 @@
         <br>
         <label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
         <button type="button" id="addstartbtn" onclick="addbtnListener()">Add</button>
-        <!-- <label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        <button type="button" id="addwpbtn"onclick="wpbtnListener()">Add Waypoint</button> -->
-        <!-- <button type="button" id="delbtn">Delete Waypoint</button> -->
         <br>
         <br>
         <label> &nbsp;&nbsp;&nbsp;</label>
@@ -47,7 +44,6 @@
         <label id= "startaddress">Start Address: </label>
         <label id= "startaddressval"></label>
         <br><br>
-        <!-- <label> &nbsp;&nbsp;&nbsp;&nbsp;</label> -->
         <img id="startimg" src="http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png" width="30" height="30">
         <label>Waypoints: <br/></label>
         <ul id="wp-boxes">

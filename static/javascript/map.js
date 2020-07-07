@@ -5,6 +5,9 @@ var add1;
 var startmarkers=[];
 var wpmarkers=[];
 var currposmarker=[];
+var startcoord;
+var wpcoordarray=[];
+var finalwps=[];
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -193,6 +196,16 @@ function genRouteListener() {
         document.getElementById("dist_input").value=0
     } else{
         document.getElementById("dist_error").innerHTML= '';
+        //get all coordinates of waypoints that are active at time of generation
+        var ul = document.getElementById("wp-boxes");
+        var items = ul.getElementsByTagName("li");
+        var closebtns = document.getElementsByClassName("close");
+        var i;
+        for (i = 0; i < closebtns.length; i++){
+            if (this.parentElement.style.display !='none'){
+                finalwps.push(wpcoordarray[i]);
+            }
+        }
         genRoute(dist);
         //call pointCalculator here?
     }
@@ -392,11 +405,14 @@ function addStartMarker(){
         draggable:true
     });
     startmarkers.push(newstartmarker);
+    startcoord=latlng;
     google.maps.event.addListener(newstartmarker, 'drag', function(event) {
         lat1=event.latLng.lat()
         lng1=event.latLng.lng()
     });
     google.maps.event.addListener(newstartmarker, 'dragend', function(event) {
+        var latlng = new google.maps.LatLng(lat1, lng1);
+        startcoord=latlng;
         getReverseGeocodingData(lat1, lng1)
         setTimeout(() => {  document.getElementById("startaddressval").innerHTML=String(add1); }, 500);
     });
@@ -427,11 +443,13 @@ function addWpMarker(){
         draggable:true
     });
     wpmarkers.push(waypointmarker);
+    wpcoordarray.push(latlng);
     google.maps.event.addListener(waypointmarker, 'drag', function(event) {
         lat1=event.latLng.lat()
         lng1=event.latLng.lng()
     });
     google.maps.event.addListener(waypointmarker, 'dragend', function(event) {
+        var latlng = new google.maps.LatLng(lat1, lng1);
         getReverseGeocodingData(lat1, lng1)
         setTimeout(() => {
             for (i = 0; i< wpmarkers.length; i++){
@@ -439,6 +457,7 @@ function addWpMarker(){
                     var ul = document.getElementById("wp-boxes");
                     var items = ul.getElementsByTagName("li");
                     items[i].childNodes[0].innerHTML=add1;
+                    wpcoordarray[i]=latlng;
                 }
             }
         }, 500);
