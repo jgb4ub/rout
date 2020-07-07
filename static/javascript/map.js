@@ -313,21 +313,13 @@ function collapsableDirections() {
     }
 }
 
-var coll = document.getElementsByClassName("button2");
-var i;
-
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.maxHeight){
-      content.style.maxHeight = null;
-    } else {
-      content.style.maxHeight = content.scrollHeight + "px";
-    }
-  });
+function printDiv() {
+    var printContents = document.getElementById().innerHTML;
+    w=window.open();
+    w.document.write(printContents);
+    w.print();
+    w.close();
 }
-
 
 function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : evt.keyCode;

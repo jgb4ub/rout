@@ -178,6 +178,11 @@ body {
     overflow:auto;
 }
 
+#print-button {
+    width: 100%;
+    overflow:auto;
+}
+
 .button2 {
     display: inline-block;
     border-radius: 0px;
@@ -213,6 +218,21 @@ body {
 .button2:hover span:after {
     opacity: 1;
     right: 0;
+}
+
+.button3 {
+    display: inline-block;
+    border-radius: 0px;
+    background-color: #FF8C00;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 12px;
+    padding: 5px;
+    width: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
 
