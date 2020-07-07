@@ -1,5 +1,9 @@
+var map, origin, midway, destination, currPos, latitude,
+longitude, directionsService, directionsRenderer, address;
 
-var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
+var userSetWypts = [];
+var userSetCoords = [];
+
 
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
@@ -147,8 +151,13 @@ function setupAutoComplete(map) {
         document.getElementById("wp-boxes").appendChild(x);
         var address1=document.createElement("LABEL");
         address1.innerHTML= infowindowContent.children['place-address'].textContent
+        if (!userSetWypts.includes(address1.innerHTML)){
+            userSetWypts.push(address1.innerHTML)
+        }
         address1.innerHTML+="<br/>"
         document.getElementById("wp-boxes").appendChild(address1);
+        //console.log(address1);
+
     }
 
     // function setupClickListener(id, types) {
@@ -279,6 +288,21 @@ function description(){
     alert("This website uses the Google Maps API to enable users to create a round trip route, with the ability to specify certain parameters and customize their route.")
 }
 
+  function getCoordFromAddress(anAddress){
+    let geocoder = new google.maps.Geocoder;
+    geocoder.geocode( { 'address': anAddress}, function(results, status) {
+      if (status == 'OK') {
+        let lat = results[0].geometry.location.lat();
+        let long = results[0].geometry.location.lng();
+        let info = "" + lat + "," + long;
+        userSetCoords.push(info);
+        console.log(userSetCoords)
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  }
+
 function genRouteListener() {
     var dist=document.getElementById("dist_input").value
     if (dist<0 || dist==""){
@@ -291,13 +315,44 @@ function genRouteListener() {
 }
 
 
-
 function genRoute(distance) {
-    let randomWayPt;
+    //let randomWayPt;
+    let userSetCoord;
+    let routeDist = 0;
     let waypts = [];
+    let userSetCoords = [];
     let lat_origin = latitude;
     let long_origin = longitude;
-    let distanceTo = parseFloat(distance/2);
+    let distTo = parseFloat(distance/2);
+    origin = "" + lat_origin + "," + long_origin;
+
+
+
+    for (let i = 0; i < userSetWypts.length; i++){
+      getCoordFromAddress(userSetWypts[i]);
+    }
+
+
+
+
+    //how to find distance between 2 places
+    let lstPt = origin
+    let distFrom = 0
+    console.log(userSetCoords)
+    while(userSetCoords.length > 0 && distFrom <= distTo){
+      //console.log(distFrom)
+      distFrom += google.maps.geometry.spherical.computeDistanceBetween(lstPt, userSetCoords.top());
+      //console.log(distFrom)
+      if (Math.abs(distFrom)<= distanceTo){
+        lstPt = userSetCoords.top();
+        wypts.push(userSetCoords.pop())
+    } else {
+      break;
+  }
+}
+
+
+
 
 
 
@@ -308,6 +363,8 @@ function genRoute(distance) {
        { direction : "southeast", latitude: '', longitude: ''}, { direction : "southwest", latitude: '', longitude: ''},
     ];
 
+
+/*
     let randomDirection = directions[Math.floor(Math.random() * directions.length)];
 
 
@@ -348,19 +405,24 @@ function genRoute(distance) {
 
     let lat_mid = randomDirection.latitude;
     let long_mid = randomDirection.longitude;
+*/
 
-    origin = "" + lat_origin + "," + long_origin;
-    midway = "" + lat_mid + "," + long_mid;
+
+  /*  midway = "" + lat_mid + "," + long_mid;
     let randomWayPtLat = (Math.random() * (lat_mid - lat_origin) + lat_origin);
     let randomWayPtLong = (Math.random() * (long_mid - long_origin) + long_origin);
     randomWayPt = "" + randomWayPtLat + "," + randomWayPtLong;
-    console.log(randomWayPtLat);
+    //console.log(randomWayPtLat);
 
     waypts.push({location: midway, stopover: true})
-    waypts.push({location: randomWayPt, stopover: true})
+*/
+    //waypts.push({location: randomWayPt, stopover: true})
 
 
+    //console.log(newAddress);
 
+
+    //console.log(waypts)
 
     let request = {
       origin: origin,
@@ -370,8 +432,8 @@ function genRoute(distance) {
       travelMode: 'DRIVING'
     };
 
-    console.log(request.origin);
-    console.log(request.destination);
+    //console.log(request.origin);
+    //console.log(request.destination);
     directionsService.route(request, function(result, status){
         if(status === "OK"){
           directionsRenderer.setDirections(result);
