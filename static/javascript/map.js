@@ -1,22 +1,16 @@
 var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer, route, elevator;
 
-// Load the Visualization API and the columnchart package.
-google.load("visualization", "1", { packages: ["columnchart"] });
 
 function setupAutoComplete(map) {
     var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
-
-
     var card2 = document.getElementById('pac-card2');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
     map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
-
     autocomplete.bindTo('bounds', map);
-
     autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
 
     var infowindow = new google.maps.InfoWindow();
@@ -117,13 +111,6 @@ function setupAutoComplete(map) {
     setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
     setupClickListenerTransMode('changemode-driving', 'DRIVING');
 
-
-    // setupClickListener('changetype-all', []);
-    // setupClickListener('changetype-address', ['address']);
-    // setupClickListener('changetype-establishment', ['establishment']);
-    // setupClickListener('changetype-geocode', ['geocode']);
-
-
     //"Delete waypoint" radio button listener to enable/disable properties
     document.getElementById('delwp').addEventListener('click', function() {
             document.getElementById("pac-input").disabled = true;
@@ -153,34 +140,7 @@ function setupAutoComplete(map) {
         document.getElementById("wp-boxes").appendChild(address1);
     }
 
-    // function setupClickListener(id, types) {
-    //     var radioButton = document.getElementById(id);
-    //     radioButton.addEventListener('click', function() {
-    //         autocomplete.setTypes(types);
-    //     });
-    // }
-    //
-    // setupClickListener('changetype-all', []);
-    // setupClickListener('changetype-address', ['address']);
-    // setupClickListener('changetype-establishment', ['establishment']);
-    // setupClickListener('changetype-geocode', ['geocode']);
-    //
-    // document.getElementById('use-strict-bounds').addEventListener('click', function() {
-    //     console.log('Checkbox clicked! New state=' + this.checked);
-    //     autocomplete.setOptions({strictBounds: this.checked});
-    // });
 
-    // document.getElementById('addstart').addEventListener('click', function() {
-    //     console.log('Checkbox clicked! New state=' + this.checked);
-    //     autocomplete.setOptions({strictBounds: this.checked});
-    // });
-
-
-
-    // document.getElementById('addstart').addEventListener('click', function() {
-    //     console.log('Checkbox clicked! New state=' + this.checked);
-    //     autocomplete.setOptions({strictBounds: this.checked});
-    // });
 }
 
 
@@ -213,12 +173,8 @@ function initMap() {
 
     setupAutoComplete(map);
     //setUserCurrentPosition();
-
-
-
     directionsRenderer.setMap(map);
-
-<<<<<<< HEAD
+}
     function setOrigin(marker) {
         if (currPos) {
             currPos.setPosition(marker);
@@ -228,9 +184,6 @@ function initMap() {
                 map:map,
             });
         }
-    }
-=======
-
 
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
@@ -241,7 +194,6 @@ function initMap() {
         //place marker
         setOrigin(event.latLng);
     });
->>>>>>> master
 }
 
 function setUserCurrentPosition() {
@@ -296,7 +248,7 @@ function description(){
 }
 
 function genRouteListener() {
-    var dist=document.getElementById("dist_input").value
+    var dist=document.getElementById("dist_input").value;
     if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
@@ -372,9 +324,6 @@ function genRoute(distance) {
     //waypts.push({location: randomWayPt, stopover: true})
 
 
-
-
-
     let request = {
       origin: origin,
       destination: origin,
@@ -389,11 +338,11 @@ function genRoute(distance) {
         if(status === "OK"){
           route = result;
           directionsRenderer.setDirections(route);
-          // Draw the path, using the Visualization API and the Elevation service.
-          displayPathElevation(route, elevator, map);
-        }
-    });
+          // Create an ElevationService.
+
+    })
 }
+
 
 
 
@@ -419,58 +368,8 @@ function displayLocationElevation(location, elevator, infowindow) {
 }
 
 
-function displayPathElevation(route, elevator, map) {
-  // Display a polyline of the elevation path.
-  new google.maps.Polyline({
-    route: route,
-    strokeColor: "#0000CC",
-    strokeOpacity: 0.4,
-    map: map
-  });
 
-  // Create a PathElevationRequest object using this array.
-  // Ask for 256 samples along that path.
-  // Initiate the path request.
-  elevator.getElevationAlongPath(
-    {
-      route: route,
-      samples: 256
-    },
-    plotElevation
-  );
-}
 
-// Takes an array of ElevationResult objects, draws the path on the map
-// and plots the elevation profile on a Visualization API ColumnChart.
-function plotElevation(elevations, status) {
-  var chartDiv = document.getElementById("elevation_chart");
-  if (status !== "OK") {
-    // Show the error code inside the chartDiv.
-    chartDiv.innerHTML =
-      "Cannot show elevation: request failed because " + status;
-    return;
-  }
-  // Create a new chart in the elevation_chart DIV.
-  var chart = new google.visualization.ColumnChart(chartDiv);
-
-  // Extract the data from which to populate the chart.
-  // Because the samples are equidistant, the 'Sample'
-  // column here does double duty as distance along the
-  // X axis.
-  var data = new google.visualization.DataTable();
-  data.addColumn("string", "Sample");
-  data.addColumn("number", "Elevation");
-  for (var i = 0; i < elevations.length; i++) {
-    data.addRow(["", elevations[i].elevation]);
-  }
-
-  // Draw the chart using the data within its DIV.
-  chart.draw(data, {
-    height: 150,
-    legend: "none",
-    titleY: "Elevation (m)"
-  });
-}
 
 //Directions
 function calcRoute() {
