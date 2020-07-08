@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>IPP project</title>
+    <title>R.out</title>
     <meta name="viewport" content="initial-scale=1.0"> <!-- content="user-scalable=no" -->
     <meta charset="utf-8">
 
@@ -72,13 +72,13 @@
     </div>
 
     <div class = "pac-card" id = "pac-card3">
-        <div class = "demo" id="right-panel"></div>
+        <div class = "demo" id="right-panel">
+            <div id="print-content">
+                <form><input type="button" class="button3" onclick="printDiv()" value="Print"/></form>
+            </div>
+        </div>
         <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span>Directions</span></button>
-        <div class = "content"></div>
     </div>
-
-
-
 
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>

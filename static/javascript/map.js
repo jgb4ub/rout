@@ -212,82 +212,77 @@ function genRouteListener() {
     }
 }
 
+function getDist(lat1,lon1,lat2,lon2) {
+  let R = 6371; // Radius of the earth in km
+  let conv = 0.621371 //conversion factor km to mi
+  let dLat = deg2rad(lat2-lat1);  // deg2rad below
+  let dLon = deg2rad(lon2-lon1);
+  let a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  let d = R * c * conv; // Distance in miles
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
 
 function genRoute(distance) {
     let randomWayPt;
-    let waypts = [];
+    let conv = 0.621371
+    let wypts = [];
     let lat_origin = latitude;
     let long_origin = longitude;
-    let distanceTo = parseFloat(distance/2);
+    let kmToMi = conv * distance
+    let degToMi = (1/69)
+    let radius = parseFloat(kmToMi/2);
+    let routeDist = 0;
+    let start = {lat: lat_origin, lng: long_origin};
+    let ptA = start;
+    let ptB = start;
 
-    directions = [
-       { direction : "north", latitude: '', longitude: ''}, { direction : "south", latitude: '', longitude: ''},
-       { direction : "east", latitude: '', longitude: ''}, { direction : "west", latitude: '', longitude: ''},
-       { direction : "northeast", latitude: '', longitude: ''}, { direction : "northwest", latitude: '', longitude: ''},
-       { direction : "southeast", latitude: '', longitude: ''}, { direction : "southwest", latitude: '', longitude: ''},
-    ];
+    origin = "" + lat_origin + "," + long_origin + "";
 
-    let randomDirection = directions[Math.floor(Math.random() * directions.length)];
+    if (finalwps.length > 0) {
+      while ((finalwps.length > 0) && (routeDist < radius)){
+          ptB = finalwps.pop()
+          let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
+          if ((routeDist + dist) < radius) {
+            routeDist += dist
+            let position = "" + ptB.lat + "," + ptB.lng + ""
+            wypts.push({location: position, stopover: true});
+            ptA = ptB
+          } else {
+            alert("Cannot integrate waypoints into route. Increase distance or Remove/Adjust Waypoint")
+            break;
+          }
+      }
+    } else {
+      //Randomly generate waypoint
+          let leftBound = lat_origin - (degToMi * radius)
+          let rightBound = lat_origin + (degToMi * radius)
+          let upperBound = long_origin + (degToMi * radius)
+          let lowerBound = long_origin - (degToMi * radius)
 
+          let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
+          let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
 
-    if (randomDirection.direction === 'north') {
-      randomDirection.latitude = lat_origin;
-      randomDirection.longitude = long_origin + distanceTo;
+          let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
+          let randWypt = {location: randLatLng, stopover: true}
+          wypts.push(randWypt);
     }
-    else if (randomDirection.direction === 'south'){
-      randomDirection.latitude = lat_origin;
-      randomDirection.longitude = long_origin - distanceTo;
-    }
-    else if (randomDirection.direction === 'east'){
-      randomDirection.latitude = lat_origin + distanceTo;
-      randomDirection.longitude = long_origin;
-    }
-    else if (randomDirection.direction === 'west'){
-      randomDirection.latitude = lat_origin - distanceTo;
-      randomDirection.longitude = long_origin;
-    }
-    else if (randomDirection.direction === 'northeast'){
-      randomDirection.latitude = lat_origin + distanceTo;
-      randomDirection.longitude = long_origin + distanceTo;
-    }
-    else if (randomDirection.direction === 'northwest'){
-      randomDirection.latitude = lat_origin - distanceTo;
-      randomDirection.longitude = long_origin + distanceTo;
-    }
-    else if (randomDirection.direction === 'southeast'){
-      randomDirection.latitude = lat_origin + distanceTo;
-      randomDirection.longitude = long_origin - distanceTo;
-    }
-    else if (randomDirection.direction === 'southwest'){
-      randomDirection.latitude = lat_origin - distanceTo;
-      randomDirection.longitude = long_origin - distanceTo;
-    }
-
-
-    let lat_mid = randomDirection.latitude;
-    let long_mid = randomDirection.longitude;
-
-    origin = "" + lat_origin + "," + long_origin;
-    midway = "" + lat_mid + "," + long_mid;
-    let randomWayPtLat = (Math.random() * (lat_mid - lat_origin) + lat_origin);
-    let randomWayPtLong = (Math.random() * (long_mid - long_origin) + long_origin);
-    randomWayPt = "" + randomWayPtLat + "," + randomWayPtLong;
-    console.log(randomWayPtLat);
-
-    waypts.push({location: midway, stopover: true})
-    //waypts.push({location: randomWayPt, stopover: true})
 
 
     let request = {
       origin: origin,
       destination: origin,
-      waypoints: waypts,
+      waypoints: wypts,
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
-
-    console.log(request.origin);
-    console.log(request.destination);
     directionsService.route(request, function(result, status){
         if(status === "OK"){
           directionsRenderer.setDirections(result);
@@ -305,21 +300,13 @@ function collapsableDirections() {
     }
 }
 
-var coll = document.getElementsByClassName("button2");
-var i;
-
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.maxHeight){
-      content.style.maxHeight = null;
-    } else {
-      content.style.maxHeight = content.scrollHeight + "px";
-    }
-  });
+function printDiv() {
+    var printContents = document.getElementById("right-panel").innerHTML;
+    w=window.open();
+    w.document.write(printContents);
+    w.print();
+    w.close();
 }
-
 
 function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -449,7 +436,8 @@ function addWpMarker(){
         draggable:true
     });
     wpmarkers.push(waypointmarker);
-    wpcoordarray.push(latlng);
+    wpcoordarray.push({lat: latlng.lat(), lng: latlng.lng()});
+
     google.maps.event.addListener(waypointmarker, 'drag', function(event) {
         lat1=event.latLng.lat()
         lng1=event.latLng.lng()
@@ -529,7 +517,6 @@ function deleteWaypoints(){
 
 /*
 Function to determine a route that approximates given distance
-
 planning:
 - request routes with waypoint preset distance from origin
 - if first route is more than 10% different from
@@ -541,24 +528,17 @@ planning:
 
 /*function pointCalculator(){
     let waypts = [];
-
     var distPreset = .5;     //basic change in lat/longitude to create starting waypoint (which will be adjusted)
     var margin = dist*.05;  //greatest acceptable difference between requested and actual distance
     var diff = 2*dist;      //initialize to dist to ensure greater than 5% difference margin
-
     var deg = 360*Math.random(); //random degree between 0 (inclusive) and 360 (exclusive)
     var rad= (deg*Math.PI)/180;  //get radian of angle (for trig functions)
-
     var ydiff = Math.sin(rad)*distPreset;  //find amount to change origin coords
     var xdiff = Math.cos(rad)*distPreset;
-
     var waypointY = origin.position.lat()+ydiff;  //find latitude to put new point
     var waypointX = origin.position.lng()+xdiff;  //find longitude to put new point
-
     var randomWaypointCoords = new google.maps.LatLng(waypointY,waypointX);
     waypts.push({location: randomWaypointCoords, stopover: true});
-
-
     let request = {
       origin: origin,
       destination: origin,
@@ -566,27 +546,20 @@ planning:
       optimizeWaypoints: true,
       travelMode: mode
     };
-
     var routed = false;   //tells if successfully generated a route
     var dirResult;       //stores directionResult object
-
-
     directionsService.route(request, function(result, status){
         if(status === "OK"){
             dirResult = result;
             routed = true;                                        //directionsRenderer.setDirections(result);
         }
     });
-
     /*while (diff > margin){
         var legSum = 0;       //sum of distance of all legs of route (in meters)
         for (i in dirResult.routes[0]){
             sum += i.distance.value;
         }
         var miles = sum/1609.34;     //convert meter distance to miles
-
         diff = Math.abs(miles-dist);
     }
-
-
 }*/

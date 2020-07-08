@@ -178,6 +178,11 @@ body {
     overflow:auto;
 }
 
+#print-button {
+    width: 100%;
+    overflow:auto;
+}
+
 .button2 {
     display: inline-block;
     border-radius: 0px;
@@ -200,7 +205,7 @@ body {
     transition: 0.5s;
 }
 .button2 span:after {
-    content: '\2193';
+    content: '\2195';
     position: absolute;
     opacity: 0;
     top: 0;
@@ -213,6 +218,21 @@ body {
 .button2:hover span:after {
     opacity: 1;
     right: 0;
+}
+
+.button3 {
+    display: inline-block;
+    border-radius: 0px;
+    background-color: #FF8C00;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 12px;
+    padding: 5px;
+    width: 50%;
+    transition: all 0.5s;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
 
@@ -256,4 +276,3 @@ ul li:hover {
 }
 
 .close:hover {background: #bbb;}
->>>>>>> master
