@@ -259,20 +259,20 @@ function genRoute(distance) {
             break;
           }
       }
-} else {
-  //Randomly generate waypoint
-      let leftBound = lat_origin - (degToMi * radius)
-      let rightBound = lat_origin + (degToMi * radius)
-      let upperBound = long_origin + (degToMi * radius)
-      let lowerBound = long_origin - (degToMi * radius)
+    } else {
+      //Randomly generate waypoint
+          let leftBound = lat_origin - (degToMi * radius)
+          let rightBound = lat_origin + (degToMi * radius)
+          let upperBound = long_origin + (degToMi * radius)
+          let lowerBound = long_origin - (degToMi * radius)
 
-      let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
-      let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
+          let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
+          let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
 
-      let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
-      let randWypt = {location: randLatLng, stopover: true}
-      wypts.push(randWypt);
-}
+          let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
+          let randWypt = {location: randLatLng, stopover: true}
+          wypts.push(randWypt);
+    }
 
 
     let request = {
