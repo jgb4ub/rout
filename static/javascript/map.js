@@ -249,12 +249,10 @@ function genRoute(distance) {
       while ((finalwps.length > 0) && (routeDist < radius)){
           ptB = finalwps.pop()
           let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
-          console.log(dist);
           if ((routeDist + dist) < radius) {
             routeDist += dist
             let position = "" + ptB.lat + "," + ptB.lng + ""
             wypts.push({location: position, stopover: true});
-            console.log(wypts)
             ptA = ptB
           } else {
             alert("Cannot integrate waypoints into route. Increase distance or Remove/Adjust Waypoint")
@@ -284,7 +282,6 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
-
     directionsService.route(request, function(result, status){
         if(status === "OK"){
           directionsRenderer.setDirections(result);
@@ -292,8 +289,6 @@ function genRoute(distance) {
     });
 
 }
-
-
 
 function collapsableDirections() {
     var directionsPanel = document.getElementById("right-panel");
