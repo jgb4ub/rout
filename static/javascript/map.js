@@ -398,6 +398,84 @@ function isNumberKey(evt){
     return true;
 }
 
+
+//// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
+// var iterativeRouting = function(){
+//     getDirectionsWithCurrentWaypoints();
+//
+//     if (hitIterationLimit()) {
+//          callOutput();
+//     } else {
+//
+//         if (tooShort()) {
+//             elongate();  // adjustments
+//             google.api(waypoints, iterativeRouting(counter) );
+//         } else if (tooLong()) {
+//             shorten();    // other adjustments
+//             google.api(waypoints, iterativeRouting(counter) );
+//         } else {
+//             callOutput();
+//         }
+//     }
+// };
+//
+// function startUpGeneration() {
+//     generateRandomWaypoint();
+//     google.api(waypoints, iterativeRouting);
+// }
+
+var limit = 10; //number of times loop can run
+function hitIterationLimit(){
+    if (limit === 0){
+        return true;
+    }
+    limit--;
+    return false;
+}
+
+function callOutput(){
+    directionsRenderer.setDirections(dirResult);
+}
+
+function tooShort(){
+    if (pathDifferenceCalc()<(-.05*dist)){
+        return true;
+    }
+    return false;
+}
+
+function tooLong(){
+    if (pathDifferenceCalc()>(.05*dist)){
+        return true;
+    }
+    return false;
+}
+
+function pathDifferenceCalc(){
+    return (computeTotalDistance(dirResult)-dist);
+}
+
+var sum;
+var myroute;
+function computeTotalDistance(result){
+    sum = 0;
+    myroute = dirResult.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    for (var i = 0; i < myroute.legs.length; i++) {
+        sum += myroute.legs[i].distance.value;
+    }
+    var miles = sum/1609.34;
+    return miles;
+}
+
+
+function elongate(){
+
+}
+
+function shorten(){
+
+}
+
 /*
 Function to determine a route that approximates given distance
 
@@ -410,7 +488,7 @@ planning:
 -
 */
 
-/*function pointCalculator(){
+/*function initialPointSet(){
     let waypts = [];
 
     var distPreset = .5;     //basic change in lat/longitude to create starting waypoint (which will be adjusted)
@@ -429,7 +507,7 @@ planning:
     var randomWaypointCoords = new google.maps.LatLng(waypointY,waypointX);
     waypts.push({location: randomWaypointCoords, stopover: true});
 
-
+-------------------------------------------------------------------------------------------------------------------------- (end here?)
     let request = {
       origin: origin,
       destination: origin,
