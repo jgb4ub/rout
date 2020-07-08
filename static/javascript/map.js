@@ -8,6 +8,7 @@ var currposmarker=[];
 var startcoord;
 var wpcoordarray=[];
 var finalwps=[];
+var dist;
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -275,7 +276,6 @@ function genRoute(distance) {
           wypts.push(randWypt);
     }
 
-
     let request = {
       origin: origin,
       destination: origin,
@@ -285,10 +285,10 @@ function genRoute(distance) {
     };
     directionsService.route(request, function(result, status){
         if(status === "OK"){
-          directionsRenderer.setDirections(result);
+            console.log("Started iteration");
+            iterativeRouting(request, result, 10);
         }
     });
-
 }
 
 function collapsableDirections() {
@@ -489,34 +489,27 @@ function deleteWaypoints(){
 
 
 //// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
-function iterativeRouting(callback){
-    getDirectionsWithCurrentWaypoints();
-
-    if (hitIterationLimit()) {
-         callOutput();
+function iterativeRouting(request, result, counter){
+    // getDirectionsWithCurrentWaypoints();
+    // modify request to change the route that gets plotted
+    counter--;
+    if(counter === 0) {
+         callOutput(result);
 
     } else {
 
-        if (tooShort()) {
+        if (tooShort(result)) {
             elongate();  // adjustments
-            if directMe(request){
-                iterativeRouting();
-            } else {
-                console.log("API error");
-            }
+            directMe(request, counter);
 
-        } else if (tooLong()) {
+        } else if (tooLong(result)) {
             shorten();    // other adjustments
-            if directMe(request){
-                iterativeRouting();
-            } else {
-                console.log("API error");
-            }
+            directMe(request, counter);
 
         } else {
-            callOutput();
+            callOutput(result);
         }
-}
+    }
 };
 //
 // function startUpGeneration() {
@@ -524,34 +517,25 @@ function iterativeRouting(callback){
 //     google.api(waypoints, iterativeRouting);
 // }
 
-var limit = 10; //number of times loop can run
-function hitIterationLimit(){
-    if (limit === 0){
-        return true;
-    }
-    limit--;
-    return false;
+function callOutput(directResult){
+    directionsRenderer.setDirections(directResult);
 }
 
-function callOutput(){
-    directionsRenderer.setDirections(dirResult);
-}
-
-function tooShort(){
-    if (pathDifferenceCalc()<(-.05*dist)){
+function tooShort(dirResult){
+    if (pathDifferenceCalc(dirResult)<(-.05*dist)){
         return true;
     }
     return false;
 }
 
-function tooLong(){
-    if (pathDifferenceCalc()>(.05*dist)){
+function tooLong(dirResult){
+    if (pathDifferenceCalc(dirResult)>(.05*dist)){
         return true;
     }
     return false;
 }
 
-function pathDifferenceCalc(){
+function pathDifferenceCalc(dirResult){
     return (computeTotalDistance(dirResult)-dist);
 }
 
@@ -559,7 +543,7 @@ var sum;
 var myroute;
 function computeTotalDistance(result){
     sum = 0;
-    myroute = dirResult.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
     for (var i = 0; i < myroute.legs.length; i++) {
         sum += myroute.legs[i].distance.value;
     }
@@ -567,13 +551,11 @@ function computeTotalDistance(result){
     return miles;
 }
 
-function directMe(requested){
+function directMe(requested, counter){
     directionsService.route(requested, function(result, status){
         if(status === "OK"){
-          dirResult = result;
-          return true;
+            iterativeRouting(requested, result, counter);
         }
-        return false;
     });
 }
 
