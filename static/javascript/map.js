@@ -244,6 +244,8 @@ function genRoute(distance) {
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
+    let usrWypts;
+    let randWypts;
 
     origin = "" + lat_origin + "," + long_origin + "";
 
@@ -255,6 +257,7 @@ function genRoute(distance) {
             routeDist += dist
             let position = "" + ptB.lat + "," + ptB.lng + ""
             wypts.push({location: position, stopover: true});
+            userWypts = wypts;
             ptA = ptB
           } else {
             alert("Cannot integrate waypoints into route. Increase distance or Remove/Adjust Waypoint")
@@ -274,6 +277,7 @@ function genRoute(distance) {
           let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
           let randWypt = {location: randLatLng, stopover: true}
           wypts.push(randWypt);
+          randWaypts = wypts;
     }
 
     let request = {
@@ -283,10 +287,15 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
+    let requestData = {
+        request: request,
+        randomWaypoints: randWypts,
+        userWaypoints: usrWypts
+    };
     directionsService.route(request, function(result, status){
         if(status === "OK"){
             console.log("Started iteration");
-            iterativeRouting(request, result, 10);
+            iterativeRouting(requestData, result, 10);
         }
     });
 }
@@ -489,7 +498,7 @@ function deleteWaypoints(){
 
 
 //// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
-function iterativeRouting(request, result, counter){
+function iterativeRouting(requestData, result, counter){
     // getDirectionsWithCurrentWaypoints();
     // modify request to change the route that gets plotted
     counter--;
@@ -500,11 +509,11 @@ function iterativeRouting(request, result, counter){
 
         if (tooShort(result)) {
             elongate();  // adjustments
-            directMe(request, counter);
+            directMe(requestData, counter);
 
         } else if (tooLong(result)) {
             shorten();    // other adjustments
-            directMe(request, counter);
+            directMe(requestData, counter);
 
         } else {
             callOutput(result);
@@ -551,10 +560,10 @@ function computeTotalDistance(result){
     return miles;
 }
 
-function directMe(requested, counter){
-    directionsService.route(requested, function(result, status){
+function directMe(requestData, counter){
+    directionsService.route(requestData.request, function(result, status){
         if(status === "OK"){
-            iterativeRouting(requested, result, counter);
+            iterativeRouting(requestData, result, counter);
         }
     });
 }
