@@ -8,6 +8,7 @@ var currposmarker=[];
 var startcoord;
 var wpcoordarray=[];
 var finalwps=[];
+var dist;
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -243,6 +244,8 @@ function genRoute(distance) {
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
+    let usrWypts;
+    let randWypts;
 
     origin = "" + lat_origin + "," + long_origin + "";
 
@@ -254,6 +257,7 @@ function genRoute(distance) {
             routeDist += dist
             let position = "" + ptB.lat + "," + ptB.lng + ""
             wypts.push({location: position, stopover: true});
+            userWypts = wypts;
             ptA = ptB
           } else {
             alert("Cannot integrate waypoints into route. Increase distance or Remove/Adjust Waypoint")
@@ -273,8 +277,8 @@ function genRoute(distance) {
           let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
           let randWypt = {location: randLatLng, stopover: true}
           wypts.push(randWypt);
+          randWaypts = wypts;
     }
-
 
     let request = {
       origin: origin,
@@ -283,12 +287,17 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
+    let requestData = {
+        request: request,
+        randomWaypoints: randWypts,
+        userWaypoints: usrWypts
+    };
     directionsService.route(request, function(result, status){
         if(status === "OK"){
-          directionsRenderer.setDirections(result);
+            console.log("Started iteration");
+            iterativeRouting(requestData, result, 10);
         }
     });
-
 }
 
 function collapsableDirections() {
@@ -488,32 +497,84 @@ function deleteWaypoints(){
 }
 
 
+//// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
+function iterativeRouting(requestData, result, counter){
+    // getDirectionsWithCurrentWaypoints();
+    // modify request to change the route that gets plotted
+    counter--;
+    if(counter === 0) {
+         callOutput(result);
 
-// var iterativeRouting = function(){
-//     getDirectionsWithCurrentWaypoints();
-//
-//     if (hitIterationLimit()) {
-//          callOutput();
-//     } else {
-//
-//         if (tooShort()) {
-//             // adjustments
-//             google.api(waypoints, iterativeRouting(counter) );
-//         } else if (tooLong()) {
-//             // other adjustments
-//             google.api(waypoints, iterativeRouting(counter) );
-//         } else {
-//             callOutput();
-//         }
-//     }
-// };
+    } else {
+
+        if (tooShort(result)) {
+            elongate();  // adjustments
+            directMe(requestData, counter);
+
+        } else if (tooLong(result)) {
+            shorten();    // other adjustments
+            directMe(requestData, counter);
+
+        } else {
+            callOutput(result);
+        }
+    }
+};
 //
 // function startUpGeneration() {
 //     generateRandomWaypoint();
 //     google.api(waypoints, iterativeRouting);
 // }
 
+function callOutput(directResult){
+    directionsRenderer.setDirections(directResult);
+}
 
+function tooShort(dirResult){
+    if (pathDifferenceCalc(dirResult)<(-.05*dist)){
+        return true;
+    }
+    return false;
+}
+
+function tooLong(dirResult){
+    if (pathDifferenceCalc(dirResult)>(.05*dist)){
+        return true;
+    }
+    return false;
+}
+
+function pathDifferenceCalc(dirResult){
+    return (computeTotalDistance(dirResult)-dist);
+}
+
+var sum;
+var myroute;
+function computeTotalDistance(result){
+    sum = 0;
+    myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    for (var i = 0; i < myroute.legs.length; i++) {
+        sum += myroute.legs[i].distance.value;
+    }
+    var miles = sum/1609.34;
+    return miles;
+}
+
+function directMe(requestData, counter){
+    directionsService.route(requestData.request, function(result, status){
+        if(status === "OK"){
+            iterativeRouting(requestData, result, counter);
+        }
+    });
+}
+
+function elongate(){
+    return true;
+}
+
+function shorten(){
+    return true;
+}
 
 /*
 Function to determine a route that approximates given distance
@@ -526,7 +587,7 @@ planning:
 -
 */
 
-/*function pointCalculator(){
+/*function initialPointSet(){
     let waypts = [];
     var distPreset = .5;     //basic change in lat/longitude to create starting waypoint (which will be adjusted)
     var margin = dist*.05;  //greatest acceptable difference between requested and actual distance
@@ -539,6 +600,8 @@ planning:
     var waypointX = origin.position.lng()+xdiff;  //find longitude to put new point
     var randomWaypointCoords = new google.maps.LatLng(waypointY,waypointX);
     waypts.push({location: randomWaypointCoords, stopover: true});
+
+ -------------------------------------------------------------------------------------------------------------------------- (end here?)
     let request = {
       origin: origin,
       destination: origin,
