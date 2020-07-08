@@ -1,15 +1,25 @@
 var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
+var lat1;
+var lng1;
+var add1;
+var startmarkers=[];
+var wpmarkers=[];
+var currposmarker=[];
+var startcoord;
+var wpcoordarray=[];
+var finalwps=[];
 
 function setupAutoComplete(map) {
-    var card = document.getElementById('pac-card');
     var input = document.getElementById('pac-input');
+    var card = document.getElementById('pac-card');
     var types = document.getElementById('type-selector');
     var strictBounds = document.getElementById('strict-bounds-selector');
-
     var card2 = document.getElementById('pac-card2');
+    var card3 = document.getElementById('pac-card3');
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
     map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(card2);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card3);
 
     var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -41,7 +51,7 @@ function setupAutoComplete(map) {
             map.setCenter(place.geometry.location);
             map.setZoom(17);
         }
-        currPos.setPosition(place.geometry.location);
+        setOrigin(place.geometry.location);
         marker.setVisible(true);
 
         var address = '';
@@ -57,6 +67,7 @@ function setupAutoComplete(map) {
         infowindowContent.children['place-name'].textContent = place.name;
         infowindowContent.children['place-address'].textContent = address;
         infowindow.open(map, marker);
+        add1=address;
     });
 
     function setupClickListener(id, types) {
@@ -77,28 +88,9 @@ function setupAutoComplete(map) {
         });
     }
 
-
     setupClickListenerTransMode('changemode-walking', 'WALKING');
     setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
     setupClickListenerTransMode('changemode-driving', 'DRIVING');
-
-
-    setupClickListener('changetype-all', []);
-    setupClickListener('changetype-address', ['address']);
-    setupClickListener('changetype-establishment', ['establishment']);
-    setupClickListener('changetype-geocode', ['geocode']);
-
-    document.getElementById('use-strict-bounds').addEventListener('click', function() {
-        console.log('Checkbox clicked! New state=' + this.checked);
-        autocomplete.setOptions({strictBounds: this.checked});
-    });
-
-
-
-    // document.getElementById('addstart').addEventListener('click', function() {
-    //     console.log('Checkbox clicked! New state=' + this.checked);
-    //     autocomplete.setOptions({strictBounds: this.checked});
-    // });
 
 
     // // Converting address to coordinates
@@ -119,6 +111,7 @@ function initMap() {
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
 
+
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 38.034004119, lng: -78.50953967324405},
         zoom: 16,
@@ -130,19 +123,7 @@ function initMap() {
     //setUserCurrentPosition();
 
     directionsRenderer.setMap(map);
-
-    function setOrigin(marker) {
-        if (currPos) {
-            currPos.setPosition(marker);
-        } else {
-            currPos = new google.maps.Marker({
-                position:marker,
-                map:map,
-            });
-        }
-        setTimeout(function(){map.setCenter(currPos.position)},200);
-    }
-
+    directionsRenderer.setPanel(document.getElementById('right-panel'));
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
@@ -151,6 +132,9 @@ function initMap() {
         //currPos = new google.maps.LatLng(latitude,longitude);
         //place marker
         setOrigin(event.latLng);
+        var lat1=event.latLng.lat();
+        var lng1=event.latLng.lng();
+        getReverseGeocodingData(lat1, lng1);
     });
 }
 
@@ -212,6 +196,16 @@ function genRouteListener() {
         document.getElementById("dist_input").value=0
     } else{
         document.getElementById("dist_error").innerHTML= '';
+        //get all coordinates of waypoints that are active at time of generation
+        var ul = document.getElementById("wp-boxes");
+        var items = ul.getElementsByTagName("li");
+        var closebtns = document.getElementsByClassName("close");
+        var i;
+        for (i = 0; i < closebtns.length; i++){
+            if (closebtns[i].parentElement.style.display !='none'){
+                finalwps.push(wpcoordarray[i]);
+            }
+        }
         genRoute(dist);
         //call pointCalculator here?
     }
@@ -283,9 +277,6 @@ function genRoute(distance) {
     //waypts.push({location: randomWayPt, stopover: true})
 
 
-
-
-
     let request = {
       origin: origin,
       destination: origin,
@@ -304,98 +295,194 @@ function genRoute(distance) {
 
 }
 
-//Directions
-function calcRoute() {
-
-  for (i = 0; i < markerArray.length; i++) {
-    markerArray[i].setMap(null);
-  }
-
-  var start = document.getElementById('start').value;
-  var end = document.getElementById('end').value;
-  var request = {
-      origin: start,
-      destination: end,
-      travelMode: 'WALKING'
-  };
-
-  directionsService.route(request, function(response, status) {
-    if (status == "OK") {
-      var warnings = document.getElementById("warnings_panel");
-      warnings.innerHTML = "" + response.routes[0].warnings + "";
-      directionsRenderer.setDirections(response);
-      showSteps(response);
+function collapsableDirections() {
+    var directionsPanel = document.getElementById("right-panel");
+    if (directionsPanel.style.display === "none") {
+        directionsPanel.style.display = "block";
+    } else {
+        directionsPanel.style.display = "none";
     }
-  });
 }
 
-function showSteps(directionResult) {
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-      var marker = new google.maps.Marker({
-        position: myRoute.steps[i].start_point,
-        map: map
-      });
-      attachInstructionText(marker, myRoute.steps[i].instructions);
-      markerArray[i] = marker;
-  }
+function printDiv() {
+    var printContents = document.getElementById("right-panel").innerHTML;
+    w=window.open();
+    w.document.write(printContents);
+    w.print();
+    w.close();
 }
 
-function attachInstructionText(marker, text) {
-  google.maps.event.addListener(marker, 'click', function() {
-    stepDisplay.setContent(text);
-    stepDisplay.open(map, marker);
-  });
-}function calcRoute() {
-
-  for (i = 0; i < markerArray.length; i++) {
-    markerArray[i].setMap(null);
-  }
-
-  var start = document.getElementById('start').value;
-  var end = document.getElementById('end').value;
-  var request = {
-      origin: start,
-      destination: end,
-      travelMode: 'WALKING'
-  };
-
-  directionsService.route(request, function(response, status) {
-    if (status == "OK") {
-      var warnings = document.getElementById("warnings_panel");
-      warnings.innerHTML = "" + response.routes[0].warnings + "";
-      directionsRenderer.setDirections(response);
-      showSteps(response);
-    }
-  });
-}
-
-function showSteps(directionResult) {
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-      var marker = new google.maps.Marker({
-        position: myRoute.steps[i].start_point,
-        map: map
-      });
-      attachInstructionText(marker, myRoute.steps[i].instructions);
-      markerArray[i] = marker;
-  }
-}
-
-function attachInstructionText(marker, text) {
-  google.maps.event.addListener(marker, 'click', function() {
-    stepDisplay.setContent(text);
-    stepDisplay.open(map, marker);
-  });
-}
-
-function isNumberKey(evt){
+function isNumberKey(evt) {
     var charCode = (evt.which) ? evt.which : evt.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57))
         return false;
     return true;
+}
+
+//Takes coordinates and returns address
+function getReverseGeocodingData(lat, lng) {
+    var latlng = new google.maps.LatLng(lat, lng);
+    // This is making the Geocode request
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+        if (status !== google.maps.GeocoderStatus.OK) {
+            alert(status);
+        }
+        // This is checking to see if the Geoeode Status is OK before proceeding
+        if (status == google.maps.GeocoderStatus.OK) {
+            add1 = (results[0].formatted_address);
+        }
+    });
+}
+
+function setOrigin(marker) {
+    for (var i = 0; i < currposmarker.length; i++){
+        currposmarker[i].setMap(null);
+    }
+    currposmarker = [];
+    currPos = new google.maps.Marker({
+        position:marker,
+        map:map,
+        title: 'Draggable Marker',
+        draggable:false
+    });
+    currposmarker.push(currPos);
+    lat1=marker.lat();
+    lng1=marker.lng();
+    getReverseGeocodingData(lat1, lng1);
+    setTimeout(function(){map.setCenter(currPos.position)},200);
+}
+
+//"Add/Edit Start" button listener for non-autocomplete input
+function addbtnListener(){
+    //var x= addStart()
+    if(add1==null){
+        alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
+    } else{
+        if(document.getElementById("changemode-startpoint").checked==true){
+            addStartMarker();
+        } else{
+            addWpMarker();
+        }
+    }
+}
+
+function addStartMarker(){
+    //remove placeholder currPos marker and clear array
+    for (var i = 0; i < startmarkers.length; i++){
+        startmarkers[i].setMap(null);
+        }
+    startmarkers = [];
+    //remove previous start marker and clear array
+    for (var i = 0; i < currposmarker.length; i++){
+        currposmarker[i].setMap(null);
+        }
+    currposmarker = [];
+    //create new startpoint marker and add to array
+    var starticon = {
+        url: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(20, 32),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(0, 32)
+    };
+    var latlng = new google.maps.LatLng(lat1, lng1);
+    var newstartmarker = new google.maps.Marker({
+        position:latlng,
+        map: map,
+        icon:starticon,
+        title: 'New Start Marker',
+        draggable:true
+    });
+    startmarkers.push(newstartmarker);
+    startcoord=latlng;
+    google.maps.event.addListener(newstartmarker, 'drag', function(event) {
+        lat1=event.latLng.lat()
+        lng1=event.latLng.lng()
+    });
+    google.maps.event.addListener(newstartmarker, 'dragend', function(event) {
+        var latlng = new google.maps.LatLng(lat1, lng1);
+        startcoord=latlng;
+        getReverseGeocodingData(lat1, lng1)
+        setTimeout(() => {  document.getElementById("startaddressval").innerHTML=String(add1); }, 500);
+    });
+    document.getElementById("startaddressval").innerHTML=add1
+}
+
+function addWpMarker(){
+    //remove placeholder currPos marker and clear array
+    for (var i = 0; i < currposmarker.length; i++){
+        currposmarker[i].setMap(null);
+        }
+    currposmarker = [];
+    var wpicon = {
+        url: 'http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png',
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(48, 48),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(24, 48)
+    };
+    var latlng = new google.maps.LatLng(lat1, lng1);
+    var waypointmarker = new google.maps.Marker({
+        position:latlng,
+        map: map,
+        icon: wpicon,
+        title: 'New Waypoint Marker',
+        draggable:true
+    });
+    wpmarkers.push(waypointmarker);
+    wpcoordarray.push(latlng);
+    google.maps.event.addListener(waypointmarker, 'drag', function(event) {
+        lat1=event.latLng.lat()
+        lng1=event.latLng.lng()
+    });
+    google.maps.event.addListener(waypointmarker, 'dragend', function(event) {
+        var latlng = new google.maps.LatLng(lat1, lng1);
+        getReverseGeocodingData(lat1, lng1)
+        setTimeout(() => {
+            for (i = 0; i< wpmarkers.length; i++){
+                if(wpmarkers[i]==waypointmarker){
+                    var ul = document.getElementById("wp-boxes");
+                    var items = ul.getElementsByTagName("li");
+                    items[i].childNodes[0].innerHTML=add1;
+                    wpcoordarray[i]=latlng;
+                }
+            }
+        }, 500);
+    });
+    //add to side list
+    var x = document.createElement("LI");
+    var t = document.createElement("SPAN");
+    t.innerHTML=add1;
+    x.appendChild(t);
+    var s= document.createElement("SPAN");
+    s.className="close";
+    s.innerHTML+="&times;"
+    x.appendChild(s);
+    document.getElementById("wp-boxes").appendChild(x);
+    deleteWaypoints();
+}
+
+function deleteWaypoints(){
+    /* Get all elements with class="close" */
+    var closebtns = document.getElementsByClassName("close");
+    var i;
+    /* Loop through the elements, and hide the parent, when clicked on */
+    for (i = 0; i < closebtns.length; i++){
+        closebtns[i].addEventListener("click", function() {
+            this.parentElement.style.display = 'none';
+            var closebtns2 = document.getElementsByClassName("close");
+            for (j = 0; j < closebtns2.length; j++){
+                if(closebtns2[j]==this){
+                    wpmarkers[j].setMap(null);
+                }
+            }
+        });
+    }
 }
 
 
