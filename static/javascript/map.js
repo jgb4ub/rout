@@ -430,17 +430,16 @@ function addWpMarker(){
         currposmarker[i].setMap(null);
         }
     currposmarker = [];
-    // var wpicon = {
-    //     //url: 'http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png',
-    //     src: 'waypointmarker.png',
-    //     // This marker is 20 pixels wide by 32 pixels high.
-    //     size: new google.maps.Size(48, 48),
-    //     // The origin for this image is (0, 0).
-    //     origin: new google.maps.Point(0, 0),
-    //     // The anchor for this image is the base of the flagpole at (0, 32).
-    //     anchor: new google.maps.Point(24, 48)
-    // };
-    var wpicon= document.getElementById("wpimg")
+    var wpicon = {
+        url: '/images/waypointmarker.png',
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(48, 48),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(24, 48)
+    };
+    //var wpicon= document.getElementById("wpimg")
     var latlng = new google.maps.LatLng(lat1, lng1);
     var waypointmarker = new google.maps.Marker({
         position:latlng,
