@@ -400,24 +400,35 @@ function isNumberKey(evt){
 
 
 //// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
-// var iterativeRouting = function(){
-//     getDirectionsWithCurrentWaypoints();
-//
-//     if (hitIterationLimit()) {
-//          callOutput();
-//     } else {
-//
-//         if (tooShort()) {
-//             elongate();  // adjustments
-//             google.api(waypoints, iterativeRouting(counter) );
-//         } else if (tooLong()) {
-//             shorten();    // other adjustments
-//             google.api(waypoints, iterativeRouting(counter) );
-//         } else {
-//             callOutput();
-//         }
-//     }
-// };
+function iterativeRouting(callback){
+    getDirectionsWithCurrentWaypoints();
+
+    if (hitIterationLimit()) {
+         callOutput();
+
+    } else {
+
+        if (tooShort()) {
+            elongate();  // adjustments
+            if directMe(request){
+                iterativeRouting();
+            } else {
+                console.log("API error");
+            }
+
+        } else if (tooLong()) {
+            shorten();    // other adjustments
+            if directMe(request){
+                iterativeRouting();
+            } else {
+                console.log("API error");
+            }
+
+        } else {
+            callOutput();
+        }
+}
+};
 //
 // function startUpGeneration() {
 //     generateRandomWaypoint();
@@ -467,13 +478,22 @@ function computeTotalDistance(result){
     return miles;
 }
 
+function directMe(requested){
+    directionsService.route(requested, function(result, status){
+        if(status === "OK"){
+          dirResult = result;
+          return true;
+        }
+        return false;
+    });
+}
 
 function elongate(){
-
+    return true;
 }
 
 function shorten(){
-
+    return true;
 }
 
 /*
