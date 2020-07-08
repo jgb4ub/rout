@@ -23,20 +23,20 @@
             Start Point Search
             <button class="button" id="currPosButton" onclick="setUserCurrentPosition()"> Use Current Location</button>
         </div>
-        <div id="addmode">
+        <!-- <div id="addmode">
             <input type="radio" name="addmode" id="changemode-startpoint" checked="checked">
             <label for="changemode-startpoint">Adding Startpoint</label>
 
             <input type="radio" name="addmode" id="changemode-waypoint">
             <label for="changemode-waypoint">Adding Waypoints</label>
-        </div>
+        </div> -->
         <br>
         <div id="pac-container">
             <input id="pac-input" type="text" placeholder="Enter a location">
         </div>
         <br>
-        <label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-        <button type="button" id="addstartbtn" onclick="addbtnListener()">Add</button>
+        <button type="button"  class="button" id="addstartbtn" onclick="addbtnListener()">Add/Change Startpoint</button>
+        <button type="button"  class="button" id="addwpbtn" onclick="wpbtnListener()">Add Waypoint</button>
         <br>
         <br>
         <label> &nbsp;&nbsp;&nbsp;</label>
@@ -44,7 +44,7 @@
         <label id= "startaddress">Start Address: </label>
         <label id= "startaddressval"></label>
         <br><br>
-        <img id="startimg" src="http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png" width="30" height="30">
+        <img id="wpimg" src="/static/javascript/waypointmarker.png" width="30" height="30">
         <label>Waypoints: <br/></label>
         <ul id="wp-boxes">
             <!-- <li>First point<span class="close">&times;</span></li> -->

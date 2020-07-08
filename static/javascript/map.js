@@ -135,6 +135,7 @@ function initMap() {
         var lat1=event.latLng.lat();
         var lng1=event.latLng.lng();
         getReverseGeocodingData(lat1, lng1);
+        setTimeout(() => {  document.getElementById("pac-input").value=add1; }, 500);
     });
 }
 
@@ -367,11 +368,15 @@ function addbtnListener(){
     if(add1==null){
         alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
     } else{
-        if(document.getElementById("changemode-startpoint").checked==true){
             addStartMarker();
-        } else{
-            addWpMarker();
         }
+}
+
+function wpbtnListener(){
+    if(add1==null){
+        alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
+    } else{
+        addWpMarker();
     }
 }
 
@@ -425,15 +430,17 @@ function addWpMarker(){
         currposmarker[i].setMap(null);
         }
     currposmarker = [];
-    var wpicon = {
-        url: 'http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png',
-        // This marker is 20 pixels wide by 32 pixels high.
-        size: new google.maps.Size(48, 48),
-        // The origin for this image is (0, 0).
-        origin: new google.maps.Point(0, 0),
-        // The anchor for this image is the base of the flagpole at (0, 32).
-        anchor: new google.maps.Point(24, 48)
-    };
+    // var wpicon = {
+    //     //url: 'http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png',
+    //     src: 'waypointmarker.png',
+    //     // This marker is 20 pixels wide by 32 pixels high.
+    //     size: new google.maps.Size(48, 48),
+    //     // The origin for this image is (0, 0).
+    //     origin: new google.maps.Point(0, 0),
+    //     // The anchor for this image is the base of the flagpole at (0, 32).
+    //     anchor: new google.maps.Point(24, 48)
+    // };
+    var wpicon= document.getElementById("wpimg")
     var latlng = new google.maps.LatLng(lat1, lng1);
     var waypointmarker = new google.maps.Marker({
         position:latlng,
