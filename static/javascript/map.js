@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer, route, elevator;
-
-=======
-var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
 var lat1;
 var lng1;
 var add1;
@@ -13,16 +9,12 @@ var startcoord;
 var wpcoordarray=[];
 var finalwps=[];
 var dist;
->>>>>>> master
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
-<<<<<<< HEAD
-=======
     var card = document.getElementById('pac-card');
     var types = document.getElementById('type-selector');
     var strictBounds = document.getElementById('strict-bounds-selector');
->>>>>>> master
     var card2 = document.getElementById('pac-card2');
     var card3 = document.getElementById('pac-card3');
 
@@ -99,7 +91,6 @@ function setupAutoComplete(map) {
     setupClickListenerTransMode('changemode-bicycling', 'BICYCLING');
     setupClickListenerTransMode('changemode-driving', 'DRIVING');
 
-<<<<<<< HEAD
     //"Delete waypoint" radio button listener to enable/disable properties
     document.getElementById('delwp').addEventListener('click', function() {
             document.getElementById("pac-input").disabled = true;
@@ -130,20 +121,6 @@ function setupAutoComplete(map) {
     }
 
 
-=======
-
-    // // Converting address to coordinates
-    // google.maps.event.addListener( autocomplete , 'place_changed' , function(){
-    //     var place = autocomplete.getPlace();
-    //     var location = "<b>Address:</b>" + place.formatted_address + "<br/>";
-    //     location += "<b>Latitude:</b>" + place.geometry.location.A + "<br/>";
-    //     location += "<b>Longtitude:</b>" + place.geometry.location.F;
-    //     document.getElementById('lblresult').innerHTML = location;
-    // });
-    // //This would get used on the existing input box that has the autocomplete feature. The address that gets typed in that box would be converted to coordinates
-    // //<span>Location:</span><input type="text" id="pac-input" placeholder="Enter the address" /><br /><br />
-    // <label id="lblresult"></label>
->>>>>>> master
 }
 
 function initMap() {
@@ -175,7 +152,7 @@ function initMap() {
 
     setupAutoComplete(map);
     //setUserCurrentPosition();
-<<<<<<< HEAD
+
     directionsRenderer.setMap(map);
 }
     function setOrigin(marker) {
@@ -188,11 +165,9 @@ function initMap() {
             });
         }
 
-=======
-
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById('right-panel'));
->>>>>>> master
+
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
@@ -260,11 +235,7 @@ function description(){
 }
 
 function genRouteListener() {
-<<<<<<< HEAD
     var dist=document.getElementById("dist_input").value;
-=======
-    dist=document.getElementById("dist_input").value
->>>>>>> master
     if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
@@ -569,7 +540,7 @@ function deleteWaypoints(){
 }
 
 
-<<<<<<< HEAD
+
     let request = {
       origin: origin,
       destination: origin,
@@ -586,7 +557,7 @@ function deleteWaypoints(){
           directionsRenderer.setDirections(route);
           // Create an ElevationService.
 
-    })
+    }); 
 }
 
 
@@ -638,51 +609,52 @@ function calcRoute() {
       warnings.innerHTML = "" + response.routes[0].warnings + "";
       directionsRenderer.setDirections(response);
       showSteps(response);
-=======
-//// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
-function iterativeRouting(requestData, result, counter){
-    // getDirectionsWithCurrentWaypoints();
-    // modify request to change the route that gets plotted
-    counter--;
-    if(counter === 0) {
-         callOutput(result);
 
-    } else {
 
-        if (tooShort(result)) {
-            elongate();  // adjustments
-            directMe(requestData, counter);
+      //// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
+      function iterativeRouting(requestData, result, counter){
+          // getDirectionsWithCurrentWaypoints();
+          // modify request to change the route that gets plotted
+          counter--;
+          if(counter === 0) {
+               callOutput(result);
 
-        } else if (tooLong(result)) {
-            shorten();    // other adjustments
-            directMe(requestData, counter);
+          } else {
 
-        } else {
-            callOutput(result);
-        }
-    }
-};
-//
-// function startUpGeneration() {
-//     generateRandomWaypoint();
-//     google.api(waypoints, iterativeRouting);
-// }
+              if (tooShort(result)) {
+                  elongate();  // adjustments
+                  directMe(requestData, counter);
 
-function callOutput(directResult){
-    directionsRenderer.setDirections(directResult);
-}
+              } else if (tooLong(result)) {
+                  shorten();    // other adjustments
+                  directMe(requestData, counter);
 
-function tooShort(dirResult){
-    if (pathDifferenceCalc(dirResult)<(-.05*dist)){
-        return true;
-    }
-    return false;
-}
+              } else {
+                  callOutput(result);
+              }
+          }
+      };
+      //
+      // function startUpGeneration() {
+      //     generateRandomWaypoint();
+      //     google.api(waypoints, iterativeRouting);
+      // }
 
-function tooLong(dirResult){
-    if (pathDifferenceCalc(dirResult)>(.05*dist)){
-        return true;
->>>>>>> master
+      function callOutput(directResult){
+          directionsRenderer.setDirections(directResult);
+      }
+
+      function tooShort(dirResult){
+          if (pathDifferenceCalc(dirResult)<(-.05*dist)){
+              return true;
+          }
+          return false;
+      }
+
+      function tooLong(dirResult){
+          if (pathDifferenceCalc(dirResult)>(.05*dist)){
+              return true;
+
     }
     return false;
 }
