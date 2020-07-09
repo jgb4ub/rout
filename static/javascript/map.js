@@ -578,7 +578,7 @@ function displayPathElevation(path, elevator, map) {
     // Initiate the path request.
     elevator.getElevationAlongPath({
         'path': path,
-        'samples': 256
+        'samples': 500
     }, plotElevation);
 }
 
