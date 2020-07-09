@@ -108,6 +108,8 @@ function setupAutoComplete(map) {
 }
 
 function initMap() {
+    // Load the Visualization API and the columnchart package.
+    google.load('visualization', '1', {packages: ['columnchart']});
     var marker;
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
@@ -532,8 +534,7 @@ function callOutput(directResult){
 }
 
 function elevationCreator(directResult){
-    // Load the Visualization API and the columnchart package.
-    google.load('visualization', '1', {packages: ['columnchart']});
+
 
     var path = pathData(directResult);
 
@@ -584,6 +585,7 @@ function displayPathElevation(path, elevator, map) {
 // Takes an array of ElevationResult objects, draws the path on the map
 // and plots the elevation profile on a Visualization API ColumnChart.
 function plotElevation(elevations, status) {
+
     var chartDiv = document.getElementById('elevation_chart');
     if (status !== 'OK') {
     // Show the error code inside the chartDiv.
