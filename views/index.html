@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>IPP project</title>
+    <title>R.out</title>
     <meta name="viewport" content="initial-scale=1.0"> <!-- content="user-scalable=no" -->
     <meta charset="utf-8">
 
+<<<<<<< HEAD
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+=======
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"/>
+>>>>>>> master
     <link href="/css/main.css" rel="stylesheet">
     <script src="/javascript/map.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
@@ -17,7 +21,7 @@
     </a>
     <span class="label dist">Enter a distance:</span>
     <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
-    <button class="button" id="routeBtn" onclick="genRouteListener()" <span>Generate Route</span></button>
+    <button class="button" onclick="genRouteListener()"><span>Generate Route</span></button>
     <span class="label dist2" id="dist_error"></span>
     <br><br>
     <div id="map"></div>
@@ -28,44 +32,32 @@
             Start Point Search
             <button class="button" id="currPosButton" onclick="setUserCurrentPosition()"> Use Current Location</button>
         </div>
-        <div id="type-selector" class="pac-controls">
-            <input type="radio" name="wp-toggle" id="addstart" >
-            <label>Add/Edit Starting point</label>
-            <input type="radio" name="wp-toggle" id="addwp" >
-            <label>Add Waypoints</label>
-            <input type="radio" name="wp-toggle" id="delwp">
-            <label>Delete Waypoints</label>
-        </div><br><br>
-        <!-- <div id="type-selector" class="pac-controls">
-            <input type="radio" name="type" id="changetype-all" checked="checked">
-            <label for="changetype-all">All</label>
+        <!-- <div id="addmode">
+            <input type="radio" name="addmode" id="changemode-startpoint" checked="checked">
+            <label for="changemode-startpoint">Adding Startpoint</label>
 
-            <input type="radio" name="type" id="changetype-establishment">
-            <label for="changetype-establishment">Establishments</label>
-
-            <input type="radio" name="type" id="changetype-address">
-            <label for="changetype-address">Addresses</label>
-
-            <input type="radio" name="type" id="changetype-geocode">
-            <label for="changetype-geocode">Geocodes</label>
-        </div>
-        <div id="strict-bounds-selector" class="pac-controls">
-            <input type="checkbox" id="use-strict-bounds" value="">
-            <label for="use-strict-bounds">Strict Bounds</label>
+            <input type="radio" name="addmode" id="changemode-waypoint">
+            <label for="changemode-waypoint">Adding Waypoints</label>
         </div> -->
+        <br>
         <div id="pac-container">
             <input id="pac-input" type="text" placeholder="Enter a location">
         </div>
-        <button type="button" id="addbtn">Add Startpoint/Waypoint</button>
-        <button type="button" id="delbtn">Delete Waypoint</button>
+        <br>
+        <button type="button"  class="button" id="addstartbtn" onclick="addbtnListener()">Add/Change Startpoint</button>
+        <button type="button"  class="button" id="addwpbtn" onclick="wpbtnListener()">Add Waypoint</button>
         <br>
         <br>
+        <label> &nbsp;&nbsp;&nbsp;</label>
+        <img id="startimg" src="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png" width="20" height="20">
         <label id= "startaddress">Start Address: </label>
         <label id= "startaddressval"></label>
         <br><br>
+        <img id="wpimg" src="/images/waypointmarker.png" width="30" height="30">
         <label>Waypoints: <br/></label>
-        <form id="wp-boxes">
-        </form>
+        <ul id="wp-boxes">
+            <!-- <li>First point<span class="close">&times;</span></li> -->
+        </ul>
         <label id="tester1"></label>
         <div id="map"></div>
         <div id="infowindow-content">
@@ -88,8 +80,14 @@
         </div>
     </div>
 
-
-
+    <div class = "pac-card" id = "pac-card3">
+        <div class = "demo" id="right-panel">
+            <div id="print-content">
+                <form><input type="button" class="button3" onclick="printDiv()" value="Print"/></form>
+            </div>
+        </div>
+        <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span>Directions</span></button>
+    </div>
 
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>
