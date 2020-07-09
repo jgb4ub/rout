@@ -8,6 +8,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"/>
     <link href="/css/main.css" rel="stylesheet">
     <script src="/javascript/map.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://www.google.com/jsapi"></script>
 </head>
 <body>
     <a href="/about">
@@ -80,6 +82,8 @@
         </div>
         <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span>Directions</span></button>
     </div>
+
+    <div id="elevation_chart"></div>
 
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>
