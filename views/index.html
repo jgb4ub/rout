@@ -13,8 +13,10 @@
         <p onClick="description()">Round Trip Routing</p>
     </a>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
-    <button class="button" onclick="genRouteListener()"><span>Generate Route</span></button>
+    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
+    onkeydown = "if (event.keyCode == 13)
+                        document.getElementById('GenRouteBtn').click()">
+    <button class="button" id = "GenRouteBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
     <span class="label dist2" id="dist_error"></span>
     <br><br>
     <div id="map"></div>

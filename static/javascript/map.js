@@ -191,7 +191,7 @@ function description(){
 
 function genRouteListener() {
     dist=document.getElementById("dist_input").value
-    if (dist<0 || dist==""){
+    if (dist<=0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
     } else{
@@ -207,9 +207,10 @@ function genRouteListener() {
             }
         }
         genRoute(dist);
-        //call pointCalculator here?
+        //call pointCalculator here
     }
 }
+
 
 
 function genRoute(distance) {
