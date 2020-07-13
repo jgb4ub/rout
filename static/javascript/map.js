@@ -528,6 +528,7 @@ function iterativeRouting(requestData, result, counter){
 // }
 
 function callOutput(directResult){
+    console.log("length: "+sum/1609);
     directionsRenderer.setDirections(directResult);
 }
 
@@ -546,6 +547,7 @@ function tooLong(dirResult){
 }
 
 function pathDifferenceCalc(dirResult){
+
     return (computeTotalDistance(dirResult)-dist);
 }
 
