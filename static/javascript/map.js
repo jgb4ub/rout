@@ -274,8 +274,8 @@ function genRoute(distance) {
           let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
           let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
 
-          let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
-          let randWypt = {location: randLatLng, stopover: true}
+          let randLatLng = {lat: randWyptLat , lng: randWyptLng};
+          let randWypt = {location: randLatLng, stopover: true};
           wypts.push(randWypt);
           randWaypts = wypts;
     }
@@ -292,6 +292,7 @@ function genRoute(distance) {
         randomWaypoints: randWypts,
         userWaypoints: usrWypts
     };
+
     directionsService.route(request, function(result, status){
         if(status === "OK"){
             console.log("Started iteration");
@@ -512,8 +513,8 @@ function iterativeRouting(requestData, result, counter){
             directMe(requestData, counter);
 
         } else if (tooLong(result)) {
-            shorten();    // other adjustments
-            directMe(requestData, counter);
+            shorten(requestData, counter);    // other adjustments
+            //directMe(requestData, counter);
 
         } else {
             callOutput(result);
@@ -572,8 +573,29 @@ function elongate(){
     return true;
 }
 
-function shorten(){
-    return true;
+function shorten(pathRequest, counter){
+    let adjustPoints = pathRequest.randomWaypoints;
+    let numRands = adjustPoints.length;
+    let newRandPoints = [];
+    for (let point in adjustPoints){       //adjust each random waypoint
+        let pt_lat = point.location.lat;   //store point's latitude and longitude
+        let pt_lng = point.location.lng;
+
+        let start_lat = requestdata.request.origin.lat; //get origin latitude and longitude
+        let start_lng = requestdata.request.origin.lng;
+
+        let lat_change = start_lat+((pt_lat-start_lat)/2);   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
+        let lng_change = star_lng+((pt_lng-start_lng)/2);
+
+        let newLatLng = {lat:lat_change, lng:lng_change};
+        newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
+    }
+
+    let newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    pathRequest.request.waypoints = newPoints;
+    pathRequest.randomWaypoints = newRandPoints;
+    directMe(pathRequest, counter);
+
 }
 
 /*
