@@ -9,6 +9,7 @@ var startcoord;
 var wpcoordarray=[];
 var finalwps=[];
 var dist;
+var generated=false;
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -211,6 +212,7 @@ function genRouteListener() {
             }
         }
         genRoute(dist);
+        generated=true;
         //call pointCalculator here
     }
 }
@@ -310,6 +312,11 @@ function collapsableDirections() {
     } else {
         directionsPanel.style.display = "none";
     }
+    if (generated==false){
+    document.getElementById("directions-button").disabled = true;
+}
+    else{ document.getElementById("directions-button").disabled = false;
+}
 }
 
 function printDiv() {
@@ -663,6 +670,12 @@ function elongate(){
 
 function shorten(){
     return true;
+}
+
+function getEndpoint(startPoint, distance, direction) {
+    let o = origin
+    let d = dist
+    let dir = direction    
 }
 
 /*
