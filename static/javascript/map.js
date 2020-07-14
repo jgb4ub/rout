@@ -7,6 +7,7 @@ var wpmarkers=[];
 var currposmarker=[];
 var startcoord;
 var wpcoordarray=[];
+var wpOnClick = [];
 var finalwps=[];
 
 function setupAutoComplete(map) {
@@ -39,7 +40,6 @@ function setupAutoComplete(map) {
         infowindow.close();
         marker.setVisible(false);
         var place = autocomplete.getPlace();
-
         if (!place.geometry) {
             window.alert("No details available for input: '" + place.name + "'");
             return;
@@ -134,6 +134,12 @@ function initMap() {
         setOrigin(event.latLng);
         var lat1=event.latLng.lat();
         var lng1=event.latLng.lng();
+
+        if (wpOnClick > 0){
+            wpOnClick.pop()
+        }
+        wpOnClick.push({lat: lat1, lng: lng1})
+
         getReverseGeocodingData(lat1, lng1);
     });
 }
@@ -243,11 +249,14 @@ function genRoute(distance) {
     let ptA = start;
     let ptB = start;
 
-    origin = "" + lat_origin + "," + long_origin + "";
 
+
+    origin = "" + lat_origin + "," + long_origin + "";
     if (finalwps.length > 0) {
       while ((finalwps.length > 0) && (routeDist < radius)){
+
           ptB = finalwps.pop()
+
           let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
           if ((routeDist + dist) < radius) {
             routeDist += dist
@@ -255,7 +264,7 @@ function genRoute(distance) {
             wypts.push({location: position, stopover: true});
             ptA = ptB
           } else {
-            alert("Cannot integrate waypoints into route. Increase distance or Remove/Adjust Waypoint")
+            document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
             break;
           }
       }
@@ -416,6 +425,14 @@ function addStartMarker(){
 
 function addWpMarker(){
     //remove placeholder currPos marker and clear array
+    if (wpOnClick.length > 0) {
+      wpOnClick.forEach((wp) => {
+        finalwps.push(wp)
+        wpOnClick.pop()
+      });
+}
+
+
     for (var i = 0; i < currposmarker.length; i++){
         currposmarker[i].setMap(null);
         }
@@ -430,6 +447,7 @@ function addWpMarker(){
         anchor: new google.maps.Point(24, 48)
     };
     var latlng = new google.maps.LatLng(lat1, lng1);
+
     var waypointmarker = new google.maps.Marker({
         position:latlng,
         map: map,
@@ -453,11 +471,12 @@ function addWpMarker(){
                     var ul = document.getElementById("wp-boxes");
                     var items = ul.getElementsByTagName("li");
                     items[i].childNodes[0].innerHTML=add1;
-                    wpcoordarray[i]=latlng;
+                    //wpcoordarray[i]=latlng;
                 }
             }
         }, 500);
     });
+
     //add to side list
     var x = document.createElement("LI");
     var t = document.createElement("SPAN");
@@ -468,7 +487,9 @@ function addWpMarker(){
     s.innerHTML+="&times;"
     x.appendChild(s);
     document.getElementById("wp-boxes").appendChild(x);
+
     deleteWaypoints();
+
 }
 
 function deleteWaypoints(){
