@@ -297,7 +297,7 @@ function genRoute(distance) {
     directionsService.route(request, function(result, status){
         if(status === "OK"){
             console.log("Started iteration");
-            iterativeRouting(requestData, result, 10);
+            iterativeRouting(requestData, result, 1); //change back to 10
         }
     });
 }
@@ -508,7 +508,6 @@ function iterativeRouting(requestData, result, counter){
          callOutput(result);
 
     } else {
-
         if (tooShort(result)) {
             elongate();  // adjustments
             directMe(requestData, counter);
@@ -521,12 +520,29 @@ function iterativeRouting(requestData, result, counter){
             callOutput(result);
         }
     }
+    backTrack(result);
 };
 //
 // function startUpGeneration() {
 //     generateRandomWaypoint();
 //     google.api(waypoints, iterativeRouting);
 // }
+
+function backTrack(directResult){
+    var legs = directResult.routes[0].legs;
+    console.log(legs.length)
+    for (i = 0; i < legs.length; i++) {
+        var steps = legs[i].steps;
+        for(j=0; j<steps.length; j++){
+            var step=steps[j];
+            console.log(step);
+            // if (step=="uturn-left" || step=="uturn-right"){
+            //     return true;
+            // }
+        }
+    }
+    return false;
+}
 
 function callOutput(directResult){
     directionsRenderer.setDirections(directResult);
