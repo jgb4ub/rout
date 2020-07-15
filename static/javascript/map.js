@@ -571,8 +571,28 @@ function directMe(requestData, counter){
     });
 }
 
-function elongate(){
-    return true;
+function elongate(pathRequest, counter){
+    let adjustPoints = pathRequest.randomWaypoints;
+    let numRands = adjustPoints.length;
+    let newRandPoints = [];
+    for (let point in adjustPoints){       //adjust each random waypoint
+        let pt_lat = point.location.lat;   //store point's latitude and longitude
+        let pt_lng = point.location.lng;
+
+        let start_lat = requestdata.request.origin.lat; //get origin latitude and longitude
+        let start_lng = requestdata.request.origin.lng;
+
+        let lat_change = (start_lat+((pt_lat-start_lat)*(dist/sum)));   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
+        let lng_change = (star_lng+((pt_lng-start_lng)*(dist/sum)));
+
+        let newLatLng = {lat:lat_change, lng:lng_change};
+        newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
+    }
+
+    let newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    pathRequest.request.waypoints = newPoints;
+    pathRequest.randomWaypoints = newRandPoints;
+    directMe(pathRequest, counter);
 }
 
 function shorten(pathRequest, counter){
@@ -586,8 +606,8 @@ function shorten(pathRequest, counter){
         let start_lat = requestdata.request.origin.lat; //get origin latitude and longitude
         let start_lng = requestdata.request.origin.lng;
 
-        let lat_change = start_lat+((pt_lat-start_lat)/2);   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
-        let lng_change = star_lng+((pt_lng-start_lng)/2);
+        let lat_change = start_lat+((pt_lat-start_lat)*(dist/sum));       //start_lat+(numRands/(pt_lat-start_lat))     //start_lat+((pt_lat-start_lat)/2)   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
+        let lng_change = start_lng+((pt_lng-start_lng)*(dist/sum));       //start_lng+(numRands/(pt_lat-start_lat));     //star_lng+((pt_lng-start_lng)/2);   //numRands/(req_distance/difference);   numRands*difference/(req_distance)
 
         let newLatLng = {lat:lat_change, lng:lng_change};
         newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
