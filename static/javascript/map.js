@@ -1,4 +1,4 @@
-var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
+var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer, directionsDisplay;
 var lat1;
 var lng1;
 var add1;
@@ -9,6 +9,7 @@ var startcoord;
 var wpcoordarray=[];
 var wpOnClick = [];
 var finalwps=[];
+
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -108,8 +109,15 @@ function setupAutoComplete(map) {
 
 function initMap() {
     var marker;
+
+
     directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
+    //directionsRenderer = new google.maps.DirectionsRenderer();
+
+        directionsRenderer = new google.maps.DirectionsRenderer({
+          });
+        directionsRenderer.setOptions({suppressMarkers: true})
+
 
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -236,6 +244,7 @@ function deg2rad(deg) {
 }
 
 function genRoute(distance) {
+
     let randomWayPt;
     let conv = 0.621371
     let wypts = [];
@@ -282,6 +291,16 @@ function genRoute(distance) {
           let randWypt = {location: randLatLng, stopover: true}
           wypts.push(randWypt);
     }
+/*
+    wypts.forEach((wypt) => {
+      let wyptMarker = new google.maps.MarkerLabel({
+       position: wypt,
+       draggable: true,
+       raiseOnDrag: true,
+       labelContent: "",
+       labelInBackground: false,
+     });
+*/
 
 
     let request = {
@@ -291,13 +310,27 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
-    directionsService.route(request, function(result, status){
+
+    directionsService.route(request, function(result, status) {
         if(status === "OK"){
           directionsRenderer.setDirections(result);
         }
     });
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function collapsableDirections() {
     var directionsPanel = document.getElementById("right-panel");
