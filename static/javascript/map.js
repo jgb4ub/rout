@@ -648,11 +648,9 @@ function pathDifferenceCalc(dirResult){
     return (computeTotalDistance(dirResult)-dist);
 }
 
-var sum;
-var myroute;
 function computeTotalDistance(result){
-    sum = 0;
-    myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    var sum = 0;
+    var myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
     for (var i = 0; i < myroute.legs.length; i++) {
         sum += myroute.legs[i].distance.value;
     }
@@ -676,10 +674,15 @@ function shorten(){
     return true;
 }
 
+getEndpoint({lat: 1.23, lng: 1.54}, 10, 90);
+
 function getEndpoint(startPoint, distance, direction) {
-    let o = origin
-    let d = dist
-    let dir = direction
+    let o = startPoint;
+    let d = distance;
+    let dir = direction;
+    console.log(startPoint);
+    var endPoint = {lat: (), lng: ()}
+    return endPoint;
 }
 
 /*
