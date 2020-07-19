@@ -12,6 +12,8 @@ var dist;
 var generated=false;
 
 function setupAutoComplete(map) {
+    hideMapDisplay();
+
     var input = document.getElementById('pac-input');
     var card = document.getElementById('pac-card');
     var types = document.getElementById('type-selector');
@@ -305,18 +307,22 @@ function genRoute(distance) {
     });
 }
 
-function collapsableDirections() {
+function hideMapDisplay() {
     var directionsPanel = document.getElementById("right-panel");
-    if (directionsPanel.style.display === "none") {
-        directionsPanel.style.display = "block";
-    } else {
-        directionsPanel.style.display = "none";
+    directionsPanel.style.display = "none";
+}
+
+function collapsableDirections() {
+    if (generated == true){
+        var directionsPanel = document.getElementById("right-panel");
+        if (directionsPanel.style.display == "none") {
+            directionsPanel.style.display = "block";
+            console.log("showed");
+        } else {
+            directionsPanel.style.display = "none";
+            console.log("hid");
+        }
     }
-    if (generated==false){
-    document.getElementById("directions-button").disabled = true;
-}
-    else{ document.getElementById("directions-button").disabled = false;
-}
 }
 
 function printDiv() {
@@ -675,7 +681,7 @@ function shorten(){
 function getEndpoint(startPoint, distance, direction) {
     let o = origin
     let d = dist
-    let dir = direction    
+    let dir = direction
 }
 
 /*
