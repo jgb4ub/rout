@@ -305,18 +305,16 @@ function genRoute(distance) {
 }
 
 function collapsableDirections() {
-    var directionsPanel = document.getElementById("right-panel");
-    if (directionsPanel.style.display === "none") {
-        directionsPanel.style.display = "block";
-    } else {
-        directionsPanel.style.display = "none";
+    if (generated==true){
+        var directionsPanel = document.getElementById("right-panel");
+        if (directionsPanel.style.display === "none") {
+            directionsPanel.style.display = "block";
+        } else {
+            directionsPanel.style.display = "none";
+        }
     }
-    if (generated==false){
-    document.getElementById("directions-button").disabled = true;
 }
-    else{ document.getElementById("directions-button").disabled = false;
-}
-}
+
 
 function printDiv() {
     var printContents = document.getElementById("right-panel").innerHTML;
