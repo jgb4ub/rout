@@ -26,7 +26,6 @@ function setupAutoComplete(map) {
     var autocomplete = new google.maps.places.Autocomplete(input);
 
     autocomplete.bindTo('bounds', map);
-
     autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
 
     var infowindow = new google.maps.InfoWindow();
@@ -675,7 +674,7 @@ function shorten(){
 function getEndpoint(startPoint, distance, direction) {
     let o = origin
     let d = dist
-    let dir = direction    
+    let dir = direction
 }
 
 /*
