@@ -676,11 +676,36 @@ function shorten(){
     return true;
 }
 
-function getEndpoint(startPoint, distance, direction) {
-    let o = origin
-    let d = dist
-    let dir = direction
+
+getEndpoint({lat:0, lng: 0}, 90, 5)
+function getEndpoint(startPoint, BearingRadians, distanceMiles) {
+    const radiusEarthMiles = 3958.8;
+    var distRatio = distanceMiles / radiusEarthMiles;
+    var distRatioSine = Math.Sin(distRatio);
+    var distRatioCosine = Math.Cos(distRatio);
+
+    var startLatRad = DegreesToRadians(startPoint.Latitude);
+    var startLonRad = DegreesToRadians(startPoint.Longitude);
+
+    var startLatCos = Math.Cos(startLatRad);
+    var startLatSin = Math.Sin(startLatRad);
+
+    var endLatRads = Math.Asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.Cos(initialBearingRadians)));
+
+    var endLonRads = startLonRad
+        + Math.Atan2(
+            Math.Sin(initialBearingRadians) * distRatioSine * startLatCos,
+            distRatioCosine - startLatSin * Math.Sin(endLatRads));
+
+    return new GeoLocation
+    {
+        Latitude = RadiansToDegrees(endLatRads),
+        Longitude = RadiansToDegrees(endLonRads)
+    };
+    console.log("ran")
 }
+
+
 
 /*
 Function to determine a route that approximates given distance

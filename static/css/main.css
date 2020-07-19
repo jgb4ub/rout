@@ -18,6 +18,9 @@ html, body {
     background-color: #232D4B;
 }
 
+a {
+    text-decoration: none;
+}
 
 .button {
     display: inline-block;
