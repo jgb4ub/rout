@@ -13,14 +13,16 @@
 </head>
 <body>
     <a href="/about">
-        <p onClick="description()">Round Trip Routing</p>
+        <p onClick="description()">R.out</p>
     </a>
-    <span class="label dist">Enter a distance:</span>
-    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
-    onkeydown = "if (event.keyCode == 13)
-                        document.getElementById('GenRouteBtn').click()">
-    <button class="button" id = "GenRouteBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
-    <span class="label dist2" id="dist_error"></span>
+    <div id = "top-panel"
+        <span class="label dist" id = "dist-label" >Enter a distance:</span>
+        <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
+        onkeydown = "if (event.keyCode == 13)
+                            document.getElementById('GenRouteBtn').click()">
+        <button class="button" id = "GenRouteBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
+        <span class="label dist2" id="dist_error"></span>
+    </div>
     <br><br>
     <div id="map"></div>
     <div class="pac-card" id="pac-card">
