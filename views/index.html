@@ -5,21 +5,16 @@
     <meta name="viewport" content="initial-scale=1.0"> <!-- content="user-scalable=no" -->
     <meta charset="utf-8">
 
-    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"/>
     <link href="/css/main.css" rel="stylesheet">
     <script src="/javascript/map.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <script src="https://www.google.com/jsapi"></script>
 </head>
 <body>
     <a href="/about">
         <p onClick="description()">Round Trip Routing</p>
     </a>
     <span class="label dist">Enter a distance:</span>
-    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
-    onkeydown = "if (event.keyCode == 13)
-                        document.getElementById('GenRouteBtn').click()">
-    <button class="button" id = "GenRouteBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
+    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
+    <button class="button" onclick="genRouteListener()"><span>Generate Route</span></button>
     <span class="label dist2" id="dist_error"></span>
     <br><br>
     <div id="map"></div>
@@ -28,19 +23,20 @@
             Start Point Search
             <button class="button" id="currPosButton" onclick="setUserCurrentPosition()"> Use Current Location</button>
         </div>
-        <!-- <div id="addmode">
+        <div id="addmode">
             <input type="radio" name="addmode" id="changemode-startpoint" checked="checked">
             <label for="changemode-startpoint">Adding Startpoint</label>
+
             <input type="radio" name="addmode" id="changemode-waypoint">
             <label for="changemode-waypoint">Adding Waypoints</label>
-        </div> -->
+        </div>
         <br>
         <div id="pac-container">
             <input id="pac-input" type="text" placeholder="Enter a location">
         </div>
         <br>
-        <button type="button"  class="button" id="addstartbtn" onclick="addbtnListener()">Add/Change Startpoint</button>
-        <button type="button"  class="button" id="addwpbtn" onclick="wpbtnListener()">Add Waypoint</button>
+        <label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <button type="button" id="addstartbtn" onclick="addbtnListener()">Add</button>
         <br>
         <br>
         <label> &nbsp;&nbsp;&nbsp;</label>
@@ -48,7 +44,7 @@
         <label id= "startaddress">Start Address: </label>
         <label id= "startaddressval"></label>
         <br><br>
-        <img id="wpimg" src="/images/waypointmarker.png" width="30" height="30">
+        <img id="startimg" src="http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png" width="30" height="30">
         <label>Waypoints: <br/></label>
         <ul id="wp-boxes">
             <!-- <li>First point<span class="close">&times;</span></li> -->
@@ -76,15 +72,13 @@
     </div>
 
     <div class = "pac-card" id = "pac-card3">
-        <div id="print-content" style= "text-align: center">
-            <input type="button" class="button3" onclick="printDiv()" value="Print Directions"/>
-        </div>
         <div class = "demo" id="right-panel">
+            <div id="print-content">
+                <form><input type="button" class="button3" onclick="printDiv()" value="Print"/></form>
+            </div>
         </div>
-        <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span> View Directions</span></button>
+        <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span>Directions</span></button>
     </div>
-
-    <div id="elevation_chart"></div>
 
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>

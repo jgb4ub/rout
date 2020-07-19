@@ -67,6 +67,7 @@ html, body {
     color: #ff2e2e;
 }
 p {
+    color: #F84C1E;
     color: #232D4B;
     text-align: center;
     font-weight: bold;
@@ -252,6 +253,9 @@ body {
     color: #FFFFFF;
     text-align: center;
     font-size: 12px;
+    padding: 5px;
+    width: 50%;
+    transition: all 0.5s;
     width: 100%;
     cursor: pointer;
     float: right;

@@ -1,4 +1,4 @@
-var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer;
+var map, origin, midway, destination, currPos, latitude, longitude, directionsService, directionsRenderer, directionsDisplay;
 var lat1;
 var lng1;
 var add1;
@@ -7,9 +7,9 @@ var wpmarkers=[];
 var currposmarker=[];
 var startcoord;
 var wpcoordarray=[];
+var wpOnClick = [];
 var finalwps=[];
-var dist;
-var generated=false;
+
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -41,7 +41,6 @@ function setupAutoComplete(map) {
         infowindow.close();
         marker.setVisible(false);
         var place = autocomplete.getPlace();
-
         if (!place.geometry) {
             window.alert("No details available for input: '" + place.name + "'");
             return;
@@ -109,11 +108,16 @@ function setupAutoComplete(map) {
 }
 
 function initMap() {
-    // Load the Visualization API and the columnchart package.
-    google.load('visualization', '1', {packages: ['columnchart']});
     var marker;
+
+
     directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
+    //directionsRenderer = new google.maps.DirectionsRenderer();
+
+        directionsRenderer = new google.maps.DirectionsRenderer({
+          });
+        directionsRenderer.setOptions({suppressMarkers: true})
+
 
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -138,8 +142,13 @@ function initMap() {
         setOrigin(event.latLng);
         var lat1=event.latLng.lat();
         var lng1=event.latLng.lng();
+
+        if (wpOnClick > 0){
+            wpOnClick.pop()
+        }
+        wpOnClick.push({lat: lat1, lng: lng1})
+
         getReverseGeocodingData(lat1, lng1);
-        setTimeout(() => {  document.getElementById("pac-input").value=add1; }, 500);
     });
 }
 
@@ -196,7 +205,7 @@ function description(){
 
 function genRouteListener() {
     dist=document.getElementById("dist_input").value
-    if (dist<=0 || dist==""){
+    if (dist<0 || dist==""){
         document.getElementById("dist_error").innerHTML= 'Please enter a valid input for distance';
         document.getElementById("dist_input").value=0
     } else{
@@ -212,8 +221,7 @@ function genRouteListener() {
             }
         }
         genRoute(dist);
-        generated=true;
-        //call pointCalculator here
+        //call pointCalculator here?
     }
 }
 
@@ -235,8 +243,8 @@ function deg2rad(deg) {
   return deg * (Math.PI/180)
 }
 
-
 function genRoute(distance) {
+
     let randomWayPt;
     let conv = 0.621371
     let wypts = [];
@@ -249,23 +257,23 @@ function genRoute(distance) {
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
-    let usrWypts;
-    let randWypts;
+
+
 
     origin = "" + lat_origin + "," + long_origin + "";
-
     if (finalwps.length > 0) {
       while ((finalwps.length > 0) && (routeDist < radius)){
+
           ptB = finalwps.pop()
+
           let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
           if ((routeDist + dist) < radius) {
             routeDist += dist
             let position = "" + ptB.lat + "," + ptB.lng + ""
             wypts.push({location: position, stopover: true});
-            userWypts = wypts;
             ptA = ptB
           } else {
-            alert("Cannot integrate waypoints into route. Increase distance or Remove/Adjust Waypoint")
+            document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
             break;
           }
       }
@@ -282,8 +290,18 @@ function genRoute(distance) {
           let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
           let randWypt = {location: randLatLng, stopover: true}
           wypts.push(randWypt);
-          randWaypts = wypts;
     }
+/*
+    wypts.forEach((wypt) => {
+      let wyptMarker = new google.maps.MarkerLabel({
+       position: wypt,
+       draggable: true,
+       raiseOnDrag: true,
+       labelContent: "",
+       labelInBackground: false,
+     });
+*/
+
 
     let request = {
       origin: origin,
@@ -292,18 +310,27 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
-    let requestData = {
-        request: request,
-        randomWaypoints: randWypts,
-        userWaypoints: usrWypts
-    };
-    directionsService.route(request, function(result, status){
+
+    directionsService.route(request, function(result, status) {
         if(status === "OK"){
-            console.log("Started iteration");
-            iterativeRouting(requestData, result, 10);
+          directionsRenderer.setDirections(result);
         }
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function collapsableDirections() {
     var directionsPanel = document.getElementById("right-panel");
@@ -312,11 +339,6 @@ function collapsableDirections() {
     } else {
         directionsPanel.style.display = "none";
     }
-    if (generated==false){
-    document.getElementById("directions-button").disabled = true;
-}
-    else{ document.getElementById("directions-button").disabled = false;
-}
 }
 
 function printDiv() {
@@ -374,15 +396,11 @@ function addbtnListener(){
     if(add1==null){
         alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
     } else{
+        if(document.getElementById("changemode-startpoint").checked==true){
             addStartMarker();
+        } else{
+            addWpMarker();
         }
-}
-
-function wpbtnListener(){
-    if(add1==null){
-        alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
-    } else{
-        addWpMarker();
     }
 }
 
@@ -432,12 +450,20 @@ function addStartMarker(){
 
 function addWpMarker(){
     //remove placeholder currPos marker and clear array
+    if (wpOnClick.length > 0) {
+      wpOnClick.forEach((wp) => {
+        finalwps.push(wp)
+        wpOnClick.pop()
+      });
+}
+
+
     for (var i = 0; i < currposmarker.length; i++){
         currposmarker[i].setMap(null);
         }
     currposmarker = [];
     var wpicon = {
-        url: '/images/waypointmarker.png',
+        url: 'http://files.softicons.com/download/web-icons/vista-map-markers-icons-by-icons-land/png/48x48/MapMarker_Ball__Pink.png',
         // This marker is 20 pixels wide by 32 pixels high.
         size: new google.maps.Size(48, 48),
         // The origin for this image is (0, 0).
@@ -445,8 +471,8 @@ function addWpMarker(){
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(24, 48)
     };
-    //var wpicon= document.getElementById("wpimg")
     var latlng = new google.maps.LatLng(lat1, lng1);
+
     var waypointmarker = new google.maps.Marker({
         position:latlng,
         map: map,
@@ -470,11 +496,12 @@ function addWpMarker(){
                     var ul = document.getElementById("wp-boxes");
                     var items = ul.getElementsByTagName("li");
                     items[i].childNodes[0].innerHTML=add1;
-                    wpcoordarray[i]=latlng;
+                    //wpcoordarray[i]=latlng;
                 }
             }
         }, 500);
     });
+
     //add to side list
     var x = document.createElement("LI");
     var t = document.createElement("SPAN");
@@ -485,7 +512,9 @@ function addWpMarker(){
     s.innerHTML+="&times;"
     x.appendChild(s);
     document.getElementById("wp-boxes").appendChild(x);
+
     deleteWaypoints();
+
 }
 
 function deleteWaypoints(){
@@ -507,176 +536,32 @@ function deleteWaypoints(){
 }
 
 
-//// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
-function iterativeRouting(requestData, result, counter){
-    // getDirectionsWithCurrentWaypoints();
-    // modify request to change the route that gets plotted
-    counter--;
-    if(counter === 0) {
-         callOutput(result);
 
-    } else {
-
-        if (tooShort(result)) {
-            elongate();  // adjustments
-            directMe(requestData, counter);
-
-        } else if (tooLong(result)) {
-            shorten();    // other adjustments
-            directMe(requestData, counter);
-
-        } else {
-            callOutput(result);
-        }
-    }
-};
+// var iterativeRouting = function(){
+//     getDirectionsWithCurrentWaypoints();
+//
+//     if (hitIterationLimit()) {
+//          callOutput();
+//     } else {
+//
+//         if (tooShort()) {
+//             // adjustments
+//             google.api(waypoints, iterativeRouting(counter) );
+//         } else if (tooLong()) {
+//             // other adjustments
+//             google.api(waypoints, iterativeRouting(counter) );
+//         } else {
+//             callOutput();
+//         }
+//     }
+// };
 //
 // function startUpGeneration() {
 //     generateRandomWaypoint();
 //     google.api(waypoints, iterativeRouting);
 // }
 
-function callOutput(directResult){
-    directionsRenderer.setDirections(directResult);
-    elevationCreator(directResult);
-}
 
-function elevationCreator(directResult){
-
-
-    var path = pathData(directResult);
-
-    // var path = [
-    //     {lat: 36.579, lng: -118.292},  // Mt. Whitney
-    //     {lat: 36.606, lng: -118.0638},  // Lone Pine
-    //     {lat: 36.433, lng: -117.951},  // Owens Lake
-    //     {lat: 36.588, lng: -116.943},  // Beatty Junction
-    //     {lat: 36.34, lng: -117.468},  // Panama Mint Springs
-    //     {lat: 36.24, lng: -116.832}];  // Badwater, Death Valley
-
-
-    // Create an ElevationService.
-    var elevator = new google.maps.ElevationService;
-
-    // Draw the path, using the Visualization API and the Elevation service.
-    displayPathElevation(path, elevator, map);
-}
-
-
-function pathData(directResult){
-    var route = directResult.routes[0]; //route is a directionRoute object
-    return route.overview_path;
-    // for (x in route.legs[]) {
-    //     path.push();
-    // }
-}
-
-
-function displayPathElevation(path, elevator, map) {
-  // Display a polyline of the elevation path.
-    new google.maps.Polyline({
-        path: path,
-        strokeColor: '#0000CC',
-        strokeOpacity: 0.4,
-        map: map
-    });
-
-    // Create a PathElevationRequest object using this array.
-    // Ask for 256 samples along that path.
-    // Initiate the path request.
-    elevator.getElevationAlongPath({
-        'path': path,
-        'samples': 500
-    }, plotElevation);
-}
-
-// Takes an array of ElevationResult objects, draws the path on the map
-// and plots the elevation profile on a Visualization API ColumnChart.
-function plotElevation(elevations, status) {
-
-    var chartDiv = document.getElementById('elevation_chart');
-    if (status !== 'OK') {
-    // Show the error code inside the chartDiv.
-        chartDiv.innerHTML = 'Cannot show elevation: request failed because ' + status;
-        return;
-    }
-    // Create a new chart in the elevation_chart DIV.
-    var chart = new google.visualization.ColumnChart(chartDiv);
-
-    // Extract the data from which to populate the chart.
-    // Because the samples are equidistant, the 'Sample'
-    // column here does double duty as distance along the
-    // X axis.
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Sample');
-    data.addColumn('number', 'Elevation');
-    for (var i = 0; i < elevations.length; i++) {
-        data.addRow(['', elevations[i].elevation]);
-    }
-
-    // Draw the chart using the data within its DIV.
-    chart.draw(data, {
-        height: 150,
-        legend: 'none',
-        titleY: 'Elevation (m)'
-    });
-}
-
-
-
-
-
-function tooShort(dirResult){
-    if (pathDifferenceCalc(dirResult)<(-.05*dist)){
-        return true;
-    }
-    return false;
-}
-
-function tooLong(dirResult){
-    if (pathDifferenceCalc(dirResult)>(.05*dist)){
-        return true;
-    }
-    return false;
-}
-
-function pathDifferenceCalc(dirResult){
-    return (computeTotalDistance(dirResult)-dist);
-}
-
-var sum;
-var myroute;
-function computeTotalDistance(result){
-    sum = 0;
-    myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
-    for (var i = 0; i < myroute.legs.length; i++) {
-        sum += myroute.legs[i].distance.value;
-    }
-    var miles = sum/1609.34;
-    return miles;
-}
-
-function directMe(requestData, counter){
-    directionsService.route(requestData.request, function(result, status){
-        if(status === "OK"){
-            iterativeRouting(requestData, result, counter);
-        }
-    });
-}
-
-function elongate(){
-    return true;
-}
-
-function shorten(){
-    return true;
-}
-
-function getEndpoint(startPoint, distance, direction) {
-    let o = origin
-    let d = dist
-    let dir = direction
-}
 
 /*
 Function to determine a route that approximates given distance
@@ -689,7 +574,7 @@ planning:
 -
 */
 
-/*function initialPointSet(){
+/*function pointCalculator(){
     let waypts = [];
     var distPreset = .5;     //basic change in lat/longitude to create starting waypoint (which will be adjusted)
     var margin = dist*.05;  //greatest acceptable difference between requested and actual distance
@@ -702,7 +587,6 @@ planning:
     var waypointX = origin.position.lng()+xdiff;  //find longitude to put new point
     var randomWaypointCoords = new google.maps.LatLng(waypointY,waypointX);
     waypts.push({location: randomWaypointCoords, stopover: true});
- -------------------------------------------------------------------------------------------------------------------------- (end here?)
     let request = {
       origin: origin,
       destination: origin,
