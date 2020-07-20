@@ -572,8 +572,8 @@ function computeTotalDistance(result){
     for (var i = 0; i < myroute.legs.length; i++) {
         sum += myroute.legs[i].distance.value;
     }
-    var miles = sum/1609.34;
-    return miles;
+    sum = sum/1609.34;
+    return sum;
 }
 
 function directMe(requestData, counter){
@@ -626,8 +626,8 @@ function shorten(pathRequest, counter){
         let pt_lat = adjustPoints[point].location.lat;   //store point's latitude and longitude
         let pt_lng = adjustPoints[point].location.lng;
 
-        let start_lat = requestdata.request.origin.lat; //get origin latitude and longitude
-        let start_lng = requestdata.request.origin.lng;
+        let start_lat = pathRequest.request.origin.lat; //get origin latitude and longitude
+        let start_lng = pathRequest.request.origin.lng;
 
         let lat_change = start_lat+((pt_lat-start_lat)*(dist/sum));       //start_lat+(numRands/(pt_lat-start_lat))     //start_lat+((pt_lat-start_lat)/2)   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
         let lng_change = start_lng+((pt_lng-start_lng)*(dist/sum));       //start_lng+(numRands/(pt_lat-start_lat));     //star_lng+((pt_lng-start_lng)/2);   //numRands/(req_distance/difference);   numRands*difference/(req_distance)
