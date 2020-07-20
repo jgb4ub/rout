@@ -516,8 +516,13 @@ function iterativeRouting(requestData, result, counter){
             shorten();    // other adjustments
             directMe(requestData, counter);
 
-        } else {
+        } //else if(backtrack(result)==true){
+        //     dist=document.getElementById("dist_input").value;
+        //     genRoute(dist);
+        // }
+        else {
             callOutput(result);
+            //return;
         }
     }
     backTrack(result);
@@ -529,16 +534,26 @@ function iterativeRouting(requestData, result, counter){
 // }
 
 function backTrack(directResult){
+    var steparr=[] //holds end locations of all steps as Strings
     var legs = directResult.routes[0].legs;
-    console.log(legs.length)
     for (i = 0; i < legs.length; i++) {
         var steps = legs[i].steps;
         for(j=0; j<steps.length; j++){
-            var step=steps[j];
+            var step=steps[j].end_location.toString();
+            steparr.push(step);
             console.log(step);
-            // if (step=="uturn-left" || step=="uturn-right"){
-            //     return true;
-            // }
+        }
+    }
+    for(i=0; i<steparr.length; i++){ //check if any endlocations are repeated
+        var step1=steparr[i];
+        var a=0;
+        if (steparr.indexOf(step1)!=steparr.lastIndexOf(step1)){
+            console.log("Backtracking found for "+step1)
+            a++;
+            //step1.splice(i, i+1)
+        }
+        if(a!=0){
+            return true;
         }
     }
     return false;
