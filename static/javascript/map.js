@@ -346,7 +346,6 @@ function genRoute(distance) {
                 console.log("Too long")
                 // Error message, cant reach all user waypoints in requested distance
             }
->>>>>>> master
         }
     });
 }
