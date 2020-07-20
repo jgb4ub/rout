@@ -681,21 +681,17 @@ getEndpoint({lat:0, lng: 0}, 90, 5)
 function getEndpoint(startPoint, BearingRadians, distanceMiles) {
     const radiusEarthMiles = 3958.8;
     var distRatio = distanceMiles / radiusEarthMiles;
-    var distRatioSine = Math.Sin(distRatio);
-    var distRatioCosine = Math.Cos(distRatio);
-
+    var distRatioSine = Math.sin(distRatio);
+    var distRatioCosine = Math.cos(distRatio);
     var startLatRad = DegreesToRadians(startPoint.Latitude);
     var startLonRad = DegreesToRadians(startPoint.Longitude);
-
-    var startLatCos = Math.Cos(startLatRad);
-    var startLatSin = Math.Sin(startLatRad);
-
-    var endLatRads = Math.Asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.Cos(initialBearingRadians)));
-
+    var startLatCos = Math.cos(startLatRad);
+    var startLatSin = Math.sin(startLatRad);
+    var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(initialBearingRadians)));
     var endLonRads = startLonRad
-        + Math.Atan2(
-            Math.Sin(initialBearingRadians) * distRatioSine * startLatCos,
-            distRatioCosine - startLatSin * Math.Sin(endLatRads));
+        + Math.atan2(
+            Math.sin(initialBearingRadians) * distRatioSine * startLatCos,
+            distRatioCosine - startLatSin * Math.sin(endLatRads));
 
     return new GeoLocation
     {
