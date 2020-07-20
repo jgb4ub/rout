@@ -724,7 +724,6 @@ function shorten(){
     return true;
 }
 
-<<<<<<< HEAD
 
 getEndpoint({lat:0, lng: 0}, 90, 5)
 function getEndpoint(startPoint, BearingRadians, distanceMiles) {
@@ -748,12 +747,6 @@ function getEndpoint(startPoint, BearingRadians, distanceMiles) {
         Longitude = RadiansToDegrees(endLonRads)
     };
     console.log("ran")
-=======
-function getEndpoint(startPoint, distance, direction) {
-    let o = origin
-    let d = dist
-    let dir = direction
->>>>>>> d13e0b5cded36e948ec61ba41d5639dcd376f5e3
 }
 
 
