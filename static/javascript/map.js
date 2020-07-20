@@ -9,6 +9,7 @@ var startcoord;
 var wpcoordarray=[];
 var finalwps=[];
 var dist;
+const DEBUG = true;
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -301,7 +302,9 @@ function genRoute(distance) {
     directionsService.route(request, function(result, status){
         if(status === "OK"){
             console.log("Started iteration");
-            console.log(requestData);
+            console.log(requestData.request);
+            console.log(requestData.request.waypoints);
+
             iterativeRouting(requestData, result, 10);
         }
     });
@@ -506,6 +509,10 @@ function deleteWaypoints(){
 
 //// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
 function iterativeRouting(requestData, result, counter){
+    if (DEBUG){
+        directionsRenderer.setDirections(result);
+    }
+    computeTotalDistance(result);
     // getDirectionsWithCurrentWaypoints();
     // modify request to change the route that gets plotted
     counter--;
@@ -516,11 +523,11 @@ function iterativeRouting(requestData, result, counter){
 
         if (tooShort(result)) {
             elongate(requestData, counter);  // adjustments
-            directMe(requestData, counter);
+            // directMe(requestData, counter);
 
         } else if (tooLong(result)) {
             shorten(requestData, counter);    // other adjustments
-            //directMe(requestData, counter);
+            // directMe(requestData, counter);
 
         } else {
             callOutput(result);
@@ -578,7 +585,6 @@ function directMe(requestData, counter){
 }
 
 function elongate(pathRequest, counter){
-    console.log(pathRequest);
     let adjustPoints = pathRequest.randomWaypoints;
     let numRands = adjustPoints.length;
     let newRandPoints = [];
@@ -606,6 +612,9 @@ function elongate(pathRequest, counter){
 
     pathRequest.request.waypoints = newPoints;
     pathRequest.randomWaypoints = newRandPoints;
+    console.log("---");
+    console.log(pathRequest.request);
+    console.log(pathRequest.request.waypoints);
     directMe(pathRequest, counter);
 }
 
@@ -636,6 +645,7 @@ function shorten(pathRequest, counter){
 
     pathRequest.request.waypoints = newPoints;
     pathRequest.randomWaypoints = newRandPoints;
+    console.log(pathRequest.randomWaypoints);
     directMe(pathRequest, counter);
 
 }
