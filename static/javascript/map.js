@@ -648,11 +648,9 @@ function pathDifferenceCalc(dirResult){
     return (computeTotalDistance(dirResult)-dist);
 }
 
-var sum;
-var myroute;
 function computeTotalDistance(result){
-    sum = 0;
-    myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    var sum = 0;
+    var myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
     for (var i = 0; i < myroute.legs.length; i++) {
         sum += myroute.legs[i].distance.value;
     }
