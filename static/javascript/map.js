@@ -86,6 +86,7 @@ function setupAutoComplete(map) {
         radioButton.addEventListener('click', function() {
             // for now, store transport mode as variable
             mode = transMode;
+            console.log(mode);
         });
     }
 
@@ -247,7 +248,7 @@ function genRoute(distance) {
     let usrWypts;
     let randWypts;
 
-    origin = "" + lat_origin + "," + long_origin + "";
+    origin = {lat:lat_origin, lng:long_origin};
 
     if (finalwps.length > 0) {
       while ((finalwps.length > 0) && (routeDist < radius)){
@@ -278,6 +279,7 @@ function genRoute(distance) {
           let randWypt = {location: randLatLng, stopover: true};
           wypts.push(randWypt);
           randWaypts = wypts;
+          //console.log("random waypts init: "+ JSON.stringify(randWaypts));
     }
 
     let request = {
@@ -287,15 +289,19 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
+    //console.log("randwaypoints: " + randWaypts);
     let requestData = {
         request: request,
-        randomWaypoints: randWypts,
+        randomWaypoints: randWaypts,
         userWaypoints: usrWypts
     };
+
+    console.log(requestData);
 
     directionsService.route(request, function(result, status){
         if(status === "OK"){
             console.log("Started iteration");
+            console.log(requestData);
             iterativeRouting(requestData, result, 10);
         }
     });
@@ -509,7 +515,7 @@ function iterativeRouting(requestData, result, counter){
     } else {
 
         if (tooShort(result)) {
-            elongate();  // adjustments
+            elongate(requestData, counter);  // adjustments
             directMe(requestData, counter);
 
         } else if (tooLong(result)) {
@@ -528,7 +534,7 @@ function iterativeRouting(requestData, result, counter){
 // }
 
 function callOutput(directResult){
-    console.log("length: "+sum/1609);
+    //console.log("length: "+sum/1609);
     directionsRenderer.setDirections(directResult);
 }
 
@@ -547,7 +553,7 @@ function tooLong(dirResult){
 }
 
 function pathDifferenceCalc(dirResult){
-
+    //console.log("length: "+sum/1609);
     return (computeTotalDistance(dirResult)-dist);
 }
 
@@ -572,24 +578,32 @@ function directMe(requestData, counter){
 }
 
 function elongate(pathRequest, counter){
+    console.log(pathRequest);
     let adjustPoints = pathRequest.randomWaypoints;
     let numRands = adjustPoints.length;
     let newRandPoints = [];
     for (let point in adjustPoints){       //adjust each random waypoint
-        let pt_lat = point.location.lat;   //store point's latitude and longitude
-        let pt_lng = point.location.lng;
+        //console.log("point: "+JSON.stringify(adjustPoints[point]));
+        //console.log("point: "+JSON.stringify(point));
+        let pt_lat = adjustPoints[point].location.lat;   //store point's latitude and longitude
+        let pt_lng = adjustPoints[point].location.lng;
 
-        let start_lat = requestdata.request.origin.lat; //get origin latitude and longitude
-        let start_lng = requestdata.request.origin.lng;
+        let start_lat = pathRequest.request.origin.lat; //get origin latitude and longitude
+        let start_lng = pathRequest.request.origin.lng;
 
         let lat_change = (start_lat+((pt_lat-start_lat)*(dist/sum)));   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
-        let lng_change = (star_lng+((pt_lng-start_lng)*(dist/sum)));
+        let lng_change = (start_lng+((pt_lng-start_lng)*(dist/sum)));
 
         let newLatLng = {lat:lat_change, lng:lng_change};
         newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
     }
+    let newPoints;
+    if (pathRequest.userWaypoints){
+        newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    } else {
+        newPoints = newRandPoints;
+    }
 
-    let newPoints = pathRequest.userWaypoints.concat(newRandPoints);
     pathRequest.request.waypoints = newPoints;
     pathRequest.randomWaypoints = newRandPoints;
     directMe(pathRequest, counter);
@@ -600,8 +614,8 @@ function shorten(pathRequest, counter){
     let numRands = adjustPoints.length;
     let newRandPoints = [];
     for (let point in adjustPoints){       //adjust each random waypoint
-        let pt_lat = point.location.lat;   //store point's latitude and longitude
-        let pt_lng = point.location.lng;
+        let pt_lat = adjustPoints[point].location.lat;   //store point's latitude and longitude
+        let pt_lng = adjustPoints[point].location.lng;
 
         let start_lat = requestdata.request.origin.lat; //get origin latitude and longitude
         let start_lng = requestdata.request.origin.lng;
@@ -613,7 +627,13 @@ function shorten(pathRequest, counter){
         newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
     }
 
-    let newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    let newPoints;
+    if (pathRequest.userWaypoints){
+        newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    } else {
+        newPoints = newRandPoints;
+    }
+
     pathRequest.request.waypoints = newPoints;
     pathRequest.randomWaypoints = newRandPoints;
     directMe(pathRequest, counter);
