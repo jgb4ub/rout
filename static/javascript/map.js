@@ -725,6 +725,10 @@ function shorten(){
 }
 
 
+function DegreesToRadians(start){
+    var startPoint = start * 0.0174533
+}
+
 getEndpoint({lat:0, lng: 0}, 90, 5)
 function getEndpoint(startPoint, BearingRadians, distanceMiles) {
     const radiusEarthMiles = 3958.8;
