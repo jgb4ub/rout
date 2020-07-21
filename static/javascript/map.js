@@ -247,6 +247,14 @@ function deg2rad(deg) {
 }
 
 
+// Generate request using only user Waypoints and start point
+// If there are no user waypoints, we don't need to check if all waypoints can be
+// reached, but we still need to generate a request
+
+// If we can reach all waypoints in the given distance, pass the request on to
+// startUpGeneration
+
+// See startUpGeneration for other setup info
 function genRoute(distance) {
     let randomWayPt;
     let conv = 0.621371
@@ -296,16 +304,15 @@ function genRoute(distance) {
           randWaypts = wypts;   /*******/
     }
 
-    /*
-    wypts.forEach((wypt) => {
-      let wyptMarker = new google.maps.MarkerLabel({
-       position: wypt,
-       draggable: true,
-       raiseOnDrag: true,
-       labelContent: "",
-       labelInBackground: false,
-     });
-*/
+    // wypts.forEach((wypt) => {
+    //   let wyptMarker = new google.maps.MarkerLabel({
+    //    position: wypt,
+    //    draggable: true,
+    //    raiseOnDrag: true,
+    //    labelContent: "",
+    //    labelInBackground: false,
+    //  });
+
 
 
     let request = {
@@ -315,29 +322,32 @@ function genRoute(distance) {
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
-/*
+
     let requestData = {
         request: request,
         randomWaypoints: randWypts,
         userWaypoints: usrWypts
     };
-*/
+
+    //             This request v    should not have any random waypoints
     directionsService.route(request, function(result, status){
         if(status === "OK"){
-          directionsRenderer.setDirections(result);
-          let length = computeTotalDistance(result);
-          if (length < distance) {
-            console.log("Too short")
-            tooLong(result)
-          } else {
-            console.log("Too long")
-            tooShort(result)
-          }
-            //console.log("Started iteration");
-            //iterativeRouting(requestData, result, 10);
+            directionsRenderer.setDirections(result);
+            let length = computeTotalDistance(result);
+
+            if (length < distance) {
+                // don't pass request data here, generate it in startUpGeneration
+                startUpGeneration(request, requestData);
+            } else {
+                console.log("Too long")
+                // Error message, cant reach all user waypoints in requested distance
+            }
         }
     });
 }
+
+
+
 
 function hideMapDisplay() {
     var directionsPanel = document.getElementById("right-panel");
@@ -551,12 +561,18 @@ function deleteWaypoints(){
     }
 }
 
-
+// Generate random waypoint if necessary and create requestData, then make first call to iterativeRouting
+function startUpGeneration(request, requestData) {
+    // The passed request should not have any random waypoints, but we may need to add one
+    directionsService.route(request, function(result, status){
+        if(status === "OK"){
+            console.log("Started iteration");
+            iterativeRouting(requestData, result, 10);
+        }
+    });
+}
 //// TODO: ensure 'dist' variable is initialized before function can run ( run after dist is received)
 
-
-
-/*
 function iterativeRouting(requestData, result, counter){
     // getDirectionsWithCurrentWaypoints();
     // modify request to change the route that gets plotted
@@ -579,16 +595,6 @@ function iterativeRouting(requestData, result, counter){
         }
     }
 };
-
-*/
-
-
-
-//
-// function startUpGeneration() {
-//     generateRandomWaypoint();
-//     google.api(waypoints, iterativeRouting);
-// }
 
 function callOutput(directResult){
     directionsRenderer.setDirections(directResult);
@@ -725,6 +731,7 @@ function shorten(){
 }
 
 
+<<<<<<< HEAD
 function DegreesToRadians(start){
     var startPoint = start * 0.0174533
 }
@@ -752,6 +759,31 @@ function getEndpoint(startPoint, BearingRadians, distanceMiles) {
     };
     console.log("ran")
 }
+=======
+// getEndpoint({lat:0, lng: 0}, 90, 5)
+// function getEndpoint(startPoint, BearingRadians, distanceMiles) {
+//     const radiusEarthMiles = 3958.8;
+//     var distRatio = distanceMiles / radiusEarthMiles;
+//     var distRatioSine = Math.sin(distRatio);
+//     var distRatioCosine = Math.cos(distRatio);
+//     var startLatRad = DegreesToRadians(startPoint.Latitude);
+//     var startLonRad = DegreesToRadians(startPoint.Longitude);
+//     var startLatCos = Math.cos(startLatRad);
+//     var startLatSin = Math.sin(startLatRad);
+//     var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(initialBearingRadians)));
+//     var endLonRads = startLonRad
+//         + Math.atan2(
+//             Math.sin(initialBearingRadians) * distRatioSine * startLatCos,
+//             distRatioCosine - startLatSin * Math.sin(endLatRads));
+//
+//     return new GeoLocation
+//     {
+//         Latitude = RadiansToDegrees(endLatRads),
+//         Longitude = RadiansToDegrees(endLonRads)
+//     };
+//     console.log("ran")
+// }
+>>>>>>> e8946e0109777997420d2b498cabc3f26f021f88
 
 
 
