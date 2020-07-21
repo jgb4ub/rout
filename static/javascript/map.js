@@ -702,7 +702,7 @@ function getEndpoint(startPoint, bearingRadians, distanceMiles) {
         Latitude = RadiansToDegrees(endLatRads),
         Longitude = RadiansToDegrees(endLonRads)
     };
-    console.log("ran")
+    console.log("Calculated Endpoint")
 }
 
 getEndpoint({lat:0, lng: 0}, 90, 5)
