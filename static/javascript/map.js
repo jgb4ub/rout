@@ -117,7 +117,7 @@ function initMap() {
     var marker;
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setOptions({suppressMarkers: true})
+    //directionsRenderer.setOptions({suppressMarkers: true})
 
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -132,7 +132,7 @@ function initMap() {
 
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById('right-panel'));
-
+    
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
         latitude = event.latLng.lat();
@@ -448,14 +448,26 @@ function addStartMarker(){
     currposmarker = [];
     //create new startpoint marker and add to array
     var starticon = {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: '#00ff32',
+        fillOpacity: 0.6,
+        strokeColor: '#00A',
+        strokeOpacity: 0.9,
+        strokeWeight: 1,
+        scale: 7
+    }
+    /*
+    var starticon = {
         url: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
         // This marker is 20 pixels wide by 32 pixels high.
+
         size: new google.maps.Size(20, 32),
         // The origin for this image is (0, 0).
         origin: new google.maps.Point(0, 0),
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(0, 32)
     };
+    */
     var latlng = new google.maps.LatLng(lat1, lng1);
     var newstartmarker = new google.maps.Marker({
         position:latlng,
@@ -493,6 +505,18 @@ function addWpMarker(){
         currposmarker[i].setMap(null);
         }
     currposmarker = [];
+
+    var wpicon = {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: '#0000FF',
+        fillOpacity: 0.6,
+        strokeColor: '#00A',
+        strokeOpacity: 0.9,
+        strokeWeight: 1,
+        scale: 7
+    }
+
+    /*
     var wpicon = {
         url: '/images/waypointmarker.png',
         // This marker is 20 pixels wide by 32 pixels high.
@@ -502,6 +526,8 @@ function addWpMarker(){
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(24, 48)
     };
+    */
+
     //var wpicon= document.getElementById("wpimg")
     var latlng = new google.maps.LatLng(lat1, lng1);
     var waypointmarker = new google.maps.Marker({
