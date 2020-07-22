@@ -331,8 +331,9 @@ function genRoute(distance) {
           if(status === "OK"){
             directionsRenderer.setDirections(result);
             let length = computeTotalDistance(result);
+            console.log(length)
             if (length < distance) {
-                startUpGeneration(request, requestData)
+                startUpGeneration(usrRequest, requestData)
             } else {
               document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
             }
@@ -608,6 +609,8 @@ function startUpGeneration(request, requestData) {
         if(status === "OK"){
             console.log("Started iteration");
             iterativeRouting(requestData, result, 10);
+        } else {
+          console.log("Error")
         }
     });
 }
