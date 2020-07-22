@@ -141,6 +141,9 @@ function initMap() {
         var lng1=event.latLng.lng();
         getReverseGeocodingData(lat1, lng1);
         setTimeout(() => {  document.getElementById("pac-input").value=add1; }, 500);
+
+
+        testTools();
     });
 }
 
@@ -696,16 +699,25 @@ function getEndpoint(startPoint, bearingRadians, distanceMiles) {
         + Math.atan2(
             Math.sin(bearingRadians) * distRatioSine * startLatCos,
             distRatioCosine - startLatSin * Math.sin(endLatRads));
-
-    return
-    {
-        Latitude = RadiansToDegrees(endLatRads),
-        Longitude = RadiansToDegrees(endLonRads)
-    };
     console.log("Calculated Endpoint")
+    console.log(endLatRads);
+    console.log(endLonRads);
+
+    return {lat: RadiansToDegrees(endLatRads), lng: RadiansToDegrees(endLonRads)};
 }
 
-getEndpoint({lat:0, lng: 0}, 90, 5)
+
+function testTools() {
+    console.log("Testing");
+    var point = getEndpoint({lat:38, lng: 78}, 90, 5);
+    console.log(point);
+    var marker = new google.maps.Marker({
+        position: point,
+        map: map,
+        title: 'Hello World!'
+    });
+    setOrigin(point);
+}
 
 
 /*
