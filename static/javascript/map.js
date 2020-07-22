@@ -132,7 +132,7 @@ function initMap() {
 
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById('right-panel'));
-    
+
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
         latitude = event.latLng.lat();
@@ -248,18 +248,18 @@ function deg2rad(deg) {
 
 
 function generateRandomWaypoint(rad, start_lat, start_lng){
-  let degToMi = (1/69)
-  let leftBound = start_lat - (degToMi * rad)
-  let rightBound = start_lat + (degToMi * rad)
-  let upperBound = start_lng + (degToMi * rad)
-  let lowerBound = start_lng - (degToMi * rad)
+    let degToMi = (1/69);
+    let leftBound = start_lat - (degToMi * rad);
+    let rightBound = start_lat + (degToMi * rad);
+    let upperBound = start_lng + (degToMi * rad);
+    let lowerBound = start_lng - (degToMi * rad);
 
-  let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
-  let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
+    let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound);
+    let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound);
 
-  let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
-  let randWypt = {location: randLatLng, stopover: true}
-  return randWypt
+    let randLatLng = "" + randWyptLat + "," + randWyptLng + "";
+    let randWypt = {location: randLatLng, stopover: true};
+    return randWypt;
 }
 
 
@@ -272,37 +272,26 @@ function genRoute(distance) {
     let ptA = start;
     let ptB = start;
     let usrWypts = [];
-    let randWypts = [];
+
 
     origin = "" + lat_origin + "," + long_origin + "";
 
     if (finalwps.length > 0) {
-      while ((finalwps.length > 0) && (routeDist < radius)){
-          ptB = finalwps.pop()
-          let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
-          if ((routeDist + dist) < radius) {
-            routeDist += dist
-            let position = "" + ptB.lat + "," + ptB.lng + ""
-            usrWypts.push({location: position, stopover: true});
-            ptA = ptB
-          } else {
-            document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
-            break;
-          }
-      }
+        while ((finalwps.length > 0) && (routeDist < radius)){
+            ptB = finalwps.pop();
+            let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
+            if ((routeDist + dist) < radius) {
+                routeDist += dist;
+                let position = "" + ptB.lat + "," + ptB.lng + "";
+                usrWypts.push({location: position, stopover: true});
+                ptA = ptB;
+            } else {
+                document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
+                break;
+            }
+        }
     }
 
-    //Randomly generate waypoint
-    randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin))
-
-    //Requests
-    let randRequest = {
-      origin: origin,
-      destination: origin,
-      waypoints: randWypts,
-      optimizeWaypoints: true,
-      travelMode: 'DRIVING'
-    };
 
     let usrRequest = {
       origin: origin,
@@ -312,41 +301,23 @@ function genRoute(distance) {
       travelMode: 'DRIVING'
     };
 
-    let requestData = {
-        request: usrRequest,
-        randomWaypoints: randWypts,
-        userWaypoints: usrWypts
-    };
-
 
     //Check if there are random waypoints, else generate user waypoints
-    if (randWypts.length > 0){
-      directionsService.route(randRequest, function(result, status){
-          if(status === "OK"){
-            directionsRenderer.setDirections(result);
-          }
-      });
-    } else {
-      directionsService.route(usrRequest, function(result, status){
-          if(status === "OK"){
-            directionsRenderer.setDirections(result);
+
+    directionsService.route(usrRequest, function(result, status){
+        if(status === "OK"){
+            // directionsRenderer.setDirections(result);
             let length = computeTotalDistance(result);
-            console.log(length)
+            console.log(length);
             if (length < distance) {
-                startUpGeneration(usrRequest, requestData)
+                startUpGeneration(usrRequest);
             } else {
-              document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
+                document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
             }
               //console.log("Started iteration");
               //iterativeRouting(requestData, result, 10);
-          }
-      });
-    }
-
-
-
-
-
+        }
+    });
 }
 
 
@@ -620,16 +591,27 @@ function iterativeRouting(requestData, result, counter){
 
 
 
+function startUpGeneration(request) {
 
+    let lat_origin = latitude;
+    let long_origin = longitude;
+    let radius = parseFloat((0.621371 * distance)/2);
 
-//
-// function startUpGeneration() {
-//     generateRandomWaypoint();
-//     google.api(waypoints, iterativeRouting);
-// }
+    //Randomly generate waypoint
+    console.log("Starting up generation");
+    let randWypts = [];
+    randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+    let usrWypts = request.waypoints;
+    request.waypoints.push(randWypts);
 
+    console.log(request.waypoints)
 
-function startUpGeneration(request, requestData) {
+    let requestData = {
+        request: request,
+        randomWaypoints: randWypts,
+        userWaypoints: usrWypts
+    };
+
     // The passed request should not have any random waypoints, but we may need to add one
     directionsService.route(request, function(result, status){
         if(status === "OK"){
