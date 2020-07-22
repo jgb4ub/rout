@@ -10,6 +10,7 @@ var wpcoordarray=[];
 var finalwps=[];
 var dist;
 const DEBUG = true;
+var mode;
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -80,7 +81,7 @@ function setupAutoComplete(map) {
     }
 
     //declare variable for mode of transport
-    var mode;
+    //var mode = 'WALKING';
 
     function setupClickListenerTransMode(id, transMode) {
         var radioButton = document.getElementById(id);
@@ -211,7 +212,7 @@ function genRouteListener() {
             }
         }
         genRoute(dist);
-        //call pointCalculator here?
+
     }
 }
 
@@ -247,7 +248,7 @@ function genRoute(distance) {
     let ptA = start;
     let ptB = start;
     let usrWypts;
-    let randWypts;
+    let randWaypts;
 
     origin = {lat:lat_origin, lng:long_origin};
 
@@ -283,12 +284,16 @@ function genRoute(distance) {
           //console.log("random waypts init: "+ JSON.stringify(randWaypts));
     }
 
+    if (!mode){
+        mode = 'WALKING';
+    }
+
     let request = {
       origin: origin,
       destination: origin,
       waypoints: wypts,
       optimizeWaypoints: true,
-      travelMode: 'DRIVING'
+      travelMode: mode
     };
     //console.log("randwaypoints: " + randWaypts);
     let requestData = {
@@ -512,7 +517,9 @@ function iterativeRouting(requestData, result, counter){
     if (DEBUG){
         directionsRenderer.setDirections(result);
     }
-    computeTotalDistance(result);
+    //computeTotalDistance(result);
+    let pathDifference = pathDifferenceCalc(result);
+
     // getDirectionsWithCurrentWaypoints();
     // modify request to change the route that gets plotted
     counter--;
@@ -521,11 +528,14 @@ function iterativeRouting(requestData, result, counter){
 
     } else {
 
-        if (tooShort(result)) {
+        if (tooShort(result, pathDifference)) {
+            if (!requestData.randomWaypoints){
+                requestData.randomWaypoints = [firstRandPoint()];
+            }
             elongate(requestData, counter);  // adjustments
             // directMe(requestData, counter);
 
-        } else if (tooLong(result)) {
+        } else if (tooLong(result, pathDifference)) {
             shorten(requestData, counter);    // other adjustments
             // directMe(requestData, counter);
 
@@ -541,19 +551,19 @@ function iterativeRouting(requestData, result, counter){
 // }
 
 function callOutput(directResult){
-    //console.log("length: "+sum/1609);
+    console.log("length: "+sum);
     directionsRenderer.setDirections(directResult);
 }
 
-function tooShort(dirResult){
-    if (pathDifferenceCalc(dirResult)<(-.05*dist)){
+function tooShort(dirResult, pathDifference){
+    if (pathDifference < (-.05*dist)) {
         return true;
     }
     return false;
 }
 
-function tooLong(dirResult){
-    if (pathDifferenceCalc(dirResult)>(.05*dist)){
+function tooLong(dirResult, pathDifference){
+    if (pathDifference > (.05*dist)) {
         return true;
     }
     return false;
@@ -568,7 +578,7 @@ var sum;
 var myroute;
 function computeTotalDistance(result){
     sum = 0;
-    myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    myroute = result.routes[0];
     for (var i = 0; i < myroute.legs.length; i++) {
         sum += myroute.legs[i].distance.value;
     }
@@ -629,6 +639,22 @@ function shorten(pathRequest, counter){
         let start_lat = pathRequest.request.origin.lat; //get origin latitude and longitude
         let start_lng = pathRequest.request.origin.lng;
 
+        let ptDiff = ((Math.abs(pt_lat-start_lat))**2)+((Math.abs(pt_lng-start_lng))**2); //get square of hypotenuse between pts
+
+        if (pathRequest.userWaypoints){
+            for (let userPoint in pathRequest.userWaypoints){
+
+                let temp = pathRequest.userWaypoints[userPoint];
+                let currPtDiff = (((Math.abs(pt_lat-temp.location.lat))**2)+((Math.abs(pt_lng-temp.location.lng))**2));
+
+                if (currPtDiff < ptDiff){
+                    ptDiff = currPtDiff;
+                    start_lat = temp.location.lat;
+                    start_lng = temp.locatin.lng;
+                }
+            }
+        }
+
         let lat_change = start_lat+((pt_lat-start_lat)*(dist/sum));       //start_lat+(numRands/(pt_lat-start_lat))     //start_lat+((pt_lat-start_lat)/2)   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
         let lng_change = start_lng+((pt_lng-start_lng)*(dist/sum));       //start_lng+(numRands/(pt_lat-start_lat));     //star_lng+((pt_lng-start_lng)/2);   //numRands/(req_distance/difference);   numRands*difference/(req_distance)
 
@@ -648,6 +674,10 @@ function shorten(pathRequest, counter){
     console.log(pathRequest.randomWaypoints);
     directMe(pathRequest, counter);
 
+}
+
+function firstRandPoint() {
+    return {location: {lat: 38.034382001417875 , lng: -78.5081523875455}, stopover:true};
 }
 
 /*
