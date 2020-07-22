@@ -143,8 +143,8 @@ function initMap() {
         setTimeout(() => {  document.getElementById("pac-input").value=add1; }, 500);
 
 
-        testTools();
     });
+    // testTools();
 }
 
 function setUserCurrentPosition() {
@@ -678,11 +678,11 @@ function shorten(){
 }
 
 function DegreesToRadians(start) {
-    start * 0.0174533
+    return start*0.0174533;
 }
 
 function RadiansToDegrees(rads) {
-    rads * 57.2958
+    return rads*57.2958;
 }
 
 function getEndpoint(startPoint, bearingRadians, distanceMiles) {
@@ -690,8 +690,8 @@ function getEndpoint(startPoint, bearingRadians, distanceMiles) {
     var distRatio = distanceMiles / radiusEarthMiles;
     var distRatioSine = Math.sin(distRatio);
     var distRatioCosine = Math.cos(distRatio);
-    var startLatRad = DegreesToRadians(startPoint.Latitude);
-    var startLonRad = DegreesToRadians(startPoint.Longitude);
+    var startLatRad = DegreesToRadians(startPoint.lat);
+    var startLonRad = DegreesToRadians(startPoint.lng);
     var startLatCos = Math.cos(startLatRad);
     var startLatSin = Math.sin(startLatRad);
     var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(bearingRadians)));
@@ -699,9 +699,6 @@ function getEndpoint(startPoint, bearingRadians, distanceMiles) {
         + Math.atan2(
             Math.sin(bearingRadians) * distRatioSine * startLatCos,
             distRatioCosine - startLatSin * Math.sin(endLatRads));
-    console.log("Calculated Endpoint")
-    console.log(endLatRads);
-    console.log(endLonRads);
 
     return {lat: RadiansToDegrees(endLatRads), lng: RadiansToDegrees(endLonRads)};
 }
@@ -709,14 +706,16 @@ function getEndpoint(startPoint, bearingRadians, distanceMiles) {
 
 function testTools() {
     console.log("Testing");
-    var point = getEndpoint({lat:38, lng: 78}, 90, 5);
-    console.log(point);
-    var marker = new google.maps.Marker({
-        position: point,
-        map: map,
-        title: 'Hello World!'
-    });
-    setOrigin(point);
+    var start = {lat: 90, lng: 0};
+    for (var i = 0; i < Math.PI * 2; i += 0.1) {
+        var point = getEndpoint(start, i, 1);
+
+        var marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            title: 'Hello World!'
+        });
+    }
 }
 
 
