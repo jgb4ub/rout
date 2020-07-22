@@ -696,13 +696,13 @@ function getEndpoint(startPoint, bearingRadians, distanceMiles) {
         + Math.atan2(
             Math.sin(bearingRadians) * distRatioSine * startLatCos,
             distRatioCosine - startLatSin * Math.sin(endLatRads));
+    console.log("Calculated Endpoint")
 
     return
     {
         Latitude = RadiansToDegrees(endLatRads),
         Longitude = RadiansToDegrees(endLonRads)
     };
-    console.log("Calculated Endpoint")
 }
 
 getEndpoint({lat:0, lng: 0}, 90, 5)
