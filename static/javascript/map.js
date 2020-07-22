@@ -247,21 +247,32 @@ function deg2rad(deg) {
 }
 
 
+function generateRandomWaypoint(rad, start_lat, start_lng){
+  let degToMi = (1/69)
+  let leftBound = start_lat - (degToMi * rad)
+  let rightBound = start_lat + (degToMi * rad)
+  let upperBound = start_lng + (degToMi * rad)
+  let lowerBound = start_lng - (degToMi * rad)
+
+  let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
+  let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
+
+  let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
+  let randWypt = {location: randLatLng, stopover: true}
+  return randWypt
+}
+
+
 function genRoute(distance) {
-    let randomWayPt;
-    let conv = 0.621371
-    let wypts = [];
     let lat_origin = latitude;
     let long_origin = longitude;
-    let kmToMi = conv * distance
-    let degToMi = (1/69)
-    let radius = parseFloat(kmToMi/2);
+    let radius = parseFloat((0.621371 * distance)/2);
     let routeDist = 0;
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
-    let usrWypts;    /**************/
-    let randWypts;   /**************/
+    let usrWypts = [];
+    let randWypts = [];
 
     origin = "" + lat_origin + "," + long_origin + "";
 
@@ -272,72 +283,72 @@ function genRoute(distance) {
           if ((routeDist + dist) < radius) {
             routeDist += dist
             let position = "" + ptB.lat + "," + ptB.lng + ""
-            wypts.push({location: position, stopover: true});
-            userWypts = wypts;  /********/
+            usrWypts.push({location: position, stopover: true});
             ptA = ptB
           } else {
             document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
             break;
           }
       }
-    } else {
-      //Randomly generate waypoint
-          let leftBound = lat_origin - (degToMi * radius)
-          let rightBound = lat_origin + (degToMi * radius)
-          let upperBound = long_origin + (degToMi * radius)
-          let lowerBound = long_origin - (degToMi * radius)
-
-          let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
-          let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
-
-          let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
-          let randWypt = {location: randLatLng, stopover: true}
-          wypts.push(randWypt);
-          randWaypts = wypts;   /*******/
     }
 
-    /*
-    wypts.forEach((wypt) => {
-      let wyptMarker = new google.maps.MarkerLabel({
-       position: wypt,
-       draggable: true,
-       raiseOnDrag: true,
-       labelContent: "",
-       labelInBackground: false,
-     });
-*/
+    //Randomly generate waypoint
+    randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin))
 
-
-    let request = {
+    //Requests
+    let randRequest = {
       origin: origin,
       destination: origin,
-      waypoints: wypts,
+      waypoints: randWypts,
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
-/*
+
+    let usrRequest = {
+      origin: origin,
+      destination: origin,
+      waypoints: usrWypts,
+      optimizeWaypoints: true,
+      travelMode: 'DRIVING'
+    };
+
     let requestData = {
-        request: request,
+        request: usrRequest,
         randomWaypoints: randWypts,
         userWaypoints: usrWypts
     };
-*/
-    directionsService.route(request, function(result, status){
-        if(status === "OK"){
-          directionsRenderer.setDirections(result);
-          let length = computeTotalDistance(result);
-          if (length < distance) {
-            console.log("Too short")
-            tooLong(result)
-          } else {
-            console.log("Too long")
-            tooShort(result)
+
+
+    //Check if there are random waypoints, else generate user waypoints
+    if (randWypts.length > 0){
+      directionsService.route(randRequest, function(result, status){
+          if(status === "OK"){
+            directionsRenderer.setDirections(result);
           }
-            //console.log("Started iteration");
-            //iterativeRouting(requestData, result, 10);
-        }
-    });
+      });
+    } else {
+      directionsService.route(usrRequest, function(result, status){
+          if(status === "OK"){
+            directionsRenderer.setDirections(result);
+            let length = computeTotalDistance(result);
+            if (length < distance) {
+                startUpGeneration(request, requestData)
+            } else {
+              document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
+            }
+              //console.log("Started iteration");
+              //iterativeRouting(requestData, result, 10);
+          }
+      });
+    }
+
+
+
+
+
 }
+
+
 
 function hideMapDisplay() {
     var directionsPanel = document.getElementById("right-panel");
@@ -556,7 +567,7 @@ function deleteWaypoints(){
 
 
 
-/*
+
 function iterativeRouting(requestData, result, counter){
     // getDirectionsWithCurrentWaypoints();
     // modify request to change the route that gets plotted
@@ -580,7 +591,7 @@ function iterativeRouting(requestData, result, counter){
     }
 };
 
-*/
+
 
 
 
@@ -589,6 +600,17 @@ function iterativeRouting(requestData, result, counter){
 //     generateRandomWaypoint();
 //     google.api(waypoints, iterativeRouting);
 // }
+
+
+function startUpGeneration(request, requestData) {
+    // The passed request should not have any random waypoints, but we may need to add one
+    directionsService.route(request, function(result, status){
+        if(status === "OK"){
+            console.log("Started iteration");
+            iterativeRouting(requestData, result, 10);
+        }
+    });
+}
 
 function callOutput(directResult){
     directionsRenderer.setDirections(directResult);
