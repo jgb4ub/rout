@@ -135,8 +135,6 @@ function initMap() {
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
-        latitude = event.latLng.lat();
-        longitude = event.latLng.lng();
 
         //currPos = new google.maps.LatLng(latitude,longitude);
         //place marker
@@ -173,9 +171,6 @@ function setUserCurrentPosition() {
     }
 
     function getCurrPos(pos){
-        var latitude = pos.coords.latitude;
-        var longitude = pos.coords.longitude;
-
 
         //create google LatLng object
         var currCoords = new google.maps.LatLng(latitude,longitude);
@@ -257,24 +252,22 @@ function generateRandomWaypoint(rad, start_lat, start_lng){
     let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound);
     let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound);
 
-    let randLatLng = "" + randWyptLat + "," + randWyptLng + "";
+    let randLatLng = {lat: randWyptLat, lng: randWyptLng};
     let randWypt = {location: randLatLng, stopover: true};
     return randWypt;
 }
 
 
 function genRoute(distance) {
-    let lat_origin = latitude;
-    let long_origin = longitude;
+    // startcoord
+    let lat_origin = startcoord.lat();
+    let long_origin = startcoord.lng();
     let radius = parseFloat((0.621371 * distance)/2);
     let routeDist = 0;
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
     let usrWypts = [];
-
-
-    origin = "" + lat_origin + "," + long_origin + "";
 
     if (finalwps.length > 0) {
         while ((finalwps.length > 0) && (routeDist < radius)){
@@ -294,8 +287,8 @@ function genRoute(distance) {
 
 
     let usrRequest = {
-      origin: origin,
-      destination: origin,
+      origin: start,
+      destination: start,
       waypoints: usrWypts,
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
@@ -310,7 +303,12 @@ function genRoute(distance) {
             let length = computeTotalDistance(result);
             console.log(length);
             if (length < distance) {
-                startUpGeneration(usrRequest);
+                let requestData = {
+                    request: usrRequest,
+                    randomWaypoints: [],
+                    userWaypoints: usrWypts
+                };
+                startUpGeneration(requestData);
             } else {
                 document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
             }
@@ -394,8 +392,8 @@ function addbtnListener(){
     if(add1==null){
         alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
     } else{
-            addStartMarker();
-        }
+        addStartMarker();
+    }
 }
 
 function wpbtnListener(){
@@ -410,14 +408,15 @@ function addStartMarker(){
     //remove placeholder currPos marker and clear array
     for (var i = 0; i < startmarkers.length; i++){
         startmarkers[i].setMap(null);
-        }
+    }
     startmarkers = [];
     //remove previous start marker and clear array
     for (var i = 0; i < currposmarker.length; i++){
         currposmarker[i].setMap(null);
-        }
+    }
     currposmarker = [];
     //create new startpoint marker and add to array
+/*
     var starticon = {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: '#00ff32',
@@ -427,7 +426,8 @@ function addStartMarker(){
         strokeWeight: 1,
         scale: 7
     }
-    /*
+  */
+
     var starticon = {
         url: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
         // This marker is 20 pixels wide by 32 pixels high.
@@ -438,7 +438,7 @@ function addStartMarker(){
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(0, 32)
     };
-    */
+
     var latlng = new google.maps.LatLng(lat1, lng1);
     var newstartmarker = new google.maps.Marker({
         position:latlng,
@@ -476,7 +476,7 @@ function addWpMarker(){
         currposmarker[i].setMap(null);
         }
     currposmarker = [];
-
+/*
     var wpicon = {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: '#0000FF',
@@ -486,8 +486,8 @@ function addWpMarker(){
         strokeWeight: 1,
         scale: 7
     }
+*/
 
-    /*
     var wpicon = {
         url: '/images/waypointmarker.png',
         // This marker is 20 pixels wide by 32 pixels high.
@@ -497,7 +497,7 @@ function addWpMarker(){
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(24, 48)
     };
-    */
+
 
     //var wpicon= document.getElementById("wpimg")
     var latlng = new google.maps.LatLng(lat1, lng1);
@@ -591,26 +591,18 @@ function iterativeRouting(requestData, result, counter){
 
 
 
-function startUpGeneration(request) {
-
-    let lat_origin = latitude;
-    let long_origin = longitude;
-    let radius = parseFloat((0.621371 * distance)/2);
+function startUpGeneration(requestData) {
+    let request = requestData.request;
+    let lat_origin = request.origin.lat;
+    let long_origin = request.origin.lng;
+    let radius = parseFloat((0.621371 * dist)/2);
 
     //Randomly generate waypoint
     console.log("Starting up generation");
     let randWypts = [];
     randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
-    let usrWypts = request.waypoints;
-    request.waypoints.push(randWypts);
-
-    console.log(request.waypoints)
-
-    let requestData = {
-        request: request,
-        randomWaypoints: randWypts,
-        userWaypoints: usrWypts
-    };
+    requestData.randomWaypoints = randWypts;
+    requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
 
     // The passed request should not have any random waypoints, but we may need to add one
     directionsService.route(request, function(result, status){
