@@ -11,6 +11,7 @@ var wpOnClick = [];
 var finalwps=[];
 var dist;
 var generated=false;
+var addmorewpts=false;
 
 
 function setupAutoComplete(map) {
@@ -312,7 +313,10 @@ function genRoute(distance) {
     //    labelContent: "",
     //    labelInBackground: false,
     //  });
-
+    if(addmorewpts==true){
+        newRandWpts(distance);
+        console.log("adding");
+    }
 
 
     let request = {
@@ -332,10 +336,6 @@ function genRoute(distance) {
     //             This request v    should not have any random waypoints
     directionsService.route(request, function(result, status){
         if(status === "OK"){
-<<<<<<< HEAD
-            console.log("Started iteration");
-            iterativeRouting(requestData, result, 1); //change back to 10
-=======
             directionsRenderer.setDirections(result);
             let length = computeTotalDistance(result);
 
@@ -593,16 +593,22 @@ function iterativeRouting(requestData, result, counter){
             shorten();    // other adjustments
             directMe(requestData, counter);
 
-        } //else if(backtrack(result)==true){
-        //     dist=document.getElementById("dist_input").value;
-        //     genRoute(dist);
-        // }
+        } else if(backTrack(result)==true){
+            dist=document.getElementById("dist_input").value;
+            addmorewpts=true;
+            genRoute(dist);
+            return;
+            // while(backTrack(result)==true){
+            //     newRandWpts(distance);
+            //     genRoute(distance);
+            // }
+        }
         else {
+            addmorewpts=false;
             callOutput(result);
-            //return;
         }
     }
-    backTrack(result);
+    //backTrack(result);
 };
 
 function backTrack(directResult){
@@ -616,19 +622,49 @@ function backTrack(directResult){
             console.log(step);
         }
     }
-    for(i=0; i<steparr.length; i++){ //check if any endlocations are repeated
+    var a=0;
+    for(i=1; i<steparr.length-1; i++){ //check if any endlocations are repeated
         var step1=steparr[i];
-        var a=0;
         if (steparr.indexOf(step1)!=steparr.lastIndexOf(step1)){
             console.log("Backtracking found for "+step1)
             a++;
-            //step1.splice(i, i+1)
-        }
-        if(a!=0){
-            return true;
         }
     }
+    if(a!=0){
+        return true;
+    }
     return false;
+}
+
+function newRandWpts(distance){
+    let randomWayPt;
+    let conv = 0.621371
+    let wypts = [];
+    let lat_origin = latitude;
+    let long_origin = longitude;
+    let kmToMi = conv * distance
+    let degToMi = (1/69)
+    let radius = parseFloat(kmToMi/2);
+    let routeDist = 0;
+    let start = {lat: lat_origin, lng: long_origin};
+    let ptA = start;
+    let ptB = start;
+    let usrWypts;    /**************/
+    let randWypts;   /**************/
+
+    let leftBound = lat_origin - (degToMi * radius)
+    let rightBound = lat_origin + (degToMi * radius)
+    let upperBound = long_origin + (degToMi * radius)
+    let lowerBound = long_origin - (degToMi * radius)
+
+    let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
+    let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
+
+    let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
+    let randWypt = {location: randLatLng, stopover: true}
+    wypts.push(randWypt);
+    randWaypts = wypts;
+    console.log("called");
 }
 
 function callOutput(directResult){
