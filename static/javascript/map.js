@@ -793,6 +793,21 @@ function testTools() {
     }
 }
 
+function getDistance (startPoint, endPoint) {
+  var radiusEarthMiles = 3958.8;
+  var dLat = DegreesToRadians(endPoint.lat - startPoint.lat);
+  var dLon = DegreesToRadians(endPoint.lng - startPoint.lat);
+  var a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ;
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var distance = radiusEarthMiles * c;
+  console.log("Calculated Distance")
+  return distance;
+}
+
 
 /*
 Function to determine a route that approximates given distance
