@@ -117,7 +117,7 @@ function initMap() {
     var marker;
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer();
-    //directionsRenderer.setOptions({suppressMarkers: true})
+    directionsRenderer.setOptions({suppressMarkers: true})
 
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -132,7 +132,7 @@ function initMap() {
 
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById('right-panel'));
-    
+
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
         latitude = event.latLng.lat();
