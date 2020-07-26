@@ -155,7 +155,10 @@ function initMap() {
 
         getReverseGeocodingData(lat1, lng1);
         setTimeout(() => {  document.getElementById("pac-input").value=add1; }, 500);
+
+
     });
+    // testTools();
 }
 
 function setUserCurrentPosition() {
@@ -851,31 +854,46 @@ function firstRandPoint() {
     return {location: {lat: 38.034382001417875 , lng: -78.5081523875455}, stopover:true};
 }
 
+function DegreesToRadians(start) {
+    return start*0.0174533;
+}
 
-getEndpoint({lat:0, lng: 0}, 90, 5)
-function getEndpoint(startPoint, BearingRadians, distanceMiles) {
+function RadiansToDegrees(rads) {
+    return rads*57.2958;
+}
+
+function getEndpoint(startPoint, bearingRadians, distanceMiles) {
     const radiusEarthMiles = 3958.8;
     var distRatio = distanceMiles / radiusEarthMiles;
     var distRatioSine = Math.sin(distRatio);
     var distRatioCosine = Math.cos(distRatio);
-    var startLatRad = DegreesToRadians(startPoint.Latitude);
-    var startLonRad = DegreesToRadians(startPoint.Longitude);
+    var startLatRad = DegreesToRadians(startPoint.lat);
+    var startLonRad = DegreesToRadians(startPoint.lng);
     var startLatCos = Math.cos(startLatRad);
     var startLatSin = Math.sin(startLatRad);
-    var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(initialBearingRadians)));
+    var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(bearingRadians)));
     var endLonRads = startLonRad
         + Math.atan2(
-            Math.sin(initialBearingRadians) * distRatioSine * startLatCos,
+            Math.sin(bearingRadians) * distRatioSine * startLatCos,
             distRatioCosine - startLatSin * Math.sin(endLatRads));
 
-    return new GeoLocation
-    {
-        Latitude = RadiansToDegrees(endLatRads),
-        Longitude = RadiansToDegrees(endLonRads)
-    };
-    console.log("ran")
+    return {lat: RadiansToDegrees(endLatRads), lng: RadiansToDegrees(endLonRads)};
 }
 
+
+function testTools() {
+    console.log("Testing");
+    var start = {lat: 90, lng: 0};
+    for (var i = 0; i < Math.PI * 2; i += 0.1) {
+        var point = getEndpoint(start, i, 1);
+
+        var marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            title: 'Hello World!'
+        });
+    }
+}
 
 
 /*
