@@ -135,8 +135,6 @@ function initMap() {
 
     //Add a listener. This function runs when the 'click' event occurs on the map object.
     map.addListener("click", function (event) {
-        latitude = event.latLng.lat();
-        longitude = event.latLng.lng();
 
         //currPos = new google.maps.LatLng(latitude,longitude);
         //place marker
@@ -151,7 +149,10 @@ function initMap() {
 
         getReverseGeocodingData(lat1, lng1);
         setTimeout(() => {  document.getElementById("pac-input").value=add1; }, 500);
+
+
     });
+    // testTools();
 }
 
 function setUserCurrentPosition() {
@@ -173,9 +174,6 @@ function setUserCurrentPosition() {
     }
 
     function getCurrPos(pos){
-        var latitude = pos.coords.latitude;
-        var longitude = pos.coords.longitude;
-
 
         //create google LatLng object
         var currCoords = new google.maps.LatLng(latitude,longitude);
@@ -248,105 +246,79 @@ function deg2rad(deg) {
 
 
 function generateRandomWaypoint(rad, start_lat, start_lng){
-  let degToMi = (1/69)
-  let leftBound = start_lat - (degToMi * rad)
-  let rightBound = start_lat + (degToMi * rad)
-  let upperBound = start_lng + (degToMi * rad)
-  let lowerBound = start_lng - (degToMi * rad)
+    let degToMi = (1/69);
+    let leftBound = start_lat - (degToMi * rad);
+    let rightBound = start_lat + (degToMi * rad);
+    let upperBound = start_lng + (degToMi * rad);
+    let lowerBound = start_lng - (degToMi * rad);
 
-  let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
-  let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
+    let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound);
+    let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound);
 
-  let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
-  let randWypt = {location: randLatLng, stopover: true}
-  return randWypt
+    let randLatLng = {lat: randWyptLat, lng: randWyptLng};
+    let randWypt = {location: randLatLng, stopover: true};
+    return randWypt;
 }
 
 
 function genRoute(distance) {
-    let lat_origin = latitude;
-    let long_origin = longitude;
+    // startcoord
+    let lat_origin = startcoord.lat();
+    let long_origin = startcoord.lng();
     let radius = parseFloat((0.621371 * distance)/2);
     let routeDist = 0;
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
     let usrWypts = [];
-    let randWypts = [];
-
-    origin = "" + lat_origin + "," + long_origin + "";
 
     if (finalwps.length > 0) {
-      while ((finalwps.length > 0) && (routeDist < radius)){
-          ptB = finalwps.pop()
-          let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
-          if ((routeDist + dist) < radius) {
-            routeDist += dist
-            let position = "" + ptB.lat + "," + ptB.lng + ""
-            usrWypts.push({location: position, stopover: true});
-            ptA = ptB
-          } else {
-            document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
-            break;
-          }
-      }
+        while ((finalwps.length > 0) && (routeDist < radius)){
+            ptB = finalwps.pop();
+            let dist = getDist(ptA.lat, ptA.lng, ptB.lat, ptB.lng);
+            if ((routeDist + dist) < radius) {
+                routeDist += dist;
+                let position = "" + ptB.lat + "," + ptB.lng + "";
+                usrWypts.push({location: position, stopover: true});
+                ptA = ptB;
+            } else {
+                document.getElementById("dist_error").innerHTML= 'Cannot integrate waypoints into route. Please either increase distance or remove waypoints';
+                break;
+            }
+        }
     }
 
-    //Randomly generate waypoint
-    randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin))
-
-    //Requests
-    let randRequest = {
-      origin: origin,
-      destination: origin,
-      waypoints: randWypts,
-      optimizeWaypoints: true,
-      travelMode: 'DRIVING'
-    };
 
     let usrRequest = {
-      origin: origin,
-      destination: origin,
+      origin: start,
+      destination: start,
       waypoints: usrWypts,
       optimizeWaypoints: true,
       travelMode: 'DRIVING'
     };
 
-    let requestData = {
-        request: usrRequest,
-        randomWaypoints: randWypts,
-        userWaypoints: usrWypts
-    };
-
 
     //Check if there are random waypoints, else generate user waypoints
-    if (randWypts.length > 0){
-      directionsService.route(randRequest, function(result, status){
-          if(status === "OK"){
-            directionsRenderer.setDirections(result);
-          }
-      });
-    } else {
-      directionsService.route(usrRequest, function(result, status){
-          if(status === "OK"){
-            directionsRenderer.setDirections(result);
+
+    directionsService.route(usrRequest, function(result, status){
+        if(status === "OK"){
+            // directionsRenderer.setDirections(result);
             let length = computeTotalDistance(result);
-            console.log(length)
+            console.log(length);
             if (length < distance) {
-                startUpGeneration(usrRequest, requestData)
+                let requestData = {
+                    request: usrRequest,
+                    randomWaypoints: [],
+                    userWaypoints: usrWypts
+                };
+                startUpGeneration(requestData);
             } else {
-              document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
+                document.getElementById("dist_error").innerHTML= 'Error message, cant reach all user waypoints in requested distance';
             }
               //console.log("Started iteration");
               //iterativeRouting(requestData, result, 10);
-          }
-      });
-    }
-
-
-
-
-
+        }
+    });
 }
 
 
@@ -423,8 +395,8 @@ function addbtnListener(){
     if(add1==null){
         alert("Address not specified. Please enter valid address or click on map to place marker before adding.")
     } else{
-            addStartMarker();
-        }
+        addStartMarker();
+    }
 }
 
 function wpbtnListener(){
@@ -439,14 +411,15 @@ function addStartMarker(){
     //remove placeholder currPos marker and clear array
     for (var i = 0; i < startmarkers.length; i++){
         startmarkers[i].setMap(null);
-        }
+    }
     startmarkers = [];
     //remove previous start marker and clear array
     for (var i = 0; i < currposmarker.length; i++){
         currposmarker[i].setMap(null);
-        }
+    }
     currposmarker = [];
     //create new startpoint marker and add to array
+/*
     var starticon = {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: '#00ff32',
@@ -456,7 +429,8 @@ function addStartMarker(){
         strokeWeight: 1,
         scale: 7
     }
-    /*
+  */
+
     var starticon = {
         url: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
         // This marker is 20 pixels wide by 32 pixels high.
@@ -467,7 +441,7 @@ function addStartMarker(){
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(0, 32)
     };
-    */
+
     var latlng = new google.maps.LatLng(lat1, lng1);
     var newstartmarker = new google.maps.Marker({
         position:latlng,
@@ -505,7 +479,7 @@ function addWpMarker(){
         currposmarker[i].setMap(null);
         }
     currposmarker = [];
-
+/*
     var wpicon = {
         path: google.maps.SymbolPath.CIRCLE,
         fillColor: '#0000FF',
@@ -515,8 +489,8 @@ function addWpMarker(){
         strokeWeight: 1,
         scale: 7
     }
+*/
 
-    /*
     var wpicon = {
         url: '/images/waypointmarker.png',
         // This marker is 20 pixels wide by 32 pixels high.
@@ -526,7 +500,7 @@ function addWpMarker(){
         // The anchor for this image is the base of the flagpole at (0, 32).
         anchor: new google.maps.Point(24, 48)
     };
-    */
+
 
     //var wpicon= document.getElementById("wpimg")
     var latlng = new google.maps.LatLng(lat1, lng1);
@@ -620,16 +594,19 @@ function iterativeRouting(requestData, result, counter){
 
 
 
+function startUpGeneration(requestData) {
+    let request = requestData.request;
+    let lat_origin = request.origin.lat;
+    let long_origin = request.origin.lng;
+    let radius = parseFloat((0.621371 * dist)/2);
 
+    //Randomly generate waypoint
+    console.log("Starting up generation");
+    let randWypts = [];
+    randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+    requestData.randomWaypoints = randWypts;
+    requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
 
-//
-// function startUpGeneration() {
-//     generateRandomWaypoint();
-//     google.api(waypoints, iterativeRouting);
-// }
-
-
-function startUpGeneration(request, requestData) {
     // The passed request should not have any random waypoints, but we may need to add one
     directionsService.route(request, function(result, status){
         if(status === "OK"){
@@ -775,31 +752,46 @@ function shorten(){
     return true;
 }
 
+function DegreesToRadians(start) {
+    return start*0.0174533;
+}
 
-getEndpoint({lat:0, lng: 0}, 90, 5)
-function getEndpoint(startPoint, BearingRadians, distanceMiles) {
+function RadiansToDegrees(rads) {
+    return rads*57.2958;
+}
+
+function getEndpoint(startPoint, bearingRadians, distanceMiles) {
     const radiusEarthMiles = 3958.8;
     var distRatio = distanceMiles / radiusEarthMiles;
     var distRatioSine = Math.sin(distRatio);
     var distRatioCosine = Math.cos(distRatio);
-    var startLatRad = DegreesToRadians(startPoint.Latitude);
-    var startLonRad = DegreesToRadians(startPoint.Longitude);
+    var startLatRad = DegreesToRadians(startPoint.lat);
+    var startLonRad = DegreesToRadians(startPoint.lng);
     var startLatCos = Math.cos(startLatRad);
     var startLatSin = Math.sin(startLatRad);
-    var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(initialBearingRadians)));
+    var endLatRads = Math.asin((startLatSin * distRatioCosine) + (startLatCos * distRatioSine * Math.cos(bearingRadians)));
     var endLonRads = startLonRad
         + Math.atan2(
-            Math.sin(initialBearingRadians) * distRatioSine * startLatCos,
+            Math.sin(bearingRadians) * distRatioSine * startLatCos,
             distRatioCosine - startLatSin * Math.sin(endLatRads));
 
-    return new GeoLocation
-    {
-        Latitude = RadiansToDegrees(endLatRads),
-        Longitude = RadiansToDegrees(endLonRads)
-    };
-    console.log("ran")
+    return {lat: RadiansToDegrees(endLatRads), lng: RadiansToDegrees(endLonRads)};
 }
 
+
+function testTools() {
+    console.log("Testing");
+    var start = {lat: 90, lng: 0};
+    for (var i = 0; i < Math.PI * 2; i += 0.1) {
+        var point = getEndpoint(start, i, 1);
+
+        var marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            title: 'Hello World!'
+        });
+    }
+}
 
 
 /*
