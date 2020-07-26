@@ -600,8 +600,8 @@ function iterativeRouting(requestData, result, counter){
     } else {
 
         if (tooShort(result, pathDifference)) {
-            if (!requestData.randomWaypoints){
-                requestData.randomWaypoints = [firstRandPoint()];
+            if (requestData.randomWaypoints.length === 1 && requestData.userWaypoints.length === 0){
+                requestData.randomWaypoints.push(generateRandomWaypoint(parseFloat((0.621371 * dist)/4), requestData.request.origin.lat,  requestData.request.origin.lng));
             }
             elongate(requestData, counter);  // adjustments
             // directMe(requestData, counter);
