@@ -13,15 +13,18 @@
 </head>
 <body>
     <a href="/about">
-        <p onClick="description()">Round Trip Routing</p>
+        <p onClick="description()">R.out</p>
     </a>
-
-    <span class="label dist" style="display:inline">Enter a distance:</span>
-    <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
-    <button class="button" onclick="genRouteListener()"><span>Generate Route</span></button>
-    <span class="label dist" style="display:none" id="rating"></span>
-    <span class="label dist" style="display:none" id="slopeDiv"></span>
-    <span class="label dist2" id="dist_error"></span>
+    <div id = "top-panel"
+        <span class="label dist" id = "dist-label" >Enter a distance:</span>
+        <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
+        onkeydown = "if (event.keyCode == 13)
+                            document.getElementById('GenRouteBtn').click()">
+        <button class="button" id = "GenRouteBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
+        <span class="label dist" style="display:none" id="rating"></span>
+        <span class="label dist" style="display:none" id="slopeDiv"></span>
+        <span class="label dist2" id="dist_error"></span>
+    </div>
     <br><br>
     <div id="map"></div>
     <div class="pac-card" id="pac-card">
@@ -32,7 +35,6 @@
         <!-- <div id="addmode">
             <input type="radio" name="addmode" id="changemode-startpoint" checked="checked">
             <label for="changemode-startpoint">Adding Startpoint</label>
-
             <input type="radio" name="addmode" id="changemode-waypoint">
             <label for="changemode-waypoint">Adding Waypoints</label>
         </div> -->
@@ -47,10 +49,13 @@
         <br>
         <label> &nbsp;&nbsp;&nbsp;</label>
         <img id="startimg" src="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png" width="20" height="20">
+        <!--<img id="startimg" src="https://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/256/Trafficlight-green-icon.png" width="20" height="20">-->
         <label id= "startaddress">Start Address: </label>
         <label id= "startaddressval"></label>
         <br><br>
         <img id="wpimg" src="/images/waypointmarker.png" width="30" height="30">
+        <!--<img id="wpimg" src="https://www.publicdomainpictures.net/pictures/310000/velka/blue-circle.png" width="20" height="20" style="margin-left: 11.5px;">-->
+
         <label>Waypoints: <br/></label>
         <ul id="wp-boxes">
             <!-- <li>First point<span class="close">&times;</span></li> -->
@@ -78,12 +83,12 @@
     </div>
 
     <div class = "pac-card" id = "pac-card3">
-        <div class = "demo" id="right-panel">
-            <div id="print-content">
-                <form><input type="button" class="button3" onclick="printDiv()" value="Print"/></form>
-            </div>
+        <div id="print-content" style= "text-align: center">
+            <input type="button" class="button3" onclick="printDiv()" value="Print Directions"/>
         </div>
-        <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span>Directions</span></button>
+        <div class = "demo" id="right-panel">
+        </div>
+        <button class="button2" id = "directions-button" onclick="collapsableDirections()"><span> View Directions</span></button>
     </div>
 
     <div id="elevation_chart"></div>

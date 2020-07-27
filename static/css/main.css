@@ -7,6 +7,7 @@
  * element that contains the map. */
 #map {
     height: 100%;
+    background-color: #FF8C00;
 }
 /* Optional: Makes the sample page fill the window. */
 html, body {
@@ -14,8 +15,12 @@ html, body {
     margin-left: 5%;
     margin-right: 5%;
     margin-bottom: 5%;
+    background-color: #232D4B;
 }
 
+a {
+    text-decoration: none;
+}
 
 .button {
     display: inline-block;
@@ -67,19 +72,19 @@ html, body {
     color: #ff2e2e;
 }
 p {
-    color: #F84C1E;
+    color: #232D4B;
     text-align: center;
     font-weight: bold;
     font-size: 40px;
     margin: 10px 10px 10px 10px;
-    border-radius: 2px 0 0 2px;
-    outline-color: #F84C1E;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    outline-color: #232D4B;
     background: rgba(0, 128, 0, 0.3);
     font-family: Roboto;
+    background-color: #FF8C00;
 }
+
 body {
-    background-color: white;
+    background-color: #FF8C00;
     opacity: 1;
 }
 
@@ -87,6 +92,15 @@ body {
     font-family: Roboto;
     font-size: 15px;
     font-weight: 300;
+}
+
+#top-panel {
+    height: 30px;
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    color: #232D4B;
 }
 
 #infowindow-content .title {
@@ -114,6 +128,7 @@ body {
 
 #pac-container {
     margin-right: 12px;
+
 }
 
 .pac-controls {
@@ -144,15 +159,18 @@ body {
 
 #title {
     color: #fff;
-    background-color: #4d90fe;
+    background-color: #FF8C00;
     font-size: 25px;
     font-weight: 500;
     padding: 6px 12px;
+    font-family: Roboto;
 }
 
- #currPosButton {
+#currPosButton {
      float: right;
      margin: auto;
+     font-size: 12px;
+     width: 150px;
  }
 
 #right-panel {
@@ -180,9 +198,27 @@ body {
 }
 
 #print-button {
-    width: 100%;
-    overflow:auto;
+    float: right;
+    overflow: auto;
 }
+
+#transit-selector {
+    float: right;
+    overflow: auto;
+    display: inline-block;
+    background-color: #FF8C00;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 12px;
+    width: 220px;
+    height: 23px;
+    transition: all 0.5s;
+    cursor: pointer;
+    vertical-align: middle;
+
+}
+
 
 .button2 {
     display: inline-block;
@@ -229,11 +265,11 @@ body {
     color: #FFFFFF;
     text-align: center;
     font-size: 12px;
-    padding: 5px;
-    width: 50%;
-    transition: all 0.5s;
+    width: 100%;
     cursor: pointer;
-    vertical-align: middle;
+    float: right;
+    margin: 0 auto;
+    display: block;
 }
 
 
