@@ -15,9 +15,12 @@
     <a href="/about">
         <p onClick="description()">Round Trip Routing</p>
     </a>
-    <span class="label dist">Enter a distance:</span>
+
+    <span class="label dist" style="display:inline">Enter a distance:</span>
     <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0">
     <button class="button" onclick="genRouteListener()"><span>Generate Route</span></button>
+    <span class="label dist" style="display:none" id="rating"></span>
+    <span class="label dist" style="display:none" id="slopeDiv"></span>
     <span class="label dist2" id="dist_error"></span>
     <br><br>
     <div id="map"></div>

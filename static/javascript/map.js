@@ -9,6 +9,16 @@ var startcoord;
 var wpcoordarray=[];
 var finalwps=[];
 var dist;
+var difference = 0;
+var difficulty = '';
+
+var elevationArray = [];
+var pointNum = 0;
+var elevationNum;
+var slope;
+var slopeArray = [];
+var slopeSum = 0;
+var slopeAverage;
 
 function setupAutoComplete(map) {
     var input = document.getElementById('pac-input');
@@ -212,6 +222,16 @@ function genRouteListener() {
         }
         genRoute(dist);
         //call pointCalculator here?
+    }
+    if (rating.style.display == 'none') {
+      rating.style.display = 'inline';
+    } else {
+        rating.style.display = 'none';
+    }
+    if (slopeDiv.style.display == 'none') {
+      slopeDiv.style.display = 'inline';
+    } else {
+        slopeDiv.style.display = 'none';
     }
 }
 
@@ -566,26 +586,25 @@ function pathData(directResult){
 
 function displayPathElevation(path, elevator, map) {
   // Display a polyline of the elevation path.
-    new google.maps.Polyline({
-        path: path,
-        strokeColor: '#0000CC',
-        strokeOpacity: 0.4,
-        map: map
-    });
+    // new google.maps.Polyline({
+    //     path: path,
+    //     strokeColor: '#0000CC',
+    //     strokeOpacity: 0.8,
+    //     map: map
+    // });
 
     // Create a PathElevationRequest object using this array.
     // Ask for 256 samples along that path.
     // Initiate the path request.
     elevator.getElevationAlongPath({
         'path': path,
-        'samples': 500
+        'samples': 250 // these are the dots (the display)
     }, plotElevation);
 }
 
 // Takes an array of ElevationResult objects, draws the path on the map
 // and plots the elevation profile on a Visualization API ColumnChart.
 function plotElevation(elevations, status) {
-
     var chartDiv = document.getElementById('elevation_chart');
     if (status !== 'OK') {
     // Show the error code inside the chartDiv.
@@ -593,7 +612,7 @@ function plotElevation(elevations, status) {
         return;
     }
     // Create a new chart in the elevation_chart DIV.
-    var chart = new google.visualization.ColumnChart(chartDiv);
+    var chart = new google.visualization.LineChart(chartDiv);
 
     // Extract the data from which to populate the chart.
     // Because the samples are equidistant, the 'Sample'
@@ -602,9 +621,59 @@ function plotElevation(elevations, status) {
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Sample');
     data.addColumn('number', 'Elevation');
-    for (var i = 0; i < elevations.length; i++) {
-        data.addRow(['', elevations[i].elevation]);
+    for (var i = 0; i < elevations.length; i++) {  // Corresponds with the number of 'samples'
+        data.addRow(['', elevations[i].elevation]); //this is adding a column for each elevation sample
+        // console.log(elevations[i].location.lat() );
+        // console.log(elevations[i].location.lng() );
+        console.log( elevations[i].elevation);
+        elevationArray.push(elevations[i].elevation); // grabbing the elevation at each of the points plotted as part of the 250 'samples'
     }
+    // console.log( elevationArray );
+    var high = elevationArray[ 0 ];
+    var low = elevationArray[ 0 ];
+
+    for (var i = 0; i < elevationArray.length - 1; i++ ){
+        if (Math.abs( elevationArray[i + 1 ] - elevationArray[ i ] > difference )){
+            difference = elevationArray[i + 1 ] - elevationArray[ i ];
+            pointNum = i;
+            elevationNum = elevationArray[i]; // elevation at pointNum
+        }
+        if (elevationArray[i] < low ){
+            low = elevationArray[i];
+        }
+        if (elevationArray[i] > high ){
+            high = elevationArray[i];
+        }
+        slope = Math.abs( elevationArray[i + 1 ] - elevationArray[ i ]);
+        slopeArray.push(slope);
+        slopeSum = slopeSum + slope;
+    }
+
+    slopeAverage = slopeSum/125;
+    console.log( "AVerage slope: " + slopeAverage );
+    console.log( "Slopes: " + slopeArray );
+    console.log( "Elevation at sample point: " + elevationNum );
+    console.log( "Sample point: " + pointNum );
+    console.log( "high: " + high );
+    console.log( "low: " + low );
+    console.log( "difference: " + difference );
+
+    if (difference <= 20 )
+        difficulty = "A";
+    else if (difference > 20 || difference <= 60)
+        difficulty = "B";
+    else if (difference > 60 || difference <= 100)
+        difficulty = "C";
+    else if (difference > 100 || difference <= 200 )
+        difficulty = "D";
+    else if(difference > 200 )
+        difficulty = "F";
+
+    console.log( "difficulty: " + difficulty );
+
+    document.getElementById("rating").innerHTML = "Rating: " + difficulty;
+    document.getElementById("slopeDiv").innerHTML = "Average slope: " + slopeAverage.toFixed(3);
+    //var rating = document.getElementById( "rating" );
 
     // Draw the chart using the data within its DIV.
     chart.draw(data, {
