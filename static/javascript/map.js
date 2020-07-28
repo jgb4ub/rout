@@ -808,6 +808,20 @@ function getDistance (startPoint, endPoint) {
   return distance;
 }
 
+function getBearing (startPoint, endPoint) {
+    startLat = DegreesToRadians(startPoint.lat);
+    startLng = DegreesToRadians(startPoint.lng);
+    destLat = DegreesToRadians(endPoint.lat);
+    destLng = DegreesToRadians(endPoint.lng);
+    y = Math.sin(destLng - startLng) * Math.cos(destLat);
+    x = Math.cos(startLat) * Math.sin(destLat) -
+          Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+    brng = Math.atan2(y, x);
+    brng = toDegrees(brng);
+    console.log("Calculated Bearing")
+    return (brng + 360) % 360;
+}
+
 
 /*
 Function to determine a route that approximates given distance
