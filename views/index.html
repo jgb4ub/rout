@@ -12,9 +12,8 @@
     <script src="https://www.google.com/jsapi"></script>
 </head>
 <body>
-    <a href="/about">
-        <p onClick="description()">R.out</p>
-    </a>
+    <p >R.out</p>
+    <a href = "/about">
     <div id = "top-panel"
         <span class="label dist" id = "dist-label" >Enter a distance:</span>
         <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
@@ -90,6 +89,11 @@
     </div>
 
     <div id="elevation_chart"></div>
+
+    <div class = "pac-card" id = "pac-card4">
+        <div id = "about-button" style = "text-align: TOP_RIGHT">
+            <input type = "button" class = "button4" onclick="description()" value = "About"/>
+        </div></div>
 
     <!--message to indicate if unsuccessful in getting current position-->
     <div id="currPositionGrab"></div>

@@ -199,10 +199,6 @@ function setUserCurrentPosition() {
     }
 }
 
-function description(){
-    alert("This website uses the Google Maps API to enable users to create a round trip route, with the ability to specify certain parameters and customize their route.")
-}
-
 function genRouteListener() {
     dist=document.getElementById("dist_input").value
     if (dist<=0 || dist==""){
