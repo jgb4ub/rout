@@ -289,7 +289,6 @@ function genRoute(distance) {
         }
     }
 
-<<<<<<< HEAD
     // wypts.forEach((wypt) => {
     //   let wyptMarker = new google.maps.MarkerLabel({
     //    position: wypt,
@@ -298,13 +297,11 @@ function genRoute(distance) {
     //    labelContent: "",
     //    labelInBackground: false,
     //  });
-    if(addmorewpts==true){
-        newRandWpts(distance);
-        console.log("adding");
-    }
+    // if(addmorewpts==true){
+    //     newRandWpts(distance);
+    //     console.log("adding");
+    // }
 
-=======
->>>>>>> master
 
     let usrRequest = {
       origin: start,
@@ -594,6 +591,9 @@ function iterativeRouting(requestData, result, counter){
          callOutput(result);
 
     } else {
+        if(backTrack(result)==true){
+           newRandWpts(requestData);
+        }
         if (tooShort(result)) {
             elongate();  // adjustments
             directMe(requestData, counter);
@@ -601,16 +601,6 @@ function iterativeRouting(requestData, result, counter){
         } else if (tooLong(result)) {
             shorten();    // other adjustments
             directMe(requestData, counter);
-
-        } else if(backTrack(result)==true){
-            dist=document.getElementById("dist_input").value;
-            addmorewpts=true;
-            genRoute(dist);
-            return;
-            // while(backTrack(result)==true){
-            //     newRandWpts(distance);
-            //     genRoute(distance);
-            // }
         }
         else {
             addmorewpts=false;
@@ -620,7 +610,6 @@ function iterativeRouting(requestData, result, counter){
     //backTrack(result);
 };
 
-<<<<<<< HEAD
 function backTrack(directResult){
     var steparr=[] //holds end locations of all steps as Strings
     var legs = directResult.routes[0].legs;
@@ -629,14 +618,14 @@ function backTrack(directResult){
         for(j=0; j<steps.length; j++){
             var step=steps[j].end_location.toString();
             steparr.push(step);
-            console.log(step);
+            //console.log(step);
         }
     }
     var a=0;
     for(i=1; i<steparr.length-1; i++){ //check if any endlocations are repeated
         var step1=steparr[i];
         if (steparr.indexOf(step1)!=steparr.lastIndexOf(step1)){
-            console.log("Backtracking found for "+step1)
+            //console.log("Backtracking found for "+step1)
             a++;
         }
     }
@@ -646,37 +635,21 @@ function backTrack(directResult){
     return false;
 }
 
-function newRandWpts(distance){
-    let randomWayPt;
-    let conv = 0.621371
-    let wypts = [];
-    let lat_origin = latitude;
-    let long_origin = longitude;
-    let kmToMi = conv * distance
-    let degToMi = (1/69)
-    let radius = parseFloat(kmToMi/2);
-    let routeDist = 0;
-    let start = {lat: lat_origin, lng: long_origin};
-    let ptA = start;
-    let ptB = start;
-    let usrWypts;    /**************/
-    let randWypts;   /**************/
+function newRandWpts(requestData){
+    if(requestData.randomWaypoints.length<2){
+        let request = requestData.request;
+        let lat_origin = request.origin.lat;
+        let long_origin = request.origin.lng;
+        let radius = parseFloat((0.621371 * dist)/2);
 
-    let leftBound = lat_origin - (degToMi * radius)
-    let rightBound = lat_origin + (degToMi * radius)
-    let upperBound = long_origin + (degToMi * radius)
-    let lowerBound = long_origin - (degToMi * radius)
-
-    let randWyptLat = (Math.random() * (rightBound - leftBound) + leftBound)
-    let randWyptLng = (Math.random() * (upperBound - lowerBound) + lowerBound)
-
-    let randLatLng = "" + randWyptLat + "," + randWyptLng + ""
-    let randWypt = {location: randLatLng, stopover: true}
-    wypts.push(randWypt);
-    randWaypts = wypts;
-    console.log("called");
-=======
-
+        let randWypts = [];
+        randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+        requestData.randomWaypoints= requestData.randomWaypoints.concat(randWypts);
+        requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
+        console.log(requestData.randomWaypoints.length);
+        return requestData;
+    }
+}
 
 function startUpGeneration(requestData) {
     let request = requestData.request;
@@ -700,7 +673,6 @@ function startUpGeneration(requestData) {
           console.log("Error")
         }
     });
->>>>>>> master
 }
 
 function callOutput(directResult){
@@ -788,9 +760,6 @@ function plotElevation(elevations, status) {
         titleY: 'Elevation (m)'
     });
 }
-
-
-
 
 
 function tooShort(dirResult){
