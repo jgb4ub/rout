@@ -313,3 +313,23 @@ ul li:hover {
 }
 
 .close:hover {background: #bbb;}
+
+#meter_item
+{
+    width: 100%;
+}
+
+#scale {
+    display: table;
+    width: 100%;
+    padding: 0px 0px 0px 0px;
+    margin: 2px 0px 10px 0px;
+    border: 0px 0px 0px 0px;
+    text-align: center;
+}
+
+#scale li {
+    width: 10%;
+    display: table-cell;
+    white-space: nowrap;
+}​

@@ -243,6 +243,21 @@ function genRouteListener() {
     } else {
         slopeDiv.style.display = 'none';
     }
+    if (diffBar.style.display == 'none') {
+      diffBar.style.display = 'inline';
+    } else {
+        diffBar.style.display = 'none';
+    }
+    if (easy.style.display == 'none') {
+      easy.style.display = 'inline';
+    } else {
+        easy.style.display = 'none';
+    }
+    if (difficult.style.display == 'none') {
+      difficult.style.display = 'inline';
+    } else {
+        difficult.style.display = 'none';
+    }
 }
 
 function getDist(lat1,lon1,lat2,lon2) {
@@ -762,6 +777,24 @@ function plotElevation(elevations, status) {
 
     document.getElementById("rating").innerHTML = "Rating: " + difficulty;
     document.getElementById("slopeDiv").innerHTML = "Average slope: " + slopeAverage.toFixed(3);
+    if (difficulty == "A"){
+        document.getElementById("diffBar").value = "20";
+    }
+    if (difficulty == "C"){
+        document.getElementById("diffBar").value = "60";
+    }
+    if (difficulty == "F"){
+        document.getElementById("diffBar").value = "100";
+    }
+    if (difficulty == "D"){
+        document.getElementById("diffBar").value = "80";
+    }
+    if (difficulty == "B"){
+        document.getElementById("diffBar").value = "40";
+    }
+
+
+
     //var rating = document.getElementById( "rating" );
 
     // Draw the chart using the data within its DIV.
