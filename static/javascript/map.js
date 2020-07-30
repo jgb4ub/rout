@@ -882,6 +882,35 @@ function testTools() {
     }
 }
 
+function getDistance (startPoint, endPoint) {
+  var radiusEarthMiles = 3958.8;
+  var dLat = DegreesToRadians(endPoint.lat - startPoint.lat);
+  var dLon = DegreesToRadians(endPoint.lng - startPoint.lat);
+  var a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ;
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var distance = radiusEarthMiles * c;
+  console.log("Calculated Distance")
+  return distance;
+}
+
+function getBearing (startPoint, endPoint) {
+    startLat = DegreesToRadians(startPoint.lat);
+    startLng = DegreesToRadians(startPoint.lng);
+    destLat = DegreesToRadians(endPoint.lat);
+    destLng = DegreesToRadians(endPoint.lng);
+    y = Math.sin(destLng - startLng) * Math.cos(destLat);
+    x = Math.cos(startLat) * Math.sin(destLat) -
+          Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+    brng = Math.atan2(y, x);
+    brng = toDegrees(brng);
+    console.log("Calculated Bearing")
+    return (brng + 360) % 360;
+}
+
 
 /*
 Function to determine a route that approximates given distance
