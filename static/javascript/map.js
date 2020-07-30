@@ -10,6 +10,12 @@ var wpcoordarray=[];
 var wpOnClick = [];
 var finalwps=[];
 var dist;
+
+
+const DEBUG = true;
+var mode;
+
+
 var difference = 0;
 var difficulty = '';
 
@@ -20,7 +26,10 @@ var slope;
 var slopeArray = [];
 var slopeSum = 0;
 var slopeAverage;
+
 var generated=false;
+var addmorewpts=false;
+
 
 function setupAutoComplete(map) {
     hideMapDisplay();
@@ -92,13 +101,14 @@ function setupAutoComplete(map) {
     }
 
     //declare variable for mode of transport
-    var mode;
+    //var mode = 'WALKING';
 
     function setupClickListenerTransMode(id, transMode) {
         var radioButton = document.getElementById(id);
         radioButton.addEventListener('click', function() {
             // for now, store transport mode as variable
             mode = transMode;
+            console.log(mode);
         });
     }
 
@@ -226,8 +236,12 @@ function genRouteListener() {
             }
         }
         genRoute(dist);
+
+
+
         generated=true;
         //call pointCalculator here
+
     }
 }
 
@@ -275,6 +289,10 @@ function genRoute(distance) {
     let start = {lat: lat_origin, lng: long_origin};
     let ptA = start;
     let ptB = start;
+
+    if (!mode){
+        mode = 'WALKING';
+}
     let usrWypts = [];
 
     if (finalwps.length > 0) {
@@ -291,7 +309,21 @@ function genRoute(distance) {
                 break;
             }
         }
+
     }
+
+    // wypts.forEach((wypt) => {
+    //   let wyptMarker = new google.maps.MarkerLabel({
+    //    position: wypt,
+    //    draggable: true,
+    //    raiseOnDrag: true,
+    //    labelContent: "",
+    //    labelInBackground: false,
+    //  });
+    // if(addmorewpts==true){
+    //     newRandWpts(distance);
+    //     console.log("adding");
+    // }
 
 
     let usrRequest = {
@@ -299,7 +331,7 @@ function genRoute(distance) {
       destination: start,
       waypoints: usrWypts,
       optimizeWaypoints: true,
-      travelMode: 'DRIVING'
+      travelMode: mode
     };
 
 
@@ -575,6 +607,12 @@ function deleteWaypoints(){
 
 
 function iterativeRouting(requestData, result, counter){
+    if (DEBUG){
+        directionsRenderer.setDirections(result);
+    }
+    //computeTotalDistance(result);
+    let pathDifference = pathDifferenceCalc(result);
+
     // getDirectionsWithCurrentWaypoints();
     // modify request to change the route that gets plotted
     counter--;
@@ -583,21 +621,71 @@ function iterativeRouting(requestData, result, counter){
 
     } else {
 
-        if (tooShort(result)) {
-            elongate();  // adjustments
-            directMe(requestData, counter);
+        if(backTrack(result)==true){
+           newRandWpts(requestData);
+        }
+        if (tooShort(result, pathDifference)) {
+            if (requestData.randomWaypoints.length === 1 && requestData.userWaypoints.length === 0){
+                requestData.randomWaypoints.push(generateRandomWaypoint(parseFloat((0.621371 * dist)/2), requestData.request.origin.lat,  requestData.request.origin.lng));
+            }
+            elongate(requestData, counter);  // adjustments
+            // directMe(requestData, counter);
 
-        } else if (tooLong(result)) {
-            shorten();    // other adjustments
-            directMe(requestData, counter);
+        } else if (tooLong(result, pathDifference)) {
+            shorten(requestData, counter);    // other adjustments
+            // directMe(requestData, counter);
 
         } else {
+            addmorewpts=false;
+
+
+
             callOutput(result);
         }
     }
+    //backTrack(result);
 };
 
+function backTrack(directResult){
+    var steparr=[] //holds end locations of all steps as Strings
+    var legs = directResult.routes[0].legs;
+    for (i = 0; i < legs.length; i++) {
+        var steps = legs[i].steps;
+        for(j=0; j<steps.length; j++){
+            var step=steps[j].end_location.toString();
+            steparr.push(step);
+            //console.log(step);
+        }
+    }
+    var a=0;
+    for(i=1; i<steparr.length-1; i++){ //check if any endlocations are repeated
+        var step1=steparr[i];
+        if (steparr.indexOf(step1)!=steparr.lastIndexOf(step1)){
+            //console.log("Backtracking found for "+step1)
+            a++;
+        }
+    }
+    if(a!=0){
+        return true;
+    }
+    return false;
+}
 
+function newRandWpts(requestData){
+    if(requestData.randomWaypoints.length<2){
+        let request = requestData.request;
+        let lat_origin = request.origin.lat;
+        let long_origin = request.origin.lng;
+        let radius = parseFloat((0.621371 * dist)/2);
+
+        let randWypts = [];
+        randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+        requestData.randomWaypoints= requestData.randomWaypoints.concat(randWypts);
+        requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
+        console.log(requestData.randomWaypoints.length);
+        return requestData;
+    }
+}
 
 function startUpGeneration(requestData) {
     let request = requestData.request;
@@ -624,6 +712,7 @@ function startUpGeneration(requestData) {
 }
 
 function callOutput(directResult){
+    console.log("length: "+sum);
     directionsRenderer.setDirections(directResult);
     elevationCreator(directResult);
 }
@@ -793,36 +882,36 @@ function plotElevation(elevations, status) {
     });
 }
 
+function tooShort(dirResult, pathDifference){
+    if (pathDifference < (-.05*dist)) {
 
-
-
-
-function tooShort(dirResult){
-    if (pathDifferenceCalc(dirResult)<(-.05*dist)){
         return true;
     }
     return false;
 }
 
-function tooLong(dirResult){
-    if (pathDifferenceCalc(dirResult)>(.05*dist)){
+function tooLong(dirResult, pathDifference){
+    if (pathDifference > (.05*dist)) {
         return true;
     }
     return false;
 }
 
 function pathDifferenceCalc(dirResult){
+    //console.log("length: "+sum/1609);
     return (computeTotalDistance(dirResult)-dist);
 }
 
+var sum;
+var myroute;
 function computeTotalDistance(result){
-    var sum = 0;
-    var myroute = result.routes[0];  //// TODO: ensure dirResult is initialized by this point
+    sum = 0;
+    myroute = result.routes[0];
     for (var i = 0; i < myroute.legs.length; i++) {
         sum += myroute.legs[i].distance.value;
     }
-    var miles = sum/1609.34;
-    return miles;
+    sum = sum/1609.34;
+    return sum;
 }
 
 function directMe(requestData, counter){
@@ -833,12 +922,90 @@ function directMe(requestData, counter){
     });
 }
 
-function elongate(){
-    return true;
+function elongate(pathRequest, counter){
+    let adjustPoints = pathRequest.randomWaypoints;
+    let numRands = adjustPoints.length;
+    let newRandPoints = [];
+    for (let point in adjustPoints){       //adjust each random waypoint
+        //console.log("point: "+JSON.stringify(adjustPoints[point]));
+        //console.log("point: "+JSON.stringify(point));
+        let pt_lat = adjustPoints[point].location.lat;   //store point's latitude and longitude
+        let pt_lng = adjustPoints[point].location.lng;
+
+        let start_lat = pathRequest.request.origin.lat; //get origin latitude and longitude
+        let start_lng = pathRequest.request.origin.lng;
+
+        let lat_change = (start_lat+((pt_lat-start_lat)*(dist/sum)));   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
+        let lng_change = (start_lng+((pt_lng-start_lng)*(dist/sum)));
+
+        let newLatLng = {lat:lat_change, lng:lng_change};
+        newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
+    }
+    let newPoints;
+    if (pathRequest.userWaypoints){
+        newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    } else {
+        newPoints = newRandPoints;
+    }
+
+    pathRequest.request.waypoints = newPoints;
+    pathRequest.randomWaypoints = newRandPoints;
+    console.log("---");
+    console.log(pathRequest.request);
+    console.log(pathRequest.request.waypoints);
+    directMe(pathRequest, counter);
 }
 
-function shorten(){
-    return true;
+function shorten(pathRequest, counter){
+    let adjustPoints = pathRequest.randomWaypoints;
+    let numRands = adjustPoints.length;
+    let newRandPoints = [];
+    for (let point in adjustPoints){       //adjust each random waypoint
+        let pt_lat = adjustPoints[point].location.lat;   //store point's latitude and longitude
+        let pt_lng = adjustPoints[point].location.lng;
+
+        let start_lat = pathRequest.request.origin.lat; //get origin latitude and longitude
+        let start_lng = pathRequest.request.origin.lng;
+
+        let ptDiff = ((Math.abs(pt_lat-start_lat))**2)+((Math.abs(pt_lng-start_lng))**2); //get square of hypotenuse between pts
+
+        if (pathRequest.userWaypoints){
+            for (let userPoint in pathRequest.userWaypoints){
+
+                let temp = pathRequest.userWaypoints[userPoint];
+                let currPtDiff = (((Math.abs(pt_lat-temp.location.lat))**2)+((Math.abs(pt_lng-temp.location.lng))**2));
+
+                if (currPtDiff < ptDiff){
+                    ptDiff = currPtDiff;
+                    start_lat = temp.location.lat;
+                    start_lng = temp.locatin.lng;
+                }
+            }
+        }
+
+        let lat_change = start_lat+((pt_lat-start_lat)*(dist/sum));       //start_lat+(numRands/(pt_lat-start_lat))     //start_lat+((pt_lat-start_lat)/2)   //calc coord differences, move pt latitude and longitude toward origin's lat/lng by factor of 1/2
+        let lng_change = start_lng+((pt_lng-start_lng)*(dist/sum));       //start_lng+(numRands/(pt_lat-start_lat));     //star_lng+((pt_lng-start_lng)/2);   //numRands/(req_distance/difference);   numRands*difference/(req_distance)
+
+        let newLatLng = {lat:lat_change, lng:lng_change};
+        newRandPoints.push({location:newLatLng, stopover:true})   //add new adjusted waypoint to array
+    }
+
+    let newPoints;
+    if (pathRequest.userWaypoints){
+        newPoints = pathRequest.userWaypoints.concat(newRandPoints);
+    } else {
+        newPoints = newRandPoints;
+    }
+
+    pathRequest.request.waypoints = newPoints;
+    pathRequest.randomWaypoints = newRandPoints;
+    console.log(pathRequest.randomWaypoints);
+    directMe(pathRequest, counter);
+
+}
+
+function firstRandPoint() {
+    return {location: {lat: 38.034382001417875 , lng: -78.5081523875455}, stopover:true};
 }
 
 function DegreesToRadians(start) {
