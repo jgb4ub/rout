@@ -15,6 +15,7 @@ const DEBUG = true;
 var mode;
 
 var generated=false;
+var addmorewpts=false;
 
 
 
@@ -302,6 +303,19 @@ function genRoute(distance) {
         }
 
     }
+
+    // wypts.forEach((wypt) => {
+    //   let wyptMarker = new google.maps.MarkerLabel({
+    //    position: wypt,
+    //    draggable: true,
+    //    raiseOnDrag: true,
+    //    labelContent: "",
+    //    labelInBackground: false,
+    //  });
+    // if(addmorewpts==true){
+    //     newRandWpts(distance);
+    //     console.log("adding");
+    // }
 
 
     let usrRequest = {
@@ -599,6 +613,9 @@ function iterativeRouting(requestData, result, counter){
 
     } else {
 
+        if(backTrack(result)==true){
+           newRandWpts(requestData);
+        }
         if (tooShort(result, pathDifference)) {
             if (requestData.randomWaypoints.length === 1 && requestData.userWaypoints.length === 0){
                 requestData.randomWaypoints.push(generateRandomWaypoint(parseFloat((0.621371 * dist)/2), requestData.request.origin.lat,  requestData.request.origin.lng));
@@ -611,12 +628,56 @@ function iterativeRouting(requestData, result, counter){
             // directMe(requestData, counter);
 
         } else {
+            addmorewpts=false;
+
+
+
             callOutput(result);
         }
     }
+    //backTrack(result);
 };
 
+function backTrack(directResult){
+    var steparr=[] //holds end locations of all steps as Strings
+    var legs = directResult.routes[0].legs;
+    for (i = 0; i < legs.length; i++) {
+        var steps = legs[i].steps;
+        for(j=0; j<steps.length; j++){
+            var step=steps[j].end_location.toString();
+            steparr.push(step);
+            //console.log(step);
+        }
+    }
+    var a=0;
+    for(i=1; i<steparr.length-1; i++){ //check if any endlocations are repeated
+        var step1=steparr[i];
+        if (steparr.indexOf(step1)!=steparr.lastIndexOf(step1)){
+            //console.log("Backtracking found for "+step1)
+            a++;
+        }
+    }
+    if(a!=0){
+        return true;
+    }
+    return false;
+}
 
+function newRandWpts(requestData){
+    if(requestData.randomWaypoints.length<2){
+        let request = requestData.request;
+        let lat_origin = request.origin.lat;
+        let long_origin = request.origin.lng;
+        let radius = parseFloat((0.621371 * dist)/2);
+
+        let randWypts = [];
+        randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+        requestData.randomWaypoints= requestData.randomWaypoints.concat(randWypts);
+        requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
+        console.log(requestData.randomWaypoints.length);
+        return requestData;
+    }
+}
 
 function startUpGeneration(requestData) {
     let request = requestData.request;
@@ -731,6 +792,7 @@ function plotElevation(elevations, status) {
 
 function tooShort(dirResult, pathDifference){
     if (pathDifference < (-.05*dist)) {
+
         return true;
     }
     return false;
