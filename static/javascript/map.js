@@ -153,7 +153,7 @@ function initMap() {
 
 
     });
-    // testTools();
+    //testTools();
 }
 
 function setUserCurrentPosition() {
@@ -591,9 +591,10 @@ function iterativeRouting(requestData, result, counter){
          callOutput(result);
 
     } else {
-        if(backTrack(result)==true){
-           newRandWpts(requestData);
-        }
+        // if(backTrack(result, requestData)==true){
+        //    newRandWpts(requestData);
+        // }
+        backTrack(result, requestData);
         if (tooShort(result)) {
             elongate();  // adjustments
             directMe(requestData, counter);
@@ -603,6 +604,7 @@ function iterativeRouting(requestData, result, counter){
             directMe(requestData, counter);
         }
         else {
+            console.log("done");
             addmorewpts=false;
             callOutput(result);
         }
@@ -610,14 +612,17 @@ function iterativeRouting(requestData, result, counter){
     //backTrack(result);
 };
 
-function backTrack(directResult){
-    var steparr=[] //holds end locations of all steps as Strings
+function backTrack(directResult, requestData){
+    var steparr=[] //holds end location of all steps as Strings
+    var locArr=[];//holds end location of all steps
     var legs = directResult.routes[0].legs;
     for (i = 0; i < legs.length; i++) {
         var steps = legs[i].steps;
         for(j=0; j<steps.length; j++){
             var step=steps[j].end_location.toString();
+            var endloc=steps[j].end_location;
             steparr.push(step);
+            locArr.push(endloc);
             //console.log(step);
         }
     }
@@ -627,28 +632,44 @@ function backTrack(directResult){
         if (steparr.indexOf(step1)!=steparr.lastIndexOf(step1)){
             //console.log("Backtracking found for "+step1)
             a++;
+            newRandWpts(requestData, locArr[i]);
         }
     }
-    if(a!=0){
-        return true;
-    }
-    return false;
+    // if(a!=0){
+    //     return true;
+    // }
+    // return false;
 }
 
-function newRandWpts(requestData){
+function newRandWpts(requestData, startloc){
+    // if(requestData.randomWaypoints.length<2){
+    //     let request = requestData.request;
+    //     let randWypts = [];
+    //     let randLatLng = getEndpoint(startloc, Math.PI, 0.5);
+    //     let randWypt1 = {location: randLatLng, stopover: true};
+    //     //randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+    //     randWypts.push(randWypt1);
+    //     requestData.randomWaypoints= requestData.randomWaypoints.concat(randWypts);
+    //     requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
+    //     //console.log(requestData.randomWaypoints.length);
+    //     console.log("added wpt");
+    //     return requestData;
+    // }
+
     if(requestData.randomWaypoints.length<2){
         let request = requestData.request;
-        let lat_origin = request.origin.lat;
-        let long_origin = request.origin.lng;
-        let radius = parseFloat((0.621371 * dist)/2);
+        let lat_origin = startloc.lat;
+        let long_origin = startloc.lng;
+        //let radius = parseFloat((0.621371 * dist)/2);
 
         let randWypts = [];
-        randWypts.push(generateRandomWaypoint(radius, lat_origin, long_origin));
+        randWypts.push(generateRandomWaypoint(0.5, lat_origin, long_origin));
         requestData.randomWaypoints= requestData.randomWaypoints.concat(randWypts);
         requestData.request.waypoints = requestData.request.waypoints.concat(randWypts);
         console.log(requestData.randomWaypoints.length);
         return requestData;
     }
+
 }
 
 function startUpGeneration(requestData) {
