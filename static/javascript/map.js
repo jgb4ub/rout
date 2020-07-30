@@ -208,10 +208,6 @@ function setUserCurrentPosition() {
     }
 }
 
-function description(){
-    alert("This website uses the Google Maps API to enable users to create a round trip route, with the ability to specify certain parameters and customize their route.")
-}
-
 function genRouteListener() {
     dist=document.getElementById("dist_input").value
     if (dist<=0 || dist==""){
@@ -232,31 +228,6 @@ function genRouteListener() {
         genRoute(dist);
         generated=true;
         //call pointCalculator here
-    }
-    if (rating.style.display == 'none') {
-      rating.style.display = 'inline';
-    } else {
-        rating.style.display = 'none';
-    }
-    if (slopeDiv.style.display == 'none') {
-      slopeDiv.style.display = 'inline';
-    } else {
-        slopeDiv.style.display = 'none';
-    }
-    if (diffBar.style.display == 'none') {
-      diffBar.style.display = 'inline';
-    } else {
-        diffBar.style.display = 'none';
-    }
-    if (easy.style.display == 'none') {
-      easy.style.display = 'inline';
-    } else {
-        easy.style.display = 'none';
-    }
-    if (difficult.style.display == 'none') {
-      difficult.style.display = 'inline';
-    } else {
-        difficult.style.display = 'none';
     }
 }
 
@@ -793,6 +764,23 @@ function plotElevation(elevations, status) {
         document.getElementById("diffBar").value = "40";
     }
 
+
+    // Displaying route difficulty info
+    if (rating.style.display == 'none') {
+      rating.style.display = 'inline';
+    }
+    if (slopeDiv.style.display == 'none') {
+      slopeDiv.style.display = 'inline';
+    }
+    if (diffBar.style.display == 'none') {
+      diffBar.style.display = 'inline';
+    }
+    if (easy.style.display == 'none') {
+      easy.style.display = 'inline';
+    }
+    if (difficult.style.display == 'none') {
+      difficult.style.display = 'inline';
+    }
 
 
     //var rating = document.getElementById( "rating" );
