@@ -12,15 +12,18 @@
     <script src="https://www.google.com/jsapi"></script>
 </head>
 <body>
-    <a href="/about">
-        <p onClick="description()">R.out</p>
-    </a>
+    <p >R.out</p>
     <div id = "top-panel"
         <span class="label dist" id = "dist-label" >Enter a distance:</span>
         <input type="number" id= "dist_input" onkeypress="return isNumberKey" min="0"
         onkeydown = "if (event.keyCode == 13)
                             document.getElementById('GenRouteBtn').click()">
         <button class="button" id = "GenRouteBtn" onclick="genRouteListener()"><span>Generate Route</span></button>
+        <span class="label dist" style="display:none" id="rating"></span>
+        <span class="label dist" style="display:none" id="slopeDiv"></span>
+        <span style="display:none" id="easy">Easy (A)</span>
+        <meter min="0" max="100" style="display:none ; width: 150px" id="diffBar"></meter>
+        <span style="display:none" id="difficult">Difficult (F)</span>
         <span class="label dist2" id="dist_error"></span>
     </div>
     <br><br>
@@ -91,10 +94,13 @@
 
     <div id="elevation_chart"></div>
 
-    <!--message to indicate if unsuccessful in getting current position-->
-    <div id="currPositionGrab"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&libraries=places&callback=initMap"
-    async defer></script>
-</body>
+    <a href="/about">
+        <button id = "about-button" style = "text-align: TOP_RIGHT" class = "button4" onclick = "description()" ><span> About</span></button>
+    </a>
+        <!--message to indicate if unsuccessful in getting current position-->
+        <div id="currPositionGrab"></div>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4cSqzBhgwNwqGFCjgDj6wDB6zNB67AQQ&libraries=places&callback=initMap"
+        async defer></script>
+    </body>
 
 </html>
