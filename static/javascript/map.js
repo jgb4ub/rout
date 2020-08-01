@@ -620,10 +620,9 @@ function iterativeRouting(requestData, result, counter){
          callOutput(result);
 
     } else {
-<<<<<<< HEAD
 
         backTrack(result, requestData);
-        
+
         if (tooShort(result, pathDifference)) {
             if (requestData.randomWaypoints.length === 1 && requestData.userWaypoints.length === 0){
                 requestData.randomWaypoints.push(generateRandomWaypoint(parseFloat((0.621371 * dist)/2), requestData.request.origin.lat,  requestData.request.origin.lng));
@@ -636,20 +635,6 @@ function iterativeRouting(requestData, result, counter){
             // directMe(requestData, counter);
 
         } else {
-=======
-
-
-        if (tooShort(result)) {
-            elongate();  // adjustments
-            directMe(requestData, counter);
-
-        } else if (tooLong(result)) {
-            shorten();    // other adjustments
-            directMe(requestData, counter);
-        }
-        else {
-            console.log("done");
->>>>>>> backtracking
             addmorewpts=false;
 
 
