@@ -352,3 +352,32 @@ ul li:hover {
     display: table-cell;
     white-space: nowrap;
 }​
+
+
+p1 {
+    color: #232D4B;
+    text-align: center;
+    font-weight: bold;
+    font-size: 40px;
+    margin: 10px 10px 10px 10px;
+    outline-color: #232D4B;
+    background: rgba(0, 128, 0, 0.3);
+    font-family: Roboto;
+    background-color: #FFFFFF;
+}
+
+#des {
+    height: 100%;
+    background-color: #FFFFFF;
+}
+
+p2 {
+    color: #232D4B;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 10px 10px 10px 10px;
+    outline-color: #232D4B;
+    font-family: Roboto;
+    background-color: #FFFFFF;
+}
