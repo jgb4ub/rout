@@ -393,3 +393,20 @@ p2 {
     position: relative;
     left: 10px;
 }
+
+#addstartbtn, #addwpbtn {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width:auto;
+}
+
+#collapse{
+    display:none;
+    transition: display 0.2s ease-out;
+}
+
+#showHide{
+    margin-top: .5em;
+    padding-top:.5em;
+    padding-bottom:.5em;
+}

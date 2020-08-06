@@ -46,31 +46,34 @@
         <div id="pac-container">
             <input id="pac-input" type="text" placeholder="Enter a location">
         </div>
-        <br>
-        <button type="button"  class="button" id="addstartbtn" onclick="addbtnListener()">Add/Change Startpoint</button>
-        <button type="button"  class="button" id="addwpbtn" onclick="wpbtnListener()">Add Waypoint</button>
-        <br>
-        <br>
-        <label> &nbsp;&nbsp;&nbsp;</label>
-        <img id="startimg" src="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png" width="20" height="20">
-        <!--<img id="startimg" src="https://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/256/Trafficlight-green-icon.png" width="20" height="20">-->
-        <label id= "startaddress">Start Address: </label>
-        <label id= "startaddressval"></label>
-        <br><br>
-        <img id="wpimg" src="/images/waypointmarker.png" width="30" height="30">
-        <!--<img id="wpimg" src="https://www.publicdomainpictures.net/pictures/310000/velka/blue-circle.png" width="20" height="20" style="margin-left: 11.5px;">-->
+        <div id = "collapse" >
+            <br>
+            <!--<button type="button"  class="button" id="addstartbtn" onclick="addbtnListener()">Add/Change Startpoint</button>
+            <button type="button"  class="button" id="addwpbtn" onclick="wpbtnListener()">Add Waypoint</button>-->
+            <br>
+            <br>
+            <label> &nbsp;&nbsp;&nbsp;</label>
+            <img id="startimg" src="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png" width="20" height="20">
+            <!--<img id="startimg" src="https://icons.iconarchive.com/icons/custom-icon-design/flatastic-10/256/Trafficlight-green-icon.png" width="20" height="20">-->
+            <label id= "startaddress">Start Address: </label>
+            <label id= "startaddressval"></label>
+            <br><br>
+            <img id="wpimg" src="/images/waypointmarker.png" width="30" height="30">
+            <!--<img id="wpimg" src="https://www.publicdomainpictures.net/pictures/310000/velka/blue-circle.png" width="20" height="20" style="margin-left: 11.5px;">-->
 
-        <label>Waypoints: <br/></label>
-        <ul id="wp-boxes">
-            <!-- <li>First point<span class="close">&times;</span></li> -->
-        </ul>
-        <label id="tester1"></label>
-        <div id="map"></div>
-        <div id="infowindow-content">
-            <img src="" width="16" height="16" id="place-icon">
-            <span id="place-name"  class="title"></span><br>
-            <span id="place-address"></span>
+            <label>Waypoints: <br/></label>
+            <ul id="wp-boxes">
+                <!-- <li>First point<span class="close">&times;</span></li> -->
+            </ul>
+            <label id="tester1"></label>
+            <div id="map"></div>
+            <div id="infowindow-content">
+                <!--<img src="" width="16" height="16" id="place-icon">-->
+                <span id="place-name"  class="title"></span><br>
+                <span id="place-address"></span>
+            </div>
         </div>
+        <h3 class = "button3" onclick="collapse()" id="showHide">Show</h4>
     </div>
 
     <div class="pac-card" id="pac-card2">

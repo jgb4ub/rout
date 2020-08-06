@@ -1104,6 +1104,19 @@ function getBearing (startPoint, endPoint) {
     return (brng + 360) % 360;
 }
 
+function collapse(){
+    let coliflour = document.getElementById("collapse");
+    let toggler = document.getElementById("showHide");
+
+    if (coliflour.style.display!= "none"){
+        coliflour.style.display = "none";
+        toggler.innerHTML = "Show";
+    } else {
+        coliflour.style.display = "block";
+        toggler.innerHTML = "Hide";
+    }
+}
+
 
 /*
 Function to determine a route that approximates given distance
