@@ -367,12 +367,13 @@ p1 {
     outline-color: #232D4B;
     background: rgba(0, 128, 0, 0.3);
     font-family: Roboto;
-    background-color: #FFFFFF;
+    background-color: #FED8B1;
 }
 
 #des {
     height: 100%;
-    background-color: #FFFFFF;
+    background-color: #FED8B1;
+    font-family: Roboto;
 }
 
 p2 {
@@ -383,5 +384,12 @@ p2 {
     margin: 10px 10px 10px 10px;
     outline-color: #232D4B;
     font-family: Roboto;
-    background-color: #FFFFFF;
+    background-color: #FED8B1;
+    position: relative;
+    left: 10px;
+}
+
+#list {
+    position: relative;
+    left: 10px;
 }
