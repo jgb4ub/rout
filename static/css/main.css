@@ -410,3 +410,11 @@ p2 {
     padding-top:.5em;
     padding-bottom:.5em;
 }
+
+#length{
+    padding-left:.5em;
+    padding-bottom:1em;
+}
+#length, #pathLength {
+    display:inline;
+}

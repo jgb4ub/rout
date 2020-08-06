@@ -734,7 +734,7 @@ function startUpGeneration(requestData) {
 }
 
 function callOutput(directResult){
-    console.log("length: "+sum);
+    document.getElementById("pathLength").innerHTML= (Math.round(sum*1000))/1000 + " mi.";
     document.getElementById("dist_error").innerHTML=""
     directionsRenderer.setDirections(directResult);
     elevationCreator(directResult);
