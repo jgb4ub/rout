@@ -798,7 +798,7 @@ function plotElevation(elevations, status) {
         data.addRow(['', elevations[i].elevation]); //this is adding a column for each elevation sample
         // console.log(elevations[i].location.lat() );
         // console.log(elevations[i].location.lng() );
-        console.log( elevations[i].elevation);
+        //console.log( elevations[i].elevation);
         elevationArray.push(elevations[i].elevation); // grabbing the elevation at each of the points plotted as part of the 250 'samples'
     }
     // console.log( elevationArray );
@@ -824,7 +824,7 @@ function plotElevation(elevations, status) {
 
     slopeAverage = slopeSum/125;
     console.log( "AVerage slope: " + slopeAverage );
-    console.log( "Slopes: " + slopeArray );
+    //console.log( "Slopes: " + slopeArray );
     console.log( "Elevation at sample point: " + elevationNum );
     console.log( "Sample point: " + pointNum );
     console.log( "high: " + high );
@@ -845,7 +845,7 @@ function plotElevation(elevations, status) {
     console.log( "difficulty: " + difficulty );
 
     document.getElementById("rating").innerHTML = "Rating: " + difficulty;
-    document.getElementById("slopeDiv").innerHTML = "Average slope: " + slopeAverage.toFixed(3);
+    document.getElementById("slopeDiv").innerHTML = "Average slope: " + slopeAverage.toFixed(2);
     if (difficulty == "A"){
         document.getElementById("diffBar").value = "20";
     }
@@ -872,6 +872,7 @@ function plotElevation(elevations, status) {
     }
     if (diffBar.style.display == 'none') {
       diffBar.style.display = 'inline';
+      diffBar.style.color = 'red';
     }
     if (easy.style.display == 'none') {
       easy.style.display = 'inline';
@@ -880,6 +881,9 @@ function plotElevation(elevations, status) {
       difficult.style.display = 'inline';
     }
 
+    if (space.style.display == 'none'){
+        space.style.display = 'inline';
+    }
 
     //var rating = document.getElementById( "rating" );
 
@@ -887,7 +891,7 @@ function plotElevation(elevations, status) {
     chart.draw(data, {
         height: 150,
         legend: 'none',
-        titleY: 'Elevation (m)'
+        titleY: 'Elevation (m)',
     });
 }
 
