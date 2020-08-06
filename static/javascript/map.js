@@ -29,6 +29,8 @@ var slopeAverage;
 
 var generated=false;
 var addmorewpts=false;
+var contentString;
+var infoWindow;
 
 
 function setupAutoComplete(map) {
@@ -75,6 +77,7 @@ function setupAutoComplete(map) {
             map.setZoom(17);
         }
         setOrigin(place.geometry.location);
+
         marker.setVisible(true);
 
         var address = '';
@@ -409,6 +412,12 @@ function getReverseGeocodingData(lat, lng) {
 }
 
 function setOrigin(marker) {
+    //infoWindow.close()
+    contentString = '<button type="button"  class="button" id="addstartbtn" onclick="addbtnListener()">Startpoint</button>' + '<button type="button"  class="button" id="addwpbtn" onclick="wpbtnListener()">Waypoint</button>';
+    infoWindow = new google.maps.InfoWindow({
+        content: contentString
+          });
+
     for (var i = 0; i < currposmarker.length; i++){
         currposmarker[i].setMap(null);
     }
@@ -420,6 +429,10 @@ function setOrigin(marker) {
         draggable:false
     });
     currposmarker.push(currPos);
+
+
+    infoWindow.open(map, currPos);
+
     lat1=marker.lat();
     lng1=marker.lng();
     getReverseGeocodingData(lat1, lng1);
@@ -721,7 +734,8 @@ function startUpGeneration(requestData) {
 }
 
 function callOutput(directResult){
-    console.log("length: "+sum);
+    document.getElementById("pathLength").innerHTML= (Math.round(sum*1000))/1000 + " mi.";
+    document.getElementById("dist_error").innerHTML=""
     directionsRenderer.setDirections(directResult);
     elevationCreator(directResult);
 }
@@ -1089,6 +1103,19 @@ function getBearing (startPoint, endPoint) {
     brng = toDegrees(brng);
     console.log("Calculated Bearing")
     return (brng + 360) % 360;
+}
+
+function collapse(){
+    let coliflour = document.getElementById("collapse");
+    let toggler = document.getElementById("showHide");
+
+    if (coliflour.style.display!= "none"){
+        coliflour.style.display = "none";
+        toggler.innerHTML = "Show";
+    } else {
+        coliflour.style.display = "block";
+        toggler.innerHTML = "Hide";
+    }
 }
 
 
