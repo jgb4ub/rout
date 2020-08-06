@@ -735,6 +735,7 @@ function startUpGeneration(requestData) {
 
 function callOutput(directResult){
     console.log("length: "+sum);
+    document.getElementById("dist_error").innerHTML=""
     directionsRenderer.setDirections(directResult);
     elevationCreator(directResult);
 }
